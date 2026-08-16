@@ -15,7 +15,7 @@ test("nextBus: 港→椿・花ガーデン 10:00到着なら10:20発", () => {
   const b = nextBus(tt, "PORT", "TSUBAKI", "10:00", { port: "motomachi" });
   assert.equal(b.dep, "10:20");
   assert.equal(b.arr, "10:28");
-  assert.equal(b.tripId, "MIHARA_DOWN_1020");
+  assert.equal(b.tripId, "MIHARA_UP_1020");
 });
 
 test("nextBus: 岡田港では12:40便は使えない", () => {
@@ -50,13 +50,25 @@ test("planTrip: 荷物なしは1日目に山頂まで行く", () => {
   assert.equal(p.days[0].items.find(i => i.type === "bus").arr, "10:45");
 });
 
-test("planTrip: 2日目はホテル→山頂→港", () => {
+test("planTrip: 2日目はホテル→山頂→ホテル(荷物回収)→港", () => {
   const p = planTrip({ tt, spots, port: "motomachi", arrival: "10:00", hasLuggage: true });
   const d2 = p.days[1].items;
   const buses = d2.filter(i => i.type === "bus");
-  assert.equal(buses[0].from, "ONSEN");
-  assert.equal(buses[0].to, "SUMMIT");
-  assert.equal(buses.at(-1).to, "PORT");
+  assert.deepEqual(buses.map(b => [b.from, b.to, b.dep]), [
+    ["ONSEN", "SUMMIT", "08:38"],
+    ["SUMMIT", "ONSEN", "11:20"],
+    ["ONSEN", "PORT", "13:37"],
+  ]);
+  assert.equal(buses.at(-1).arr, "13:55");
+  assert.equal(p.unresolved.length, 0);
+});
+
+test("planTrip: 岡田港入港でも1日目は成立する（12:40便は元町港始発だが椿→温泉区間は使える）", () => {
+  const p = planTrip({ tt, spots, port: "okada", arrival: "10:00", hasLuggage: true });
+  const buses = p.days[0].items.filter(i => i.type === "bus");
+  assert.equal(buses[0].dep, "10:20");
+  assert.equal(buses[1].dep, "12:48");
+  assert.equal(p.unresolved.length, 0);
 });
 
 test("planTrip: 運賃合計を計算する", () => {

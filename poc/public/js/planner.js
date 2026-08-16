@@ -113,17 +113,29 @@ export function planTrip({ tt, spots, port = "motomachi", arrival = "10:00", has
     }
   }
 
-  // ---- 2日目 ----
-  day2.push({ type: "event", time: "08:30", title: "ホテルにキャリーケースを預ける", note: "身軽になって出発 🎒" });
-  const c1 = nextBus(tt, "ONSEN", "SUMMIT", "09:00", opts);
+  // ---- 2日目: ホテル(荷物預け) → 山頂 → ホテル(荷物回収) → 港 ----
+  const DAY2_READY = "08:20"; // 朝食後、ホテル前バス停に出られる時刻
+  day2.push({ type: "event", time: DAY2_READY, title: "ホテルにキャリーケースを預けて出発", note: "身軽になって三原山へ 🎒" });
+  const c1 = nextBus(tt, "ONSEN", "SUMMIT", DAY2_READY, opts);
   if (!c1) unresolved.push("2日目 三原山温泉→山頂口の便が見つかりません");
   else {
     day2.push(busItem(c1, tt));
     const leave = addMin(c1.arr, spots.SUMMIT.minStayMin);
-    const c2 = nextBus(tt, "SUMMIT", "PORT", leave, opts);
-    day2.push(spotItem("SUMMIT", spots, c1.arr, c2 ? c2.dep : null, "三原山を満喫（火口・裏砂漠など）", false));
-    if (c2) { day2.push(busItem(c2, tt)); day2.push({ type: "event", time: c2.arr, title: "港に到着 → 荷物はホテルから配送 or 一度戻って回収", note: "帰りの船の時刻に合わせて要調整" }); }
-    else unresolved.push("2日目 山頂→港の便が見つかりません");
+    const c2 = nextBus(tt, "SUMMIT", "ONSEN", leave, opts);
+    day2.push(spotItem("SUMMIT", spots, c1.arr, c2 ? c2.dep : null, "三原山を満喫（火口一周・裏砂漠など）", false));
+    if (!c2) unresolved.push("2日目 山頂→三原山温泉（荷物回収）の便が見つかりません");
+    else {
+      day2.push(busItem(c2, tt));
+      const c3 = nextBus(tt, "ONSEN", "PORT", addMin(c2.arr, 20), opts);
+      const wait = c3 ? toMin(c3.dep) - toMin(c2.arr) : null;
+      day2.push(spotItem("ONSEN", spots, c2.arr, c3 ? c3.dep : null,
+        c3 ? `荷物を回収${wait > 40 ? `。港行きまで${Math.floor(wait / 60)}時間${wait % 60}分あるので昼食・温泉・休憩` : ""}` : "荷物を回収", false));
+      if (!c3) unresolved.push("2日目 三原山温泉→港の便が見つかりません（ホテル送迎の有無を確認）");
+      else {
+        day2.push(busItem(c3, tt));
+        day2.push({ type: "event", time: c3.arr, title: "港に到着", note: "帰りの船：大型客船 14:20発→竹芝18:40着（8月毎日・要最終確認）。午後のジェット船は要確認" });
+      }
+    }
   }
 
   const allBuses = [...day1, ...day2].filter((i) => i.type === "bus");
