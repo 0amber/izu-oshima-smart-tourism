@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>大島スマートコース — ODH2026 First Stage 2分プレゼン</title>
+<style>
+  :root{--sea:#0b5aa6;--sea-deep:#083c70;--sea-light:#e6f0fb;--tsubaki:#d3283b;--tsubaki-light:#fdecee;--sun:#f2a900;--sun-light:#fff6dc;--leaf:#2f8f4e;--leaf-light:#e8f5ec;--ink:#1f2933;--sub:#5b6773;--line:#dde3ea}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#888}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;color:var(--ink);line-height:1.5}
+  .slide{width:1280px;height:720px;position:relative;overflow:hidden;background:#fff;page-break-after:always;break-after:page;margin:0 auto 20px;padding:56px 72px 60px;display:flex;flex-direction:column}
+  .slide:last-child{page-break-after:auto}
+  h1{font-size:64px;line-height:1.2;color:#fff;font-weight:900}
+  h2{font-size:44px;line-height:1.25;color:var(--sea-deep);font-weight:900;margin-bottom:22px;border-left:10px solid var(--tsubaki);padding-left:20px}
+  p,li{font-size:26px}
+  .sub{font-size:22px;color:var(--sub)}
+  .foot{position:absolute;left:72px;right:72px;bottom:22px;display:flex;justify-content:space-between;font-size:15px;color:var(--sub)}
+  .foot .src{max-width:900px}
+  .num{font-weight:700}
+  .cover{background:linear-gradient(135deg,var(--sea-deep) 0%,var(--sea) 55%,#2f7fd0 100%);color:#fff;justify-content:center}
+  .cover .eyebrow{font-size:22px;opacity:.9;letter-spacing:.1em;margin-bottom:18px}
+  .cover .tag{font-size:34px;font-weight:700;margin-top:26px;opacity:.95}
+  .cover .team{position:absolute;bottom:40px;left:72px;font-size:22px;opacity:.9}
+  .cover .photo{position:absolute;right:72px;top:90px;width:420px;height:420px;border-radius:24px;background:rgba(255,255,255,.12);border:2px dashed rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;text-align:center;font-size:20px;padding:24px}
+  .cover .photo img{width:100%;height:100%;object-fit:cover;border-radius:22px}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;flex:1;align-content:center}
+  .fact{background:var(--tsubaki-light);border:2px solid var(--tsubaki);border-radius:20px;padding:26px 24px}
+  .fact .big{font-size:56px;font-weight:900;color:var(--tsubaki);line-height:1.1}
+  .fact .lbl{font-size:24px;font-weight:700;margin:8px 0 6px}
+  .fact .s{font-size:18px;color:var(--sub)}
+  .vs{display:grid;grid-template-columns:1fr 90px 1fr;align-items:center;gap:10px;flex:1}
+  .box{border-radius:20px;padding:26px 28px;height:100%;display:flex;flex-direction:column;justify-content:center}
+  .box.gray{background:#f1f3f6;border:2px solid var(--line)}
+  .box.blue{background:var(--sea-light);border:3px solid var(--sea)}
+  .box h3{font-size:30px;margin-bottom:12px;color:var(--sea-deep)}
+  .box.gray h3{color:var(--sub)}
+  .box li{margin:6px 0 6px 28px}
+  .arrow{font-size:60px;text-align:center;color:var(--tsubaki);font-weight:900}
+  .shots{display:grid;grid-template-columns:1fr 1fr;gap:26px;flex:1;min-height:0}
+  .shot{border:2px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;display:flex;flex-direction:column;min-height:0}
+  .shot .cap{background:var(--sea);color:#fff;font-size:22px;font-weight:800;padding:8px 16px}
+  .shot .cap.red{background:var(--tsubaki)}
+  .shot .img{flex:1;min-height:0;overflow:hidden;position:relative}
+  .shot img{width:100%;display:block}
+  .punch{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--sun);color:#3a2a00;font-weight:900;font-size:24px;padding:10px 22px;border-radius:999px;box-shadow:0 4px 14px rgba(0,0,0,.25);white-space:nowrap}
+  .flow{display:grid;grid-template-columns:1fr 60px 1fr 60px 1fr 60px 1fr;align-items:center;gap:6px;margin-top:10px}
+  .node{background:var(--sea-light);border:2px solid var(--sea);border-radius:16px;padding:18px 16px;text-align:center;min-height:170px;display:flex;flex-direction:column;justify-content:center}
+  .node b{font-size:24px;color:var(--sea-deep);display:block;margin-bottom:6px}
+  .node span{font-size:18px;color:var(--sub)}
+  .node.ai{background:var(--sun-light);border-color:var(--sun)}
+  .node.ok{background:var(--leaf-light);border-color:var(--leaf)}
+  .arr{font-size:40px;text-align:center;color:var(--sea)}
+  .callout{margin-top:26px;background:var(--tsubaki-light);border-left:10px solid var(--tsubaki);padding:16px 22px;font-size:26px;font-weight:700;border-radius:8px}
+  table{border-collapse:collapse;width:100%;font-size:22px;margin-top:6px}
+  th,td{border:1px solid var(--line);padding:10px 14px;text-align:left;vertical-align:top}
+  th{background:var(--sea-light);color:var(--sea-deep)}
+  .pill{display:inline-block;font-size:16px;padding:2px 10px;border-radius:999px;font-weight:700;background:var(--leaf-light);color:var(--leaf)}
+  .pill.gray{background:#eef0f3;color:var(--sub)}
+  .impact{display:grid;grid-template-columns:1.1fr 1fr;gap:36px;flex:1;align-items:center}
+  .kpi{background:var(--sea-light);border-radius:20px;padding:26px 30px;margin-bottom:18px}
+  .kpi .big{font-size:60px;font-weight:900;color:var(--sea-deep);line-height:1.1}
+  .kpi .lbl{font-size:22px;color:var(--sub);margin-top:4px}
+  .islands{background:#fff;border:2px solid var(--line);border-radius:20px;padding:26px;height:100%;display:flex;flex-direction:column;justify-content:center}
+  .islands h3{font-size:28px;color:var(--sea-deep);margin-bottom:12px}
+  .islands li{margin:6px 0 6px 30px;font-size:24px}
+  .next{display:grid;grid-template-columns:1fr 1fr;gap:30px;flex:1;align-items:stretch}
+  .next .box{justify-content:flex-start}
+  .next li{margin:8px 0 8px 30px}
+  .url{margin-top:auto;font-size:26px;font-weight:800;color:var(--sea);background:var(--sea-light);padding:12px 18px;border-radius:12px;display:inline-block}
+  @page{size:1280px 720px;margin:0}
+  @media print{html,body{background:#fff}.slide{margin:0}}
+</style>
+</head>
+<body>
+
+<!-- 1 -->
+<section class="slide cover">
+  <div class="eyebrow">東京都知事杯オープンデータ・ハッカソン 2026 ｜ First Stage</div>
+  <h1>🏝️ 大島スマートコース</h1>
+  <div class="tag">キャリーケースがあっても、島を楽しみ尽くす。<br>GTFSで検証済みの、荷物の有無で変わる1泊2日プラン</div>
+  <div class="photo"><div>📷 現地写真（8/22撮影予定）<br><span style="font-size:16px;opacity:.85">港でキャリーケースを引く旅行者・バス停・時刻表</span></div></div>
+  <div class="team">SBC.別班連携チーム</div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <h2>港に着いた瞬間、旅は「荷物」に縛られる</h2>
+  <div class="facts">
+    <div class="fact"><div class="big">500円</div><div class="lbl">大きな荷物はバスで有料<br>混雑時は乗車拒否も</div><div class="s">3辺合計1m超・10kg超が対象（大島バス手荷物規定）</div></div>
+    <div class="fact"><div class="big">15:00</div><div class="lbl">宿のチェックインまで<br>荷物を抱えたまま</div><div class="s">ジェット船は9:35〜10:00着。到着後の5時間が宙に浮く</div></div>
+    <div class="fact"><div class="big">未舗装</div><div class="lbl">三原山の遊歩道は<br>キャリーケースでは行けない</div><div class="s">一番行きたい場所に、一番行けない</div></div>
+  </div>
+  <p class="sub" style="margin-top:22px">伊豆大島の来島者は年間約20万人。到着直後の数時間を無駄にする不安が、滞在満足度と島での消費機会を下げている。</p>
+  <div class="foot"><span class="src">出典：大島旅客自動車「手荷物規定」／東海汽船 時刻表／東京都「伊豆諸島・小笠原諸島観光客入込実態調査」※来島者数は提出前に最新値で更新</span><span class="num">2 / 8</span></div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <h2>乗換案内は「荷物」を知らない</h2>
+  <div class="vs">
+    <div class="box gray"><h3>従来の乗換案内</h3><ul><li>A → B に最速で行く方法</li><li>1回の移動だけを見る</li><li>「今すぐ行けるか」は考えない</li></ul></div>
+    <div class="arrow">→</div>
+    <div class="box blue"><h3>旅行者の本当の制約</h3><ul><li>🧳 大きな荷物がある</li><li>📅 2日間ある（今日と明日）</li><li>🚢 この便で着く（港も当日決まる）</li></ul><p style="margin-top:14px;font-weight:800;color:var(--tsubaki)">必要なのは「経路」ではなく「制約付きの滞在計画」</p></div>
+  </div>
+  <div class="foot"><span></span><span class="num">3 / 8</span></div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <h2>荷物あり ⇄ 身軽 — スイッチひとつで旅程が組み替わる</h2>
+  <div class="shots">
+    <div class="shot"><div class="cap">🧳 キャリーケースあり</div><div class="img"><img src="../captures/02_plan_luggage.png" alt=""><div class="punch">10:20発 → 10:28 椿・花ガーデン ✅ 時刻表と一致</div></div></div>
+    <div class="shot"><div class="cap red">🎒 身軽</div><div class="img"><img src="../captures/03_plan_light.png" alt=""><div class="punch">10:20発 → 10:45 三原山頂口 ✅ 時刻表と一致</div></div></div>
+  </div>
+  <p class="sub" style="margin-top:14px">荷物ありなら初日は平坦で港から8分の椿・花ガーデン → ホテルに預けて2日目に三原山。すべてのバス便は実在の便IDに紐づく。</p>
+  <div class="foot"><span class="src">画面：PoC v0.1（実データ：大島バス 三原山ライン 2026/7/1〜9/30ダイヤ）</span><span class="num">4 / 8</span></div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <h2>仕組み：GTFS × ルール × AI（AIの旅程はGTFSで検証）</h2>
+  <div class="flow">
+    <div class="node"><b>GTFS-JP</b><span>大島バス全路線<br>（ODPT）→ 必要な便だけJSON化</span></div>
+    <div class="arr">→</div>
+    <div class="node"><b>荷物適性スコア</b><span>スポットごとに0〜2<br>荷物ありは高スコアだけ候補に</span></div>
+    <div class="arr">→</div>
+    <div class="node ok"><b>次発検索で旅程を確定</b><span>「この停留所を、この時刻以降に出る最初の便」を時刻順に詰める</span></div>
+    <div class="arr">→</div>
+    <div class="node ai"><b>生成AIは説明文だけ</b><span>旅程は必ず時刻表で検証済み<br>＝AIの幻覚を防ぐ</span></div>
+  </div>
+  <div class="callout">港が当日の海況で元町／岡田に変わる島の事情も、「入港地」という抽象停留所で吸収。単一HTMLでも動くので、電波の弱い島内でもオフラインで使える。</div>
+  <div class="foot"><span class="src">技術：Cloudflare Pages ＋ 素のHTML/JS、ロジックは純粋関数＋テスト（planner.js）、Python でGTFS前処理</span><span class="num">5 / 8</span></div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <h2>使ったオープンデータ</h2>
+  <table>
+    <tr><th style="width:44%">データ</th><th style="width:26%">提供元</th><th>使い方</th></tr>
+    <tr><td>大島バス GTFS-JP（全路線）</td><td>公共交通オープンデータセンター（ODPT）</td><td>旅程のバス時刻・便ID・運行日 <span class="pill">利用中</span></td></tr>
+    <tr><td>伊豆諸島・小笠原諸島観光客入込実態調査</td><td>東京都 産業労働局</td><td>対象人数の定量化 <span class="pill">利用予定</span></td></tr>
+    <tr><td>東京都観光客数等実態調査</td><td>東京都 産業労働局</td><td>観光消費額でインパクト試算 <span class="pill">利用予定</span></td></tr>
+    <tr><td>大島町関連データ（公共施設・トイレ等）</td><td>東京都オープンデータカタログ</td><td>スポット情報の拡張 <span class="pill gray">確認中</span></td></tr>
+    <tr><td>東海汽船 時刻表／大島バス 手荷物規定・運賃</td><td>民間（東海汽船・大島旅客自動車）</td><td>到着時刻プリセット・荷物警告・運賃 <span class="pill">利用中</span></td></tr>
+  </table>
+  <p class="sub" style="margin-top:18px">行政の公共交通データを「経路」ではなく「制約付きの滞在計画」に使う。GTFSは全国の島・地方でも同じ形式 → そのまま横展開できる。</p>
+  <div class="foot"><span></span><span class="num">6 / 8</span></div>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <h2>インパクト：来島者の「到着直後の5時間」を取り戻す</h2>
+  <div class="impact">
+    <div>
+      <div class="kpi"><div class="big">約20万人/年</div><div class="lbl">伊豆大島の来島者（東京都 観光客入込実態調査 ※最新値で更新）</div></div>
+      <div class="kpi"><div class="big">+半日</div><div class="lbl">荷物に縛られていた初日が、観光の時間に変わる → 島での滞在満足度・消費機会が増える</div></div>
+    </div>
+    <div class="islands">
+      <h3>横展開</h3>
+      <ul><li>八丈島・三宅島・神津島など、GTFSがある島へ同じ仕組みで</li><li>「荷物」以外の制約（ベビーカー・車椅子・雨天）にも同じ設計で対応</li><li>大島町・観光協会・宿の公式導線での提供を想定</li></ul>
+    </div>
+  </div>
+  <div class="foot"><span class="src">都民のQOL＝休暇の質。東京の島しょ観光を「不安の少ない旅」に。</span><span class="num">7 / 8</span></div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <h2>8/22–23、キャリーケースを持って実走します</h2>
+  <div class="next">
+    <div class="box blue"><h3>現地検証で確かめること</h3><ul><li>10:20便で椿・花ガーデン10:28着は本当か（遅延幅）</li><li>バスの手荷物ルールの運用実態</li><li>ホテルでチェックイン前に荷物を預けられるか</li><li>山頂口〜遊歩道でキャリーが困難な証拠（写真）</li></ul></div>
+    <div class="box gray"><h3>次のステップ</h3><ul><li>ODPT GTFS-JPの本番データに差し替え</li><li>生成AIの説明文をFunctionsで提供</li><li>大島町・観光協会と運用相談</li></ul><div class="url">🔗 デモ：https://oshima-smart-course.pages.dev/（公開後）</div></div>
+  </div>
+  <div class="foot"><span class="src">SBC.別班連携チーム ｜ 生成AI（Claude/ChatGPT）を説明文生成・開発補助に利用 ｜ 写真は自前撮影・出典は各頁に明記</span><span class="num">8 / 8</span></div>
+</section>
+
+</body>
+</html>
