@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8/16 進捗まとめ｜伊豆大島スマート観光</title>
+<style>
+  :root{--sea:#0b5aa6;--sea-deep:#083c70;--sea-light:#e6f0fb;--tsubaki:#d3283b;--tsubaki-light:#fdecee;--sun:#f2a900;--sun-light:#fff6dc;--leaf:#2f8f4e;--leaf-light:#e8f5ec;--ink:#1f2933;--sub:#5b6773;--line:#dde3ea;--bg:#f2f4f7}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;font-size:16px}
+  .wrap{max-width:640px;margin:0 auto;padding:0 14px 40px}
+  header{background:linear-gradient(135deg,var(--sea-deep),var(--sea) 70%,#2f7fd0);color:#fff;padding:22px 16px 18px}
+  header .wrap{padding:0}
+  header h1{font-size:1.25rem;margin:0 0 4px}
+  header .sub{font-size:.85rem;opacity:.92}
+  .alert{margin-top:10px;background:var(--tsubaki);color:#fff;border-radius:10px;padding:8px 12px;font-weight:700;font-size:.9rem;display:inline-block}
+  h2{font-size:1.05rem;color:var(--sea-deep);border-left:5px solid var(--tsubaki);padding-left:10px;margin:26px 0 10px}
+  .tldr{background:#fff;border:2px solid var(--sea);border-radius:14px;padding:12px 14px;margin-top:16px}
+  .tldr li{margin:4px 0}
+  /* chat */
+  .chat{display:flex;flex-direction:column;gap:10px}
+  .msg{display:flex;gap:8px;align-items:flex-end}
+  .msg .av{width:34px;height:34px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:18px;background:#fff;border:1px solid var(--line)}
+  .msg .b{max-width:85%;background:#fff;border:1px solid var(--line);border-radius:16px 16px 16px 4px;padding:9px 12px;font-size:.93rem}
+  .msg.me{flex-direction:row-reverse}
+  .msg.me .b{background:var(--sea);color:#fff;border:0;border-radius:16px 16px 4px 16px}
+  .msg.me .av{background:var(--sea-light)}
+  .msg .b b{color:inherit}
+  .msg .t{display:block;font-size:.72rem;color:var(--sub);margin-top:4px}
+  .msg.me .t{color:#dfeaf8}
+  .fact{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0}
+  .fact .k{font-weight:800;color:var(--sea-deep)}
+  .tag{display:inline-block;font-size:.72rem;padding:1px 8px;border-radius:999px;font-weight:700;vertical-align:middle}
+  .ok{background:var(--leaf-light);color:var(--leaf)}.q{background:var(--sun-light);color:#946600}.ng{background:var(--tsubaki-light);color:var(--tsubaki)}
+  .tl{list-style:none;margin:6px 0 0 8px;padding:0;border-left:3px solid var(--sea)}
+  .tl li{position:relative;padding:0 0 10px 16px;font-size:.93rem}
+  .tl li::before{content:"";position:absolute;left:-7.5px;top:8px;width:10px;height:10px;border-radius:50%;background:#fff;border:3px solid var(--sea)}
+  .tl li.bus::before{background:var(--sea)}
+  .tl .h{font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--sea-deep)}
+  .warn{background:var(--tsubaki-light);border-left:4px solid var(--tsubaki);padding:8px 12px;border-radius:6px;font-size:.9rem;margin:8px 0}
+  .files li{margin:4px 0;font-size:.9rem}
+  code{font-family:ui-monospace,Menlo,monospace;background:#eef1f5;padding:1px 5px;border-radius:4px;font-size:.85em}
+  .todo{list-style:none;padding:0;margin:0}
+  .todo li{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:6px 0;font-size:.93rem;display:flex;gap:8px}
+  .todo li .who{background:var(--sea-deep);color:#fff;font-size:.7rem;padding:1px 7px;border-radius:999px;white-space:nowrap;align-self:flex-start;margin-top:3px}
+  footer{font-size:.75rem;color:var(--sub);margin-top:24px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1>🏝️ 8/16（土）進捗まとめ — 伊豆大島スマート観光</h1>
+  <div class="sub">SBC.別班連携チーム ／ 東京都知事杯ODH2026 ／ 今日AIと一緒にやったことのダイジェスト</div>
+  <div class="alert">⚠️ 提出締切 8/23（日）17:00 ＝ 現地検証と同じ日</div>
+</div></header>
+
+<div class="wrap">
+
+<div class="tldr">
+  <b>3行まとめ</b>
+  <ul>
+    <li>📱 <b>PoCが動いた</b>：「キャリーケースあり ⇄ 身軽」を切り替えると、バスの公式時刻表に基づいて1泊2日の旅程が組み替わる。ダブルクリックで開ける1ファイルHTMLも配布可</li>
+    <li>📝 <b>提出物の下書き完成</b>：フォーム文章・16:9スライド8枚PDF・画面キャプチャ。フォームURLはSlack #01_全体連絡で要取得</li>
+    <li>🚌 <b>8/22–23の旅程を公式時刻表で検証</b>：2日目は「08:38上り→11:20下り→荷物回収→13:37港行き→13:55着→14:20大型客船」で成立。ホテル一人泊・荷物預かりは電話確認が必要</li>
+  </ul>
+</div>
+
+<h2>💬 今日の流れ（会話ダイジェスト）</h2>
+<div class="chat">
+  <div class="msg me"><div class="av">🙋</div><div class="b">インセプションデッキと活動経緯を、中学生でもわかるHTMLとMDにまとめて<span class="t">開始</span></div></div>
+  <div class="msg"><div class="av">🤖</div><div class="b">チーム共有ノート（<code>index.html</code>／<code>README.md</code>）を作成。エージェント2体で「ハッカソン戦略」と「PoC設計」を調査 → <b>締切は8/23 17:00</b>、審査基準5つ、<b>大島バスの手荷物は500円・混雑時は乗車拒否あり</b>を発見<span class="t">戦略・設計</span></div></div>
+  <div class="msg me"><div class="av">🙋</div><div class="b">まずはPoCを作ってたたき台を検証したい</div></div>
+  <div class="msg"><div class="av">🤖</div><div class="b">PoC v0.1 完成（入力→タイムライン→スポット詳細、テスト付き）。検証で判明：<b>「12:58ホテル着→13:30便で山頂へ」は不成立</b>（13:30は山頂口発の下り便）→ ドキュメント修正<span class="t">PoC</span></div></div>
+  <div class="msg me"><div class="av">🙋</div><div class="b">サーバー環境がない人もHTMLで開けるようにして</div></div>
+  <div class="msg"><div class="av">🤖</div><div class="b">CSS・JS・データを1ファイルに埋め込む <code>dist/oshima-smart-course.html</code> をビルド。ダブルクリック・オフラインで動作確認<span class="t">配布版</span></div></div>
+  <div class="msg me"><div class="av">🙋</div><div class="b">提出フォームの締切と項目を確定 → 下書きとスライド骨子、収録枠予約</div></div>
+  <div class="msg"><div class="av">🤖</div><div class="b">ガイドブックを確認：フォーム項目①〜⑦、<b>文字数制限の記載なし</b>、<b>収録予約はフォーム⑥の中</b>、URLはSlackで案内。文章下書き＋16:9スライド8枚PDF＋画面キャプチャ4点を作成<span class="t">提出物</span></div></div>
+  <div class="msg me"><div class="av">🙋</div><div class="b">現時点の旅程案（8/22–23、一人旅）はこれ。1日目昼食と午後、2日目が未定</div></div>
+  <div class="msg"><div class="av">🤖</div><div class="b">大島バス公式PDFから三原山ライン<b>全便</b>を取得して検証。1日目は成立（船は「大型客船」でなく<b>ジェット船</b>）。<b>ホテル前発の港行き最終は13:37</b> → 2日目の組み方を確定。PoCも公式時刻表に更新<span class="t">旅程検証</span></div></div>
+</div>
+
+<h2>✅ 今日わかった大事な事実</h2>
+<div class="fact"><span class="k">提出締切</span> 8/23（日）17:00。動画収録は8/26–30（オンライン/対面）、予約は提出フォーム⑥で <span class="tag ok">確認済</span></div>
+<div class="fact"><span class="k">審査基準</span> データ活用／アイデア力／技術力／ソーシャルインパクト／サービスデザイン <span class="tag ok">確認済</span></div>
+<div class="fact"><span class="k">大島バス手荷物</span> 3辺1m超・10kg超は1個500円、多客時は断られることあり <span class="tag ok">確認済</span> ← 「荷物問題」の一次ソース</div>
+<div class="fact"><span class="k">三原山ライン（8月毎日）</span> 上り 元町8:20／入港地10:20／元町12:40（椿+8分・温泉+18分・山頂口+25分）。下り 山頂口9:30／11:20／13:30（温泉+7分・港+25分） <span class="tag ok">確認済</span></div>
+<div class="fact"><span class="k">午後の上り便なし</span> ホテル→山頂へ午後に上がるバスは無い。<b>ホテル前発の港行き最終は13:37</b> <span class="tag ok">確認済</span></div>
+<div class="fact"><span class="k">大島温泉ホテル</span> 一人泊・チェックイン前後の荷物預かり・港送迎 <span class="tag q">要電話</span></div>
+<div class="fact"><span class="k">椿・花ガーデン</span> 弁当持込・芝生での飲食・カフェ営業状況 <span class="tag q">要電話</span></div>
+
+<h2>🗓️ 8/22–23 旅程（公式時刻表で成立を確認）</h2>
+<b>1日目（土）</b>
+<ul class="tl">
+  <li><span class="h">07:50</span> 竹芝発 ジェット船 → <span class="h">09:35</span> 大島着（港は当日決定）</li>
+  <li class="bus"><span class="h">10:20</span> 港発 🚌 → <span class="h">10:28</span> 椿・花ガーデン（観光＋弁当 2h20）</li>
+  <li class="bus"><span class="h">12:48</span> 椿発 🚌 → <span class="h">12:58</span> 三原山温泉（ホテル前）</li>
+  <li><span class="h">12:58–15:00</span> 荷物を預けて入浴・周辺散策（午後の上り便なし）→ <span class="h">15:00</span> チェックイン</li>
+</ul>
+<b>2日目（日）</b>
+<ul class="tl">
+  <li class="bus"><span class="h">08:38</span> ホテル前発 🚌 → <span class="h">08:45</span> 山頂口。三原山 2h35</li>
+  <li class="bus"><span class="h">11:20</span> 山頂口発 🚌 → <span class="h">11:27</span> ホテルで荷物回収（昼食・入浴 2h10）</li>
+  <li class="bus"><span class="h">13:37</span> ホテル前発 🚌（港行き最終）→ <span class="h">13:55</span> 港着</li>
+  <li><span class="h">14:20</span> 大型客船 → <span class="h">18:40</span> 竹芝（8/23の運航・使用港は要最終確認）</li>
+</ul>
+<div class="warn">午前のジェット船（大島11:45頃発）は荷物回収後の港行きバスが無いため不成立。ホテル送迎があれば別 → 要確認。志田さんとの23日午後合流は13:55港着以降に。</div>
+
+<h2>📁 できたもの（リポジトリ <code>tokyo-hackerthon/</code>）</h2>
+<ul class="files">
+  <li>🧭 チーム共有ノート：<code>index.html</code>／<code>README.md</code></li>
+  <li>📱 PoC（配布用1ファイル）：<code>poc/dist/oshima-smart-course.html</code>　※開発版は <code>poc/public/</code>、テスト <code>npm test</code>（9/9）</li>
+  <li>📝 提出物下書き：<code>docs/submission/first-stage-draft.txt</code>（フォーム貼付用）／<code>…-draft.md</code></li>
+  <li>🎞️ スライド：<code>docs/submission/slides/slides.pdf</code>（16:9・8枚）＋各PNG</li>
+  <li>🖼️ 画面キャプチャ：<code>docs/submission/captures/01_input / 02_plan_luggage / 03_plan_light / 04_plan_day2.png</code></li>
+  <li>🗓️ 旅程レビュー：<code>docs/itinerary/2026-08-22-23-plan.txt</code>／<code>.md</code></li>
+</ul>
+
+<h2>👉 次にやること（人がやる）</h2>
+<ul class="todo">
+  <li><span class="who">PM</span>Slack #01_全体連絡でフォームURLを開き、項目・文字数制限をスクショ → ⑥で<b>収録枠を予約</b>（8/26–30、オンライン、日本語）</li>
+  <li><span class="who">現地担当</span>電話：大島温泉ホテル（一人泊・荷物預かり・港送迎）／椿・花ガーデン（弁当持込・芝生・カフェ）／東海汽船（8/22 7:50・8/23 14:20の運航と港、午後ジェット船の有無）</li>
+  <li><span class="who">エンジニア</span>ODPT開発者登録 → GTFS-JPを <code>build_gtfs.py</code> で差し替え。Cloudflare Pagesに公開してデモURLを確保</li>
+  <li><span class="who">全員</span>来島者数「約20万人」を都の観光入込調査の最新値で確定。8/22現地写真でスライド1を差し替え</li>
+</ul>
+
+<footer>作成 2026-08-16 ／ 出典：ODH2026ガイドブック、大島バス 路線バス時刻表（2026/7/1〜9/30）・手荷物規定、東海汽船 時刻表、東京都観光データカタログ。時刻・締切は必ず公式で最終確認してください。</footer>
+</div>
+</body>
+</html>
