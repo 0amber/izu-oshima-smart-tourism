@@ -1,0 +1,12 @@
+{
+  "name": "izu-oshima-smart-course-poc",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "GTFS活用スマートモデルコース PoC（伊豆大島・キャリーケースあり/なしで旅程が変わる）",
+  "scripts": {
+    "test": "node --test test/",
+    "dev": "python3 -m http.server 8788 --directory public",
+    "build:gtfs": "python3 scripts/build_gtfs.py"
+  }
+}

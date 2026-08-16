@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>大島スマートコース PoC</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">🏝️ 大島スマートコース <span class="badge">PoC v0.1</span></div>
+    <div class="sub">GTFS（バス時刻表データ）× 荷物の有無 で、1泊2日の旅程を自動で組みます</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- 画面1: 入力 -->
+  <section class="panel" id="inputPanel">
+    <h2>1. あなたの条件</h2>
+    <div class="grid">
+      <label class="field">
+        <span>到着する港</span>
+        <select id="port">
+          <option value="motomachi">元町港</option>
+          <option value="okada">岡田港</option>
+          <option value="unknown">まだわからない（当日決定）</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>到着時刻</span>
+        <select id="arrival">
+          <option value="09:35">09:35（ジェット船 竹芝7:25/7:50発）</option>
+          <option value="10:00" selected>10:00（ジェット船 竹芝8:15発）</option>
+          <option value="06:00">06:00（大型客船 竹芝23:00発）</option>
+        </select>
+      </label>
+      <div class="field">
+        <span>荷物</span>
+        <div class="toggle" role="radiogroup" aria-label="荷物">
+          <button type="button" class="tbtn active" data-luggage="1" id="lugOn">🧳 キャリーケースあり</button>
+          <button type="button" class="tbtn" data-luggage="0" id="lugOff">🎒 身軽</button>
+        </div>
+      </div>
+      <label class="field">
+        <span>宿泊</span>
+        <input type="text" value="大島温泉ホテル（三原山温泉）" disabled>
+      </label>
+    </div>
+    <p class="hint">👉 「キャリーケースあり ⇄ 身軽」を切り替えると、旅程が組み替わります。</p>
+  </section>
+
+  <!-- 画面2: タイムライン -->
+  <section class="panel" id="planPanel">
+    <div class="planhead">
+      <h2>2. あなたの旅程</h2>
+      <div class="tabs" id="dayTabs"></div>
+    </div>
+    <div id="warnings"></div>
+    <div id="timeline"></div>
+    <div class="fare" id="fare"></div>
+    <div class="explain">
+      <button type="button" id="explainBtn">✨ 説明文を生成</button>
+      <p id="explainText" class="explainText"></p>
+    </div>
+    <details class="src"><summary>使っているデータ</summary><div id="dataSource"></div></details>
+  </section>
+</main>
+
+<!-- 画面3: スポット詳細（モーダル） -->
+<div class="modal" id="modal" hidden>
+  <div class="modalbox">
+    <button type="button" class="close" id="modalClose" aria-label="閉じる">×</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<footer class="wrap">SBC.別班連携チーム / 東京都知事杯オープンデータ・ハッカソン 2026 — 時刻表出典: 大島バス（三原山ライン 2026/7/1〜9/30版）</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
