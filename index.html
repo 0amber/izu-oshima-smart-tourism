@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>伊豆大島スマート観光プロジェクト｜チーム共有ノート</title>
+<style>
+  :root{
+    --sea:#0b5aa6; --sea-light:#e6f0fb; --sea-deep:#083c70;
+    --tsubaki:#d3283b; --tsubaki-light:#fdecee;
+    --sun:#f2a900; --sun-light:#fff6dc;
+    --leaf:#2f8f4e; --leaf-light:#e8f5ec;
+    --ink:#1f2933; --sub:#5b6773; --line:#dde3ea; --bg:#f7f9fc; --card:#fff;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;color:var(--ink);background:var(--bg);line-height:1.75;font-size:16px}
+  a{color:var(--sea)}
+  header{background:linear-gradient(135deg,var(--sea-deep) 0%,var(--sea) 60%,#2f7fd0 100%);color:#fff;padding:40px 20px 32px}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header .wrap{padding:0 20px}
+  .eyebrow{font-size:.85rem;opacity:.9;letter-spacing:.08em}
+  h1{font-size:1.9rem;margin:.3em 0 .4em;line-height:1.35}
+  .meta{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.9rem;opacity:.95}
+  .alert{background:var(--tsubaki);color:#fff;border-radius:10px;padding:10px 14px;margin-top:16px;font-weight:700;display:inline-block}
+  nav.toc{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;overflow-x:auto;white-space:nowrap}
+  nav.toc .wrap{display:flex;gap:4px;padding:6px 12px}
+  nav.toc a{font-size:.82rem;text-decoration:none;color:var(--sea-deep);padding:6px 10px;border-radius:999px}
+  nav.toc a:hover{background:var(--sea-light)}
+  section{padding:36px 0 8px}
+  h2{font-size:1.45rem;color:var(--sea-deep);border-left:6px solid var(--tsubaki);padding-left:12px;margin:0 0 18px;line-height:1.3}
+  h3{font-size:1.1rem;color:var(--sea);margin:26px 0 10px}
+  p{margin:.5em 0}
+  .lead{background:var(--card);border:2px solid var(--sea);border-radius:14px;padding:18px 20px;font-size:1.15rem;font-weight:700;color:var(--sea-deep);text-align:center}
+  .note{background:var(--sun-light);border-left:4px solid var(--sun);padding:10px 14px;border-radius:6px;font-size:.92rem;margin:12px 0}
+  .warn{background:var(--tsubaki-light);border-left:4px solid var(--tsubaki);padding:12px 14px;border-radius:6px;margin:12px 0}
+  .ok{background:var(--leaf-light);border-left:4px solid var(--leaf);padding:12px 14px;border-radius:6px;margin:12px 0}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:12px 0}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+  .card h4{margin:0 0 6px;font-size:1.02rem;color:var(--sea-deep)}
+  .card .big{font-size:1.6rem;line-height:1;margin-bottom:6px}
+  table{width:100%;border-collapse:collapse;background:var(--card);font-size:.93rem;margin:10px 0}
+  th,td{border:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top}
+  th{background:var(--sea-light);color:var(--sea-deep)}
+  .tablewrap{overflow-x:auto}
+  .tag{display:inline-block;font-size:.75rem;padding:1px 8px;border-radius:999px;font-weight:700;vertical-align:middle;white-space:nowrap}
+  .tag.ok{background:var(--leaf-light);color:var(--leaf);border:0;padding:1px 8px}
+  .tag.q{background:var(--sun-light);color:#946600}
+  .tag.ng{background:var(--tsubaki-light);color:var(--tsubaki)}
+  /* pitch flow */
+  .flow{display:flex;flex-direction:column;gap:0;margin:14px 0}
+  .flow .step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;display:flex;gap:12px;align-items:flex-start}
+  .flow .step b{color:var(--sea-deep);min-width:8em;white-space:nowrap}
+  .flow .arrow{text-align:center;color:var(--sea);font-size:1.3rem;line-height:1.2}
+  /* timeline */
+  .tl{list-style:none;margin:10px 0;padding:0;border-left:3px solid var(--sea);margin-left:12px}
+  .tl li{position:relative;padding:4px 0 14px 22px}
+  .tl li::before{content:"";position:absolute;left:-9.5px;top:12px;width:14px;height:14px;border-radius:50%;background:var(--card);border:3px solid var(--sea)}
+  .tl li.bus::before{background:var(--sea)}
+  .tl li.hot::before{border-color:var(--tsubaki);background:var(--tsubaki)}
+  .tl .t{font-weight:800;color:var(--sea-deep);font-family:ui-monospace,Menlo,monospace;font-size:1.05rem}
+  .tl .s{color:var(--sub);font-size:.88rem}
+  .day{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:12px 0}
+  .day h3{margin-top:0}
+  .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+  /* phases */
+  .phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0}
+  .phase{background:var(--card);border-top:6px solid var(--sea);border-radius:10px;padding:14px;border:1px solid var(--line);border-top-width:6px}
+  .phase:nth-child(2){border-top-color:#2f7fd0}.phase:nth-child(3){border-top-color:var(--tsubaki)}.phase:nth-child(4){border-top-color:var(--sun)}
+  .phase .when{font-size:.8rem;color:var(--sub);font-weight:700}
+  .phase h4{margin:2px 0 6px;font-size:1rem}
+  .phase ul{margin:0;padding-left:18px;font-size:.9rem}
+  .check{list-style:none;padding:0;margin:8px 0}
+  .check li{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:6px 0;display:flex;gap:10px;align-items:flex-start}
+  .check li input{margin-top:6px;transform:scale(1.3)}
+  .role{background:var(--sea-deep);color:#fff;font-size:.72rem;padding:1px 8px;border-radius:999px;margin-right:6px;white-space:nowrap}
+  pre{background:#0f1c2b;color:#dbe7f5;padding:14px;border-radius:10px;overflow-x:auto;font-size:.82rem;line-height:1.55}
+  code{font-family:ui-monospace,Menlo,Consolas,monospace}
+  dl.gloss{display:grid;grid-template-columns:max-content 1fr;gap:6px 14px;font-size:.93rem}
+  dl.gloss dt{font-weight:800;color:var(--sea-deep)}
+  dl.gloss dd{margin:0}
+  .diff{background:var(--card);border:2px dashed var(--tsubaki);border-radius:12px;padding:14px 18px;margin:12px 0}
+  .scene{background:linear-gradient(135deg,var(--tsubaki-light),#fff);border:2px solid var(--tsubaki);border-radius:14px;padding:16px 20px;font-weight:700;color:#7a1220}
+  footer{color:var(--sub);font-size:.82rem;padding:24px 0 40px;border-top:1px solid var(--line);margin-top:30px}
+  footer ul{padding-left:18px}
+  @media (max-width:600px){h1{font-size:1.5rem}body{font-size:15px}dl.gloss{grid-template-columns:1fr}dl.gloss dt{margin-top:8px}}
+  @media print{nav.toc{display:none}header{background:var(--sea);-webkit-print-color-adjust:exact;print-color-adjust:exact}section{page-break-inside:avoid;padding:18px 0 4px}.card,.day,.phase,table{page-break-inside:avoid}body{background:#fff}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">SBC.別班連携チーム ／ 東京都知事杯オープンデータ・ハッカソン（ODH）2026</div>
+    <h1>🏝️ 伊豆大島スマート観光プロジェクト<br><small style="font-size:.7em;font-weight:500">チーム共有ノート — なぜ・何を・今の課題・次にやること</small></h1>
+    <div class="meta">
+      <span>📅 更新日：2026年8月16日</span>
+      <span>🏝️ 現地検証：8月22日（土）・23日（日）</span>
+      <span>🎥 動画収録：8月26日〜30日</span>
+    </div>
+    <div class="alert">⚠️ 提出締切：8月23日（日）17:00 — 現地検証と同じ日！</div>
+  </div>
+</header>
+
+<nav class="toc"><div class="wrap">
+  <a href="#s0">ひとこと</a><a href="#s1">なぜ</a><a href="#s2">だれの困りごと</a><a href="#s3">旅のプラン</a><a href="#s4">やらないこと</a><a href="#s5">心配なこと</a><a href="#s6">進め方</a><a href="#s7">勝つ作戦</a><a href="#s8">PoC/RP</a><a href="#s9">今すぐ</a><a href="#s10">用語</a>
+</div></nav>
+
+<div class="wrap">
+
+<div class="note" style="margin-top:20px">📖 このノートは<b>「中学生でもわかる」</b>ことを目標に書いています。難しい言葉は最後の「用語ミニ辞典」へ。<br>
+<span class="tag ok">✅ 確認済み</span> は出典があるもの、<span class="tag q">❓ 未確認</span> はまだ誰も確かめていないもの、です。</div>
+
+<!-- 0 -->
+<section id="s0">
+  <h2>0. ひとことで言うと</h2>
+  <div class="lead">「大きなキャリーケースを持った旅行者でも、伊豆大島を気持ちよく回れる1泊2日プランを、<br>バスのデータ（GTFS）とAIで自動で作るサービス」</div>
+</section>
+
+<!-- 1 -->
+<section id="s1">
+  <h2>1. なぜやるの？（3つの理由）</h2>
+  <div class="cards">
+    <div class="card"><div class="big">🧳</div><h4>困っている人がいる</h4>フェリーで大島に着いた観光客は、大きなキャリーケースを持ったまま動くのが大変。人気の三原山（山登り）にはすぐ行けない。</div>
+    <div class="card"><div class="big">📊</div><h4>データで決めたい</h4>「なんとなく」ではなく、<b>GTFS</b>（バスの時刻表デジタルデータ）と<b>AI</b>を使って、正確でムダのない旅程を作る。</div>
+    <div class="card"><div class="big">🚀</div><h4>未来の観光を提案したい</h4>東京都知事杯ODHで「これからの観光モデル」を提案する。</div>
+  </div>
+  <div class="warn"><b>🚨 新しくわかった「本当に困る」証拠</b> <span class="tag ok">✅ 確認済み</span><br>
+  大島バスの手荷物ルール：無料で持ち込めるのは<b>3辺合計1m以内・10kgまで</b>。それを超えるキャリーケースは<b>1個500円の有料</b>、しかも<b>混んでいると乗車を断られることがある</b>。<br>
+  → 「荷物を持って三原山に行く」のはお金も手間もリスクもある、という一次ソースです。（出典：大島バス 手荷物規定PDF）</div>
+</section>
+
+<!-- 2 -->
+<section id="s2">
+  <h2>2. だれの・どんな困りごとを解決する？（エレベーターピッチ）</h2>
+  <div class="flow">
+    <div class="step"><b>😥 困っている人</b><span>伊豆大島に来た、キャリーケースなど大きな荷物を持った観光客</span></div>
+    <div class="arrow">↓</div>
+    <div class="step"><b>🧱 困りごと</b><span>荷物を持ったままだと三原山などにすぐ行けない・不便・バスに乗れないかも</span></div>
+    <div class="arrow">↓</div>
+    <div class="step"><b>💡 私たちの答え</b><span>「GTFS活用 スマートモデルコース」</span></div>
+    <div class="arrow">↓</div>
+    <div class="step"><b>😊 うれしいこと</b><span>1日目は荷物を持ったままでも楽しめる<b>「椿・花ガーデン」</b>、2日目はホテルに荷物を預けて<b>「三原山」</b>を満喫 → ムダがなく、ストレスのない旅</span></div>
+  </div>
+  <div class="diff"><b>🤔 ふつうの乗換案内アプリと何がちがう？</b><br>
+  乗換案内は「A→Bに一番早く行く方法」しか教えてくれません。私たちのサービスは<b>「この船で着く」「荷物がある」「2日ある」という条件の中で、実際にできる旅程を組み立てて、バスの時刻表でちゃんと成立するか検証してから出す</b>ところが新しい点です。</div>
+</section>
+
+<!-- 3 -->
+<section id="s3">
+  <h2>3. 旅のプラン（1泊2日）</h2>
+  <div class="two">
+    <div class="day">
+      <h3>【1日目・土曜】荷物を持ったまま「椿・花ガーデン」</h3>
+      <ul class="tl">
+        <li><span class="t">朝</span> 東京・竹芝を出発（お昼のお弁当を買っておく or 船内で買う）<div class="s"><span class="tag ok">✅</span> 夏ダイヤのジェット船は竹芝7:25 / 7:50 / 8:15発 → 大島9:35 / 9:35 / 10:00着</div></li>
+        <li><span class="t">〜10:00</span> 伊豆大島（元町港 or 岡田港）に到着<div class="s"><span class="tag q">❓</span> どちらの港に着くかは<b>当日の天気・海の状態で決まる</b></div></li>
+        <li class="bus"><span class="t">10:20</span> 入港地発のバスに乗る 🚌<div class="s"><span class="tag ok">✅</span> 三原山ライン（8月毎日運行）。運賃 港→椿・花ガーデン 300円</div></li>
+        <li><span class="t">10:28</span> 椿・花ガーデン着。園内を観光＆お弁当ランチ 🍱<div class="s">滞在 約2時間20分</div></li>
+        <li class="bus"><span class="t">12:48</span> 椿・花ガーデン発のバスに乗る 🚌<div class="s"><span class="tag ok">✅</span> 元町港12:40発の便。<b>岡田港発の場合は時刻が変わるので要確認</b></div></li>
+        <li><span class="t">12:58</span> 三原山温泉（大島温泉ホテル最寄）着<div class="s"><span class="tag ok">✅</span> バス停はホテル直結</div></li>
+        <li class="hot"><span class="t">15:00</span> 大島温泉ホテル（三原山温泉）にチェックイン ♨️<div class="s">💡 12:58に着いて荷物だけ先に預ければ、13:30発のバスで山頂口へ行くことも可能（第2案）</div></li>
+      </ul>
+    </div>
+    <div class="day">
+      <h3>【2日目・日曜】身軽になって三原山へ</h3>
+      <ul class="tl">
+        <li class="hot"><span class="t">朝</span> ホテルにキャリーケースを預ける 🧳→🏨</li>
+        <li class="bus"><span class="t">午前</span> 身軽な状態で「三原山」の大自然へ！🌋<div class="s">三原山温泉 → 三原山頂口 バスあり</div></li>
+        <li class="bus"><span class="t">帰り</span> 山頂口 9:30 / 13:30発 → 出港地 9:55 / 13:55着<div class="s"><span class="tag ok">✅</span> 8月ダイヤ</div></li>
+      </ul>
+      <div class="note">👥 志田健一さんは23日（日）午後に現地参加予定</div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section id="s4">
+  <h2>4. やらないこと（スコープ外）</h2>
+  <div class="tablewrap"><table>
+    <tr><th style="width:38%">❌ やらない</th><th>理由</th></tr>
+    <tr><td>1日目に三原山へ行く</td><td>キャリーケースを持っての登山は現実的でない。バスも有料・乗車拒否リスク</td></tr>
+    <tr><td>道案内・翻訳だけのガイド</td><td>スマホやAIで代わりができる。もっと深い文化体験・知的好奇心を満たすガイドに注力</td></tr>
+    <tr><td>ログイン、予約機能、多言語、リアルタイム運行情報、全路線対応</td><td>ハッカソン期間では作りきれない。<b>1コースを完璧に見せる方が勝てる</b></td></tr>
+  </table></div>
+</section>
+
+<!-- 5 -->
+<section id="s5">
+  <h2>5. ⚠️ 今いちばん心配なこと（課題①②③）</h2>
+  <p>ここがクリアできないと、1日目のルートを作り直す必要があります。</p>
+  <div class="tablewrap"><table>
+    <tr><th>課題</th><th>今の状況</th><th>リスク</th><th>どうする？</th></tr>
+    <tr><td><b>① 昼ごはんの場所</b></td><td>椿・花ガーデンのカフェ・ショップは「リニューアルで休業中」の可能性大。近くに歩いて行ける飲食店も未確認</td><td>観光客が「お昼ごはん難民」になる</td><td>東京・竹芝や船内で<b>お弁当を買って持ち込む</b></td></tr>
+    <tr><td><b>② 飲食物の持ち込みOK？</b></td><td>園内に芝生の大広場があることはわかっている。でも「持ち込みOKか」「そこで食べていいか」は <span class="tag q">❓未確認</span></td><td>持ち込みNGだと①の作戦がくずれる</td><td><b>椿・花ガーデンに電話で公式ルールを確認</b>（最優先）</td></tr>
+    <tr><td><b>③ 2時間20分は長い？短い？</b></td><td>バス時刻から逆算すると滞在は10:28〜12:48</td><td>時間が足りない or 余りすぎる</td><td>8/22の現地検証で実際に歩いて計測。ダメなら第2案（ホテル先着→山頂口）</td></tr>
+  </table></div>
+  <div class="ok">🛟 <b>代替スポットも1つ用意しておく</b>（例：波浮港や元町の屋内施設）。もし椿・花ガーデンがNGでも旅程がくずれないように。</div>
+</section>
+
+<!-- 6 -->
+<section id="s6">
+  <h2>6. これからの進め方（フェーズ1〜4）</h2>
+  <div class="phases">
+    <div class="phase"><div class="when">今すぐ</div><h4>📍 1 事実確認と要件定義</h4><ul><li>椿・花ガーデンとホテルに電話</li><li>「やる機能／やらない機能」を決める</li></ul></div>
+    <div class="phase"><div class="when">8/16〜8/21</div><h4>💻 2 プロトタイプ（PoC/RP）開発</h4><ul><li>Cloudflare上で動くものを作る</li><li>GTFSを読み込み、荷物あり/なしでルートが変わることを確認</li></ul></div>
+    <div class="phase"><div class="when">8/22〜8/23</div><h4>🏝️ 3 現地検証</h4><ul><li>実際に歩いてタイムキーピング検証</li><li>写真・動画を撮る</li><li><b>8/23 17:00までに提出</b></li></ul></div>
+    <div class="phase"><div class="when">8/24〜</div><h4>🏆 4 ピッチ準備</h4><ul><li>2分プレゼン動画の収録（8/26〜30）</li><li>ペルソナのストーリー、オープンデータ活用の意義を言語化</li></ul></div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section id="s7">
+  <h2>7. 🏆 ハッカソンで勝つための作戦</h2>
+  <h3>審査基準は5つ <span class="tag ok">✅ ODH2026ガイドブック</span></h3>
+  <div class="tablewrap"><table>
+    <tr><th style="width:26%">基準</th><th>私たちのアピールポイント</th></tr>
+    <tr><td><b>データ活用</b></td><td>GTFS × フェリー時刻 × 来島者統計 × 施設情報を<b>組み合わせて「荷物」という新しい軸</b>を作った</td></tr>
+    <tr><td><b>アイデア力</b></td><td>「経路」ではなく「<b>条件付きの滞在計画</b>」。荷物という誰も扱わない変数を旅程に入れた</td></tr>
+    <tr><td><b>技術力</b></td><td>AIが作った旅程を<b>GTFSで機械的にファクトチェック</b>（AIのウソ旅程を防ぐ）</td></tr>
+    <tr><td><b>ソーシャルインパクト</b></td><td>島の観光消費・滞在時間の増加。来島者統計で「何人が対象か」を数字で示す。八丈島・三宅島にも横展開できる</td></tr>
+    <tr><td><b>サービスデザイン</b></td><td>8/22-23に<b>実際に歩いた一次情報</b>が最強の説得材料。運用は大島町・観光協会を想定</td></tr>
+  </table></div>
+
+  <h3>大会の流れ <span class="tag ok">✅ 確認済み</span></h3>
+  <div class="cards">
+    <div class="card"><h4>📤 提出物（8/23 17:00）</h4>提出フォーム（各300字×約6項目）＋プレゼン資料（16:9 PDF/PPT）＋2分プレゼン動画＋デモURL or 1分操作動画（任意）</div>
+    <div class="card"><h4>📆 その後</h4>2分動画の収録 8/26–30（予約制）→ 結果発表 9月下旬 → Final Stage・表彰式 10/17 → 実装支援 11月〜</div>
+    <div class="card"><h4>❓ 推測（要確認）</h4>過去の都知事杯は「複数データを掛け合わせて新しい判断軸を作った作品」が多い。GTFS単発だと部門賞止まりの可能性 → <b>複数データの組み合わせを見せる</b></div>
+  </div>
+
+  <h3>ピッチの流れ（2分動画）</h3>
+  <div class="tablewrap"><table>
+    <tr><th>#</th><th>秒</th><th>内容</th></tr>
+    <tr><td>1</td><td>20</td><td><b>課題</b>：港に着いた観光客、キャリーケース、坂道、2時間に1本のバス。写真1枚</td></tr>
+    <tr><td>2</td><td>20</td><td><b>気づき</b>：「荷物」が旅の行程を決めているのに、どのアプリも扱っていない</td></tr>
+    <tr><td>3</td><td>30</td><td><b>解決</b>：荷物あり/なしを入力 → GTFS×AIが1泊2日を生成 → 時刻表で検証済み</td></tr>
+    <tr><td>4</td><td>40</td><td><b>デモ</b>：↓の「決定的な1シーン」</td></tr>
+    <tr><td>5</td><td>20</td><td><b>データと効果</b>：使ったデータ一覧、年間来島者数×想定利用率</td></tr>
+    <tr><td>6</td><td>10</td><td><b>現地検証と次</b>：8/22-23の実測、大島町での運用、他の島への展開</td></tr>
+  </table></div>
+
+  <h3>🎬 デモの「決定的な1シーン」</h3>
+  <div class="scene">「荷物あり ⇄ なし」のスイッチを切り替えた瞬間、旅程が組み替わり、バス便（10:20発→10:28着）に時刻表と一致した ✅ マークが付く。<br><span style="font-weight:500">できれば、現地で撮った「キャリーケースで椿・花ガーデンに着いた実写」を横に並べる。</span></div>
+
+  <h3>使うオープンデータ候補</h3>
+  <div class="tablewrap"><table>
+    <tr><th>データ</th><th>状態</th><th>使い道</th></tr>
+    <tr><td>大島バス GTFS-JP（公共交通オープンデータセンター ODPT）</td><td><span class="tag ok">✅ あり</span> 取得には開発者登録＋トークンが必要</td><td>旅程のバス時刻</td></tr>
+    <tr><td>伊豆諸島・小笠原諸島観光客入込実態調査（東京都）</td><td><span class="tag ok">✅ あり</span></td><td>「何人が対象か」の数字</td></tr>
+    <tr><td>東海汽船の時刻表</td><td>△ PDF/HTMLのみ（オープンデータ形式ではない）</td><td>到着時刻のプリセット</td></tr>
+    <tr><td>東京都オープンデータカタログの大島町データ（トイレ・施設など）</td><td><span class="tag q">❓ 要確認</span></td><td>拡張候補</td></tr>
+  </table></div>
+  <p class="note">RPで実際に読み込むのは<b>3〜4本まで</b>。他は「今後の拡張」として言及にとどめる。</p>
+
+  <h3>落とし穴と回避策</h3>
+  <ul>
+    <li>AI旅程が時刻表と矛盾 → <b>生成後にGTFSでチェック</b>。動画は検証済み旅程だけ見せる</li>
+    <li>提出締切が現地検証の当日 → <b>8/21までに提出できる状態にしておく</b></li>
+    <li>「便利ツール」で終わる → 来島者統計で規模を、都民のQOL（休暇の質）に翻訳して語る</li>
+    <li>椿・花ガーデン休業／持ち込みNG → 代替スポットを1つ用意</li>
+    <li>デモURLが審査中に落ちる → 静的サイト化＋バックアップ動画</li>
+  </ul>
+</section>
+
+<!-- 8 -->
+<section id="s8">
+  <h2>8. 💻 PoC/RPをどう作るか</h2>
+  <div class="cards">
+    <div class="card"><h4>✅ 最小機能（これだけ作る）</h4>入力3つ：<b>到着港</b>（元町／岡田／未定）・<b>到着時刻</b>（ジェット船9:35 / 10:00プリセット）・<b>キャリーケース有無</b>。宿泊は大島温泉ホテル固定。<br>出力：<b>1泊2日タイムライン</b>＋<b>スポット詳細</b>。</div>
+    <div class="card"><h4>🧱 技術構成</h4><b>Cloudflare Pages ＋ 素のHTML/JS</b>（DB不要）。GTFSは事前にスクリプトで抽出→<b>静的JSONで同梱</b>（数十KB）。AI説明文は Pages Functions 1本（<code>/api/explain</code>）。<b>AIが失敗してもテンプレ文で動く</b>＝AIなしでもデモ成立。</div>
+    <div class="card"><h4>📱 画面（3つだけ）</h4>① 入力（港・到着時刻・キャリー有無トグル）<br>② タイムライン（バス便カード・警告バッジ・運賃合計・2日目タブ）<br>③ スポット詳細（写真・所要・荷物適性・次発3本）</div>
+  </div>
+
+  <h3>データの流れ</h3>
+  <pre><code>GTFS zip（ODPT）
+  → scripts/build_gtfs.py：8/22・23に有効な service_id を解決、対象バス停の trip だけ抽出
+  → data/timetable.json（{tripId, serviceId, routeName, stops:[{stopId, dep, arr}]}）
+  → ブラウザで「バス停A→Bで、時刻T以降の最初の便」を探す（便数が少ないので単純な探索でOK）</code></pre>
+
+  <h3>荷物あり/なしで分かれるルール表</h3>
+  <div class="tablewrap"><table>
+    <tr><th>スポット</th><th>荷物なし</th><th>荷物あり</th><th>理由</th></tr>
+    <tr><td>椿・花ガーデン</td><td>○ 10:28着で観光＋弁当</td><td>○（園内平坦）</td><td>港から8分・300円</td></tr>
+    <tr><td>三原山山頂口（初日）</td><td>○</td><td><span class="tag ng">×</span> 未舗装、バス500円有料・乗車拒否リスク</td><td>2日目に預けてから</td></tr>
+    <tr><td>大島温泉ホテル</td><td>15:00 IN</td><td><b>12:58着で荷物預け → 13:30発で山頂へも可</b></td><td>三原山温泉バス停直結</td></tr>
+    <tr><td>元町散策</td><td>○</td><td>△</td><td>坂道</td></tr>
+  </table></div>
+  <p>実装：各スポットに <code>luggageScore(0〜2)</code> を持たせ、荷物ありなら score≥1 だけ候補に残し、バス時刻順に詰める。バス手荷物500円／混雑時拒否リスクはタイムライン上に<b>警告バッジ</b>で表示。</p>
+
+  <h3>デモシナリオ（審査員に見せる順番）</h3>
+  <ol>
+    <li>荷物なし → 初日に山頂まで行く案が出る</li>
+    <li>同じ条件で<b>キャリーONに切替</b> → 椿・花ガーデン → 12:48便でホテル先着・預け → 翌朝三原山、と旅程が組み替わる</li>
+    <li>到着港を岡田に切替 → 時刻が追従する</li>
+    <li>「説明文を生成」ボタン → AIの文章が出る</li>
+  </ol>
+
+  <h3>日割り計画（3名想定：F=フロント、D=データ、G=現地/PM）</h3>
+  <div class="tablewrap"><table>
+    <tr><th>日</th><th>F フロント</th><th>D データ</th><th>G 現地・PM</th></tr>
+    <tr><td>8/16</td><td>骨組み＋入力画面</td><td>ODPT登録・zip取得・service_id確認</td><td>スポット表・ルール表、提出フォーム下書き</td></tr>
+    <tr><td>8/17</td><td>タイムライン描画</td><td>build_gtfs.py → timetable.json</td><td>椿・花ガーデン／ホテルに電話</td></tr>
+    <tr><td>8/18</td><td>次発検索＋分岐ロジック結合、Pages配信</td><td>同左</td><td>動画収録枠を予約</td></tr>
+    <tr><td>8/19</td><td>スポット詳細・警告バッジ</td><td>AI説明文 Function</td><td>スライド初稿</td></tr>
+    <tr><td>8/20</td><td>デモシナリオ通し・UI磨き</td><td>同左</td><td>現地行程手配、撮影ショットリスト</td></tr>
+    <tr><td>8/21</td><td>バグ修正・オフライン対応、<b>凍結</b></td><td>同左</td><td>提出物ほぼ完成状態に</td></tr>
+    <tr><td>8/22–23</td><td colspan="3">現地フィールドテスト・撮影 → <b>8/23 17:00 提出</b></td></tr>
+    <tr><td>8/24〜</td><td colspan="3">2分台本 → リハ → 収録（8/26–30）</td></tr>
+  </table></div>
+
+  <h3>現地チェックリスト（8/22–23）</h3>
+  <ul class="check">
+    <li><input type="checkbox"><span>当日の入港地とアプリの港切替が一致するか</span></li>
+    <li><input type="checkbox"><span>10:20便が実在し、椿・花ガーデン10:28着か（遅れの幅を記録）</span></li>
+    <li><input type="checkbox"><span>キャリーケースのバス持込可否・500円徴収・混雑度</span></li>
+    <li><input type="checkbox"><span>椿・花ガーデンで荷物を置ける場所があるか／弁当を食べられる場所</span></li>
+    <li><input type="checkbox"><span>ホテル12:58着でチェックイン前に荷物を預けられるか</span></li>
+    <li><input type="checkbox"><span>山頂口〜遊歩道でキャリーが本当に困難か（<b>写真を撮る</b>）</span></li>
+    <li><input type="checkbox"><span>港・園内・山頂の電波状況（オフライン動作が必要か）</span></li>
+  </ul>
+
+  <h3>リスクと代替案</h3>
+  <ul>
+    <li>ODPTトークン取得が遅れる → 公式PDFから起こした<b>手入力JSON</b>で開発を止めない（三原山ラインの主要便は既に抽出済み）</li>
+    <li>8月と9月でダイヤが変わる → ピッチ日は8月ダイヤに固定</li>
+    <li>港が当日変わる → 「入港地」という抽象バス停を用意して実港にマッピング</li>
+    <li>バスで荷物拒否 → 「港のコインロッカー／ホテル直行」ルートを常に第2案として表示</li>
+  </ul>
+
+  <h3>コード断片（次のバスを探す関数）</h3>
+  <pre><code>// バス停from→toで、時刻t(HH:MM)以降の最初の便を返す
+export function nextBus(tt, from, to, t) {
+  const m = s =&gt; { const [h, mi] = s.split(":").map(Number); return h*60+mi; };
+  return tt.flatMap(trip =&gt; {
+    const i = trip.stops.findIndex(s =&gt; s.stopId === from);
+    const j = trip.stops.findIndex(s =&gt; s.stopId === to);
+    return (i &gt;= 0 &amp;&amp; j &gt; i &amp;&amp; m(trip.stops[i].dep) &gt;= m(t))
+      ? [{ trip, dep: trip.stops[i].dep, arr: trip.stops[j].arr }] : [];
+  }).sort((a, b) =&gt; m(a.dep) - m(b.dep))[0] ?? null;
+}
+
+// ディレクトリ構成案
+/public  index.html app.js style.css data/{timetable.json,spots.json,rules.json}
+/functions/api/explain.js   （Pages Function、任意）
+/scripts/build_gtfs.py       （GTFS zip → JSON）</code></pre>
+</section>
+
+<!-- 9 -->
+<section id="s9">
+  <h2>9. ✅ 今すぐやること TOP3</h2>
+  <ul class="check">
+    <li><input type="checkbox"><span><span class="role">PM</span>ガイドブックの提出フォームを開いて締切と項目を確定 → 300字×6の下書きと16:9スライド骨子を今日中に。動画収録枠を予約</span></li>
+    <li><input type="checkbox"><span><span class="role">エンジニア</span>RPの「決定的な1シーン」（荷物トグル → 旅程差分 → GTFS照合マーク）だけを先に動かす。他は後回し</span></li>
+    <li><input type="checkbox"><span><span class="role">現地担当</span>椿・花ガーデンと大島温泉ホテルに電話（弁当持込・荷物預かり・所要時間）。8/22-23の撮影ショットリスト作成（港・キャリーケース・バス停・時刻表）</span></li>
+  </ul>
+  <div class="warn"><b>🙋 チーム内で今いちばん足りていないのは？</b><br>締切が現地検証当日なので、<b>「提出物（フォーム・スライド・動画台本）を先に書く人」</b>が最も不足しやすい。開発と並行して今日から着手を。</div>
+</section>
+
+<!-- 10 -->
+<section id="s10">
+  <h2>10. 📚 用語ミニ辞典</h2>
+  <dl class="gloss">
+    <dt>GTFS / GTFS-JP</dt><dd>バスや電車の時刻表・路線・停留所をコンピュータが読める形にした共通データ形式。JPは日本版</dd>
+    <dt>オープンデータ</dt><dd>誰でも自由に使っていいと公開されているデータ。行政が公開していることが多い</dd>
+    <dt>ODH</dt><dd>東京都知事杯オープンデータ・ハッカソン。都のオープンデータでサービスを作って競う大会</dd>
+    <dt>ODPT</dt><dd>公共交通オープンデータセンター。大島バスのGTFSはここで公開されている</dd>
+    <dt>PoC</dt><dd>Proof of Concept。「このアイデアは本当に動くのか」を確かめるための試作</dd>
+    <dt>RP</dt><dd>Rapid Prototype。短期間でざっくり作る試作品</dd>
+    <dt>MVP</dt><dd>Minimum Viable Product。最小限の機能だけ持った、使える製品</dd>
+    <dt>Cloudflare Pages</dt><dd>ウェブサイトを無料で公開できるサービス。今回の開発環境</dd>
+    <dt>service_id</dt><dd>GTFSの中で「この便はどの曜日・季節に走るか」を表すID（例：三原山＿夏＿3）</dd>
+    <dt>ペルソナ</dt><dd>サービスを使う代表的な人物像。「初めて大島に来た、知り合いのいない、キャリーケースを持った観光客」</dd>
+    <dt>QOL</dt><dd>Quality of Life。生活の質。ここでは「休暇の質」</dd>
+    <dt>ピッチ</dt><dd>短時間で審査員に企画を売り込むプレゼン</dd>
+    <dt>一次情報</dt><dd>自分で現地に行って確かめた情報。伝聞よりずっと強い</dd>
+  </dl>
+</section>
+
+<footer>
+  <b>出典</b>
+  <ul>
+    <li>ODH2026 ガイドブック <a href="https://odh-tokyo2026.code4japan.org/">odh-tokyo2026.code4japan.org</a></li>
+    <li>ODH 募集要項 <a href="https://odhackathon.metro.tokyo.lg.jp/recruitment/">odhackathon.metro.tokyo.lg.jp/recruitment</a></li>
+    <li>2025年受賞発表（東京都） <a href="https://www.metro.tokyo.lg.jp/information/press/2025/10/2025102806">metro.tokyo.lg.jp</a></li>
+    <li>大島バス GTFS-JP（ODPT） <a href="https://ckan.odpt.org/dataset/oshima_bus_all_lines">ckan.odpt.org</a></li>
+    <li>大島バス 路線バス時刻表 <a href="http://www.oshima-bus.com/rosen-bus.html">oshima-bus.com</a> ／ 手荷物規定 <a href="http://www.oshima-bus.com/files/tenimotsu.pdf">tenimotsu.pdf</a></li>
+    <li>東海汽船 時刻表 <a href="https://www.tokaikisen.co.jp/boarding/timetable/">tokaikisen.co.jp</a></li>
+    <li>伊豆諸島・小笠原諸島観光客入込実態調査 <a href="https://data.tourism.metro.tokyo.lg.jp/data/tosho-irekomi/">data.tourism.metro.tokyo.lg.jp</a></li>
+    <li>三原山ライン停留所順（NAVITIME） <a href="https://www.navitime.co.jp/bus/company/00001349/route/00073531/">navitime.co.jp</a></li>
+  </ul>
+  ※ 時刻・運賃・締切は2026-08-16時点の調査。必ず公式サイトで最終確認してください。<br>
+  同じ内容のMarkdown版：<code>README.md</code>
+</footer>
+
+</div>
+</body>
+</html>
