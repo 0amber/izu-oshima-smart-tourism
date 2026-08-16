@@ -7,6 +7,7 @@
   "scripts": {
     "test": "node --test test/",
     "dev": "python3 -m http.server 8788 --directory public",
-    "build:gtfs": "python3 scripts/build_gtfs.py"
+    "build:gtfs": "python3 scripts/build_gtfs.py",
+    "build:standalone": "python3 scripts/build_standalone.py"
   }
 }

@@ -1,47 +1,46 @@
-# 大島スマートコース PoC v0.1
+# 大島スマートコース PoC
 
-「キャリーケースあり ⇄ 身軽」を切り替えると、GTFS（バス時刻表）に基づいて1泊2日の旅程が組み替わるたたき台。
+GTFS（バス時刻表データ）× キャリーケース有無 で、伊豆大島の1泊2日旅程を自動で組む試作。
+ロジックは `public/js/planner.js`（純粋関数・テスト付き）、UIは `public/index.html` + `app.js`。
 
-## 動かす
+## みんなが開く方法（3つ）
+
+| 方法 | 手順 | 向いている場面 |
+|---|---|---|
+| **A. 1ファイルHTMLを配る**（いちばん簡単） | `dist/oshima-smart-course.html` を Slack/LINE/メールで送る → 受け取った人は**ダブルクリックで開くだけ**（サーバー不要・オフラインOK） | チーム内レビュー、現地でのフィールドテスト（電波なしでも動く） |
+| **B. Cloudflare Pages に公開**（URL共有） | Cloudflare → Workers & Pages → Create → Pages → 「Upload assets」で `public/` の中身をドラッグ＆ドロップ（または `npx wrangler pages deploy public --project-name oshima-smart-course`）→ `https://xxxx.pages.dev/` を共有 | 審査用デモURL、スマホからのアクセス |
+| **C. ローカルサーバー**（開発中） | `npm run dev` → http://localhost:8788/ 。同じWi-Fiなら `http://<自分のIP>:8788/` で他人のスマホからも見える | 開発・その場でのデモ |
+
+> `public/index.html` を直接ダブルクリックしても動きません（ES module と fetch を使っているため、`file://` ではJSONが読めない）。配布したいときは A の `dist/` 版を使ってください。
+
+## コマンド
 
 ```bash
-cd poc
-npm test          # ロジックのテスト（node --test）
-npm run dev       # http://localhost:8788 で起動（python3 の簡易サーバ）
+npm test                 # planner.js のテスト（node --test）
+npm run dev              # ローカルサーバー http://localhost:8788/
+npm run build:standalone # public/ → dist/oshima-smart-course.html（配布用1ファイル）
+npm run build:gtfs -- AllLines.zip --date 20260822   # ODPTのGTFS zip → public/data/timetable.json
 ```
 
-Cloudflare Pages に置く場合は `public/` をそのままデプロイ（ビルド不要）。
+`public/` を編集したら `npm run build:standalone` を実行して `dist/` を更新すること。
 
 ## 構成
 
 ```
 public/
-  index.html        画面（入力 → タイムライン → スポット詳細モーダル）
-  style.css
-  js/planner.js     純粋関数：nextBus / planTrip / explain（ブラウザとNode共通）
-  js/app.js         DOM描画・イベント
-  data/timetable.json  時刻表（いまは公式PDF由来の手入力。ODPT GTFS取得後に差し替え）
-  data/spots.json      スポット表（荷物適性 luggageScore、滞在目安、注意、現地TODO）
-scripts/build_gtfs.py  GTFS-JP zip → timetable.json 変換（標準ライブラリのみ）
-test/planner.test.mjs  ロジックのテスト
+  index.html  style.css
+  js/planner.js   ロジック（nextBus / planTrip / explain）
+  js/app.js       画面
+  data/timetable.json  三原山ライン時刻表（現状は公式PDFから手入力。GTFS取得後に差し替え）
+  data/spots.json      スポット表（荷物適性スコアなど）
+scripts/build_gtfs.py        GTFS zip → timetable.json
+scripts/build_standalone.py  1ファイルHTML生成
+dist/oshima-smart-course.html  配布用（生成物）
+test/planner.test.mjs
 ```
 
-## いまの分岐ロジック（planner.js）
+## 現状の割り切り
 
-- **荷物あり**：港 → 椿・花ガーデン（2h+滞在）→ 三原山温泉（ホテル）。午後にホテル→山頂へ上がる便があれば「第2案」を提案（現行ダイヤでは該当便なし）
-- **身軽**：港 → 三原山頂口 直行（2.5h）→ ホテル
-- **2日目**：ホテルで荷物預け → 山頂口 → 港
-- すべてのバス便は `timetable.json` の trip に紐づく（＝時刻表と一致 ✅）。見つからなければ ⛔ で明示
-
-## 検証でわかったこと
-
-- 「12:58ホテル着 → 13:30便で山頂へ」は**不成立**（13:30は山頂口発の下り便）。荷物あり初日の午後は温泉・周辺散策が現実的
-- 岡田港入港時、12:40便（元町港発）は使えない → 12:48便が消えるので、**岡田港発の午後便を要確認**
-- 港未定モードでは両港共通便のみで組む（10:20便・下り便）
-
-## 次にやること
-
-1. ODPT開発者登録 → `python3 scripts/build_gtfs.py AllLines.zip --date 20260822` で本物のGTFSに差し替え（STOP_MAPの停留所名を実データに合わせる）
-2. 岡田港発ダイヤの追加、下り便の途中停留所時刻の確定
-3. `explain()` を Pages Function（LLM）に差し替え（失敗時はテンプレにフォールバック）
-4. 現地検証（8/22-23）の結果を `spots.json` の cautions/todo に反映
+- 時刻表は三原山ラインの主要便のみ（8月毎日ダイヤ）。下り便の途中停留所時刻は推定。
+- 一部運賃は推定（`fares.confirmed=false`）。
+- 説明文はテンプレ。LLM連携は `/api/explain` を後付けする想定。

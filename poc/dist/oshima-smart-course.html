@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>大島スマートコース PoC</title>
+<style>
+:root{--sea:#0b5aa6;--sea-deep:#083c70;--sea-light:#e6f0fb;--tsubaki:#d3283b;--tsubaki-light:#fdecee;--sun:#f2a900;--sun-light:#fff6dc;--leaf:#2f8f4e;--leaf-light:#e8f5ec;--ink:#1f2933;--sub:#5b6773;--line:#dde3ea;--bg:#f7f9fc;--card:#fff}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;background:var(--bg);color:var(--ink);line-height:1.7;font-size:16px}
+.wrap{max-width:820px;margin:0 auto;padding:0 16px}
+header{background:linear-gradient(135deg,var(--sea-deep),var(--sea) 70%,#2f7fd0);color:#fff;padding:22px 0 18px}
+.brand{font-size:1.4rem;font-weight:800}
+.badge{font-size:.7rem;background:var(--tsubaki);padding:2px 8px;border-radius:999px;vertical-align:middle;margin-left:6px}
+.sub{font-size:.9rem;opacity:.92}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:16px 0;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+h2{font-size:1.15rem;color:var(--sea-deep);margin:0 0 12px;border-left:5px solid var(--tsubaki);padding-left:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.field span{display:block;font-size:.8rem;color:var(--sub);font-weight:700;margin-bottom:4px}
+select,input{width:100%;font-size:1rem;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+input:disabled{background:#f1f3f6;color:var(--sub)}
+.toggle{display:flex;border:2px solid var(--sea);border-radius:10px;overflow:hidden}
+.tbtn{flex:1;padding:10px 6px;border:0;background:#fff;color:var(--sea);font-weight:800;font-size:1rem;cursor:pointer;transition:.15s}
+.tbtn.active{background:var(--sea);color:#fff}
+.hint{font-size:.88rem;color:var(--sub);margin:12px 0 0}
+.planhead{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.tabs{display:flex;gap:6px}
+.tab{border:1px solid var(--sea);background:#fff;color:var(--sea);border-radius:999px;padding:5px 14px;font-weight:700;cursor:pointer}
+.tab.active{background:var(--sea);color:#fff}
+.warn{background:var(--tsubaki-light);border-left:4px solid var(--tsubaki);padding:8px 12px;border-radius:6px;font-size:.88rem;margin:8px 0}
+.warn.soft{background:var(--sun-light);border-left-color:var(--sun)}
+.unres{background:var(--tsubaki);color:#fff;padding:8px 12px;border-radius:6px;font-weight:700;margin:8px 0}
+/* timeline */
+.tl{list-style:none;margin:12px 0 0 10px;padding:0;border-left:3px solid var(--sea)}
+.tl li{position:relative;padding:2px 0 14px 22px}
+.tl li::before{content:"";position:absolute;left:-9.5px;top:10px;width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid var(--sea)}
+.tl li.bus::before{background:var(--sea)}
+.tl li.spot::before{border-color:var(--tsubaki);background:#fff}
+.tl li.alt{border-top:1px dashed var(--line);margin-top:6px;padding-top:10px}
+.tl li.alt::before{border-style:dashed}
+.t{font-family:ui-monospace,Menlo,monospace;font-weight:800;color:var(--sea-deep)}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:4px}
+.card.bus{background:var(--sea-light);border-color:#c8dcf3}
+.card.spot{cursor:pointer}
+.card.spot:hover{border-color:var(--tsubaki)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.tag{display:inline-block;font-size:.72rem;padding:1px 8px;border-radius:999px;font-weight:700;white-space:nowrap}
+.tag.ok{background:var(--leaf-light);color:var(--leaf)}
+.tag.est{background:var(--sun-light);color:#946600}
+.tag.warn{background:var(--tsubaki-light);color:var(--tsubaki)}
+.small{font-size:.82rem;color:var(--sub)}
+.altbox{background:#fafbfd;border:1px dashed var(--sea);border-radius:10px;padding:8px 12px}
+.altbox .card{margin-top:6px}
+.fare{margin-top:10px;font-weight:800;color:var(--sea-deep);text-align:right}
+.explain{margin-top:12px}
+#explainBtn{background:var(--tsubaki);color:#fff;border:0;border-radius:999px;padding:9px 18px;font-weight:800;cursor:pointer;font-size:.95rem}
+.explainText{background:var(--sun-light);border-radius:10px;padding:10px 14px;margin:10px 0 0;min-height:1em;display:none}
+.explainText.show{display:block}
+.src{margin-top:10px;font-size:.82rem;color:var(--sub)}
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+.modal[hidden]{display:none}
+.modalbox{background:#fff;border-radius:14px;max-width:520px;width:100%;padding:20px;position:relative;max-height:90vh;overflow:auto}
+.close{position:absolute;right:10px;top:8px;border:0;background:none;font-size:1.6rem;cursor:pointer;color:var(--sub)}
+.modalbox h3{margin:0 0 6px;color:var(--sea-deep)}
+.score{display:flex;gap:6px;margin:6px 0;align-items:center}
+.score span:not(.small){width:26px;height:8px;border-radius:4px;background:var(--line);flex:none}
+.score .small{margin-left:6px;white-space:nowrap}
+.score span.on{background:var(--leaf)}
+.modalbox ul{padding-left:18px;margin:6px 0}
+.nextb{background:var(--sea-light);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:.9rem}
+footer{font-size:.78rem;color:var(--sub);padding:20px 16px 40px}
+@media (max-width:520px){.brand{font-size:1.2rem}}
+
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">🏝️ 大島スマートコース <span class="badge">PoC v0.1</span></div>
+    <div class="sub">GTFS（バス時刻表データ）× 荷物の有無 で、1泊2日の旅程を自動で組みます</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- 画面1: 入力 -->
+  <section class="panel" id="inputPanel">
+    <h2>1. あなたの条件</h2>
+    <div class="grid">
+      <label class="field">
+        <span>到着する港</span>
+        <select id="port">
+          <option value="motomachi">元町港</option>
+          <option value="okada">岡田港</option>
+          <option value="unknown">まだわからない（当日決定）</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>到着時刻</span>
+        <select id="arrival">
+          <option value="09:35">09:35（ジェット船 竹芝7:25/7:50発）</option>
+          <option value="10:00" selected>10:00（ジェット船 竹芝8:15発）</option>
+          <option value="06:00">06:00（大型客船 竹芝23:00発）</option>
+        </select>
+      </label>
+      <div class="field">
+        <span>荷物</span>
+        <div class="toggle" role="radiogroup" aria-label="荷物">
+          <button type="button" class="tbtn active" data-luggage="1" id="lugOn">🧳 キャリーケースあり</button>
+          <button type="button" class="tbtn" data-luggage="0" id="lugOff">🎒 身軽</button>
+        </div>
+      </div>
+      <label class="field">
+        <span>宿泊</span>
+        <input type="text" value="大島温泉ホテル（三原山温泉）" disabled>
+      </label>
+    </div>
+    <p class="hint">👉 「キャリーケースあり ⇄ 身軽」を切り替えると、旅程が組み替わります。</p>
+  </section>
+
+  <!-- 画面2: タイムライン -->
+  <section class="panel" id="planPanel">
+    <div class="planhead">
+      <h2>2. あなたの旅程</h2>
+      <div class="tabs" id="dayTabs"></div>
+    </div>
+    <div id="warnings"></div>
+    <div id="timeline"></div>
+    <div class="fare" id="fare"></div>
+    <div class="explain">
+      <button type="button" id="explainBtn">✨ 説明文を生成</button>
+      <p id="explainText" class="explainText"></p>
+    </div>
+    <details class="src"><summary>使っているデータ</summary><div id="dataSource"></div></details>
+  </section>
+</main>
+
+<!-- 画面3: スポット詳細（モーダル） -->
+<div class="modal" id="modal" hidden>
+  <div class="modalbox">
+    <button type="button" class="close" id="modalClose" aria-label="閉じる">×</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<footer class="wrap">SBC.別班連携チーム / 東京都知事杯オープンデータ・ハッカソン 2026 — 時刻表出典: 大島バス（三原山ライン 2026/7/1〜9/30版）</footer>
+<script>
+window.__TIMETABLE__ = {"meta": {"source": "大島バス 路線バス時刻表（三原山ライン・2026/7/1〜9/30版 PDF）を手入力。ODPTのGTFS-JP取得後は scripts/build_gtfs.py で生成したものに差し替える", "sourceUrl": "http://www.oshima-bus.com/rosen-bus.html", "validFrom": "2026-07-01", "validTo": "2026-09-30", "serviceNote": "8月は毎日運行。intermediate=true の時刻は前後の便から推定（要現地確認）", "generatedBy": "manual"}, "stops": {"PORT": {"name": "入港地（元町港／岡田港）", "note": "当日の海況で決まる"}, "TSUBAKI": {"name": "椿・花ガーデン"}, "ONSEN": {"name": "三原山温泉（大島温泉ホテル前）"}, "SUMMIT": {"name": "三原山頂口"}}, "fares": {"PORT-TSUBAKI": {"yen": 300, "confirmed": true}, "PORT-ONSEN": {"yen": 790, "confirmed": true}, "PORT-SUMMIT": {"yen": 1090, "confirmed": true}, "TSUBAKI-ONSEN": {"yen": 490, "confirmed": false}, "TSUBAKI-SUMMIT": {"yen": 790, "confirmed": false}, "ONSEN-SUMMIT": {"yen": 300, "confirmed": false}}, "trips": [{"tripId": "MIHARA_DOWN_1020", "routeName": "三原山ライン（上り）", "serviceId": "8月毎日", "ports": ["motomachi", "okada"], "stops": [{"stopId": "PORT", "dep": "10:20"}, {"stopId": "TSUBAKI", "arr": "10:28", "dep": "10:28"}, {"stopId": "ONSEN", "arr": "10:38", "dep": "10:38"}, {"stopId": "SUMMIT", "arr": "10:45"}]}, {"tripId": "MIHARA_DOWN_1240", "routeName": "三原山ライン（上り）", "serviceId": "8月毎日", "ports": ["motomachi"], "stops": [{"stopId": "PORT", "dep": "12:40"}, {"stopId": "TSUBAKI", "arr": "12:48", "dep": "12:48"}, {"stopId": "ONSEN", "arr": "12:58", "dep": "12:58"}, {"stopId": "SUMMIT", "arr": "13:05"}]}, {"tripId": "MIHARA_UP_0930", "routeName": "三原山ライン（下り）", "serviceId": "8月毎日", "ports": ["motomachi", "okada"], "stops": [{"stopId": "SUMMIT", "dep": "09:30"}, {"stopId": "ONSEN", "arr": "09:37", "dep": "09:37", "intermediate": true}, {"stopId": "TSUBAKI", "arr": "09:47", "dep": "09:47", "intermediate": true}, {"stopId": "PORT", "arr": "09:55"}]}, {"tripId": "MIHARA_UP_1120", "routeName": "三原山ライン（下り）", "serviceId": "8月毎日", "ports": ["motomachi"], "stops": [{"stopId": "SUMMIT", "dep": "11:20"}, {"stopId": "ONSEN", "arr": "11:27", "dep": "11:27", "intermediate": true}, {"stopId": "TSUBAKI", "arr": "11:37", "dep": "11:37", "intermediate": true}, {"stopId": "PORT", "arr": "11:45"}]}, {"tripId": "MIHARA_UP_1330", "routeName": "三原山ライン（下り）", "serviceId": "8月毎日", "ports": ["motomachi", "okada"], "stops": [{"stopId": "SUMMIT", "dep": "13:30"}, {"stopId": "ONSEN", "arr": "13:37", "dep": "13:37", "intermediate": true}, {"stopId": "TSUBAKI", "arr": "13:47", "dep": "13:47", "intermediate": true}, {"stopId": "PORT", "arr": "13:55"}]}]};
+window.__SPOTS__ = {"TSUBAKI": {"name": "椿・花ガーデン", "emoji": "🌺", "stopId": "TSUBAKI", "luggageScore": 2, "minStayMin": 120, "desc": "港からバス8分。園内は平坦で、荷物を持ったままでも回れる。芝生の大広場あり。", "cautions": ["園内カフェ・ショップは休業中の可能性（弁当持込・園内での飲食可否は要確認）"], "todo": ["弁当持込OK？", "芝生で食べてOK？", "荷物を置ける場所は？"]}, "SUMMIT": {"name": "三原山（山頂口〜火口）", "emoji": "🌋", "stopId": "SUMMIT", "luggageScore": 0, "minStayMin": 150, "desc": "伊豆大島のシンボル。山頂口から火口までは未舗装の遊歩道。身軽で行きたい。", "cautions": ["未舗装トレイル。キャリーケースは現実的でない", "バスの大型手荷物は1個500円・混雑時は乗車拒否あり"], "todo": ["遊歩道でキャリーが困難な写真を撮る"]}, "ONSEN": {"name": "大島温泉ホテル（三原山温泉）", "emoji": "♨️", "stopId": "ONSEN", "luggageScore": 2, "minStayMin": 0, "checkIn": "15:00", "desc": "バス停直結。チェックイン前でも荷物を預けられれば、身軽になって三原山へ行ける。", "cautions": [], "todo": ["チェックイン前の荷物預かりは可能か？"]}, "MOTOMACHI": {"name": "元町散策", "emoji": "🏘️", "stopId": "PORT", "luggageScore": 1, "minStayMin": 60, "desc": "港周辺の街歩き。坂道が多く、荷物ありだとやや大変。", "cautions": ["坂道"], "todo": []}};
+</script>
+<script>
+// planner.js — 純粋関数のみ。ブラウザ（ES module）とNode両方で動く。
+// 入力: 時刻表(timetable.json) / スポット表(spots.json) / 港 / 到着時刻 / 荷物有無
+// 出力: 1泊2日の旅程（バス便はすべて時刻表の trip に紐づき verified=true）
+
+const toMin = (s) => { const [h, m] = s.split(":").map(Number); return h * 60 + m; };
+const fromMin = (n) => `${String(Math.floor(n / 60)).padStart(2, "0")}:${String(n % 60).padStart(2, "0")}`;
+const addMin = (s, d) => fromMin(toMin(s) + d);
+
+/** 停留所 from→to で、時刻 t 以降に from を出る最初の便 */
+function nextBus(tt, from, to, t, { port = "motomachi" } = {}) {
+  const cands = [];
+  for (const trip of tt.trips) {
+    if (from === "PORT" || to === "PORT") {
+      if (port !== "unknown" && !trip.ports.includes(port)) continue;
+      if (port === "unknown" && trip.ports.length < 2) continue; // 港未定なら両港共通便のみ
+    }
+    const i = trip.stops.findIndex((s) => s.stopId === from);
+    const j = trip.stops.findIndex((s) => s.stopId === to);
+    if (i < 0 || j <= i) continue;
+    const dep = trip.stops[i].dep;
+    if (!dep || toMin(dep) < toMin(t)) continue;
+    cands.push({
+      tripId: trip.tripId, routeName: trip.routeName, serviceId: trip.serviceId,
+      from, to, dep, arr: trip.stops[j].arr,
+      estimated: !!(trip.stops[i].intermediate || trip.stops[j].intermediate),
+      verified: true, // 時刻表(GTFS)上に存在する便のみ返すため常に true
+    });
+  }
+  cands.sort((a, b) => toMin(a.dep) - toMin(b.dep));
+  return cands[0] ?? null;
+}
+
+function fare(tt, a, b) {
+  const f = tt.fares[`${a}-${b}`] || tt.fares[`${b}-${a}`];
+  return f ? { yen: f.yen, confirmed: f.confirmed } : { yen: 0, confirmed: false };
+}
+
+const WALK_BUFFER = 10; // 下船→バス停の余裕（分）
+const HOTEL_CHECKIN = "15:00";
+
+function busItem(b, tt) {
+  const f = fare(tt, b.from, b.to);
+  return { type: "bus", ...b, fareYen: f.yen, fareConfirmed: f.confirmed };
+}
+const LUGGAGE_WORDS = ["キャリー", "手荷物", "荷物"];
+function spotItem(spotId, spots, arr, dep, note, hasLuggage = true) {
+  const s = spots[spotId];
+  const cautions = hasLuggage ? s.cautions : s.cautions.filter((c) => !LUGGAGE_WORDS.some((w) => c.includes(w)));
+  return { type: "spot", spotId, name: s.name, emoji: s.emoji, arr, dep, note, cautions, todo: s.todo };
+}
+
+/**
+ * planTrip — 荷物あり/なしで分岐する 1泊2日プラン
+ * 荷物あり: 港→椿・花ガーデン(2h+)→ホテル(荷物預け)。午後にホテル→山頂の便があれば「第2案」を提案（現行ダイヤでは該当便なし）
+ * 荷物なし: 港→山頂口(直行)→ホテル
+ * 2日目  : ホテル(荷物預け)→山頂→港
+ */
+function planTrip({ tt, spots, port = "motomachi", arrival = "10:00", hasLuggage = true }) {
+  const warnings = [];
+  const unresolved = [];
+  const day1 = [];
+  const day2 = [];
+  const opts = { port };
+  const ready = addMin(arrival, WALK_BUFFER);
+
+  if (port === "unknown") warnings.push("入港地が未定のため、元町・岡田どちらでも乗れる便だけで組んでいます（当日、港が決まったら切替）。");
+  if (hasLuggage) warnings.push("大島バスの大型手荷物（3辺1m超/10kg超）は1個500円・混雑時は乗車を断られることがあります。1日目のバスは早めに並びましょう。");
+
+  day1.push({ type: "event", time: arrival, title: `${port === "okada" ? "岡田港" : port === "motomachi" ? "元町港" : "入港地"}に到着`, note: hasLuggage ? "キャリーケースあり 🧳" : "身軽 🎒" });
+
+  if (hasLuggage) {
+    // 港 → 椿・花ガーデン
+    const b1 = nextBus(tt, "PORT", "TSUBAKI", ready, opts);
+    if (!b1) unresolved.push("港→椿・花ガーデンの便が見つかりません（到着時刻/港を確認）");
+    else {
+      day1.push(busItem(b1, tt));
+      const leave = addMin(b1.arr, spots.TSUBAKI.minStayMin);
+      const b2 = nextBus(tt, "TSUBAKI", "ONSEN", leave, opts);
+      if (!b2) unresolved.push("椿・花ガーデン→三原山温泉の便が見つかりません");
+      else {
+        const stayMin = toMin(b2.dep) - toMin(b1.arr);
+        day1.push(spotItem("TSUBAKI", spots, b1.arr, b2.dep, `滞在 ${Math.floor(stayMin / 60)}時間${stayMin % 60}分（園内観光＋お弁当ランチ）`));
+        day1.push(busItem(b2, tt));
+        // ホテル
+        const early = toMin(b2.arr) < toMin(HOTEL_CHECKIN);
+        day1.push(spotItem("ONSEN", spots, b2.arr, null,
+          early ? `チェックイン ${HOTEL_CHECKIN}。先に荷物だけ預けて、温泉・周辺散策でゆっくり` : "チェックイン"));
+        // 第2案: 荷物を預けて山頂へ
+        if (early) {
+          const b3 = nextBus(tt, "ONSEN", "SUMMIT", addMin(b2.arr, 20), opts);
+          const back = b3 && nextBus(tt, "SUMMIT", "ONSEN", addMin(b3.arr, 60), opts);
+          if (b3) {
+            day1.push({ type: "alt", title: "第2案（余裕があれば）", items: [
+              busItem(b3, tt),
+              spotItem("SUMMIT", spots, b3.arr, back ? back.dep : null, "身軽になって火口方面へ（短時間）"),
+              ...(back ? [busItem(back, tt)] : []),
+            ], note: "ホテルでチェックイン前に荷物を預けられることが前提（要確認）" });
+          }
+        }
+      }
+    }
+  } else {
+    // 身軽: 港 → 山頂口 直行
+    const b1 = nextBus(tt, "PORT", "SUMMIT", ready, opts);
+    if (!b1) unresolved.push("港→三原山頂口の便が見つかりません");
+    else {
+      day1.push(busItem(b1, tt));
+      const leave = addMin(b1.arr, spots.SUMMIT.minStayMin);
+      const b2 = nextBus(tt, "SUMMIT", "ONSEN", leave, opts);
+      day1.push(spotItem("SUMMIT", spots, b1.arr, b2 ? b2.dep : null, "火口一周コースなど（昼食は持参）", false));
+      if (b2) { day1.push(busItem(b2, tt)); day1.push(spotItem("ONSEN", spots, b2.arr, null, "チェックイン")); }
+      else unresolved.push("山頂→三原山温泉の便が見つかりません");
+    }
+  }
+
+  // ---- 2日目 ----
+  day2.push({ type: "event", time: "08:30", title: "ホテルにキャリーケースを預ける", note: "身軽になって出発 🎒" });
+  const c1 = nextBus(tt, "ONSEN", "SUMMIT", "09:00", opts);
+  if (!c1) unresolved.push("2日目 三原山温泉→山頂口の便が見つかりません");
+  else {
+    day2.push(busItem(c1, tt));
+    const leave = addMin(c1.arr, spots.SUMMIT.minStayMin);
+    const c2 = nextBus(tt, "SUMMIT", "PORT", leave, opts);
+    day2.push(spotItem("SUMMIT", spots, c1.arr, c2 ? c2.dep : null, "三原山を満喫（火口・裏砂漠など）", false));
+    if (c2) { day2.push(busItem(c2, tt)); day2.push({ type: "event", time: c2.arr, title: "港に到着 → 荷物はホテルから配送 or 一度戻って回収", note: "帰りの船の時刻に合わせて要調整" }); }
+    else unresolved.push("2日目 山頂→港の便が見つかりません");
+  }
+
+  const allBuses = [...day1, ...day2].filter((i) => i.type === "bus");
+  const fareTotal = allBuses.reduce((s, b) => s + (b.fareYen || 0), 0);
+  if (allBuses.some((b) => !b.fareConfirmed)) warnings.push("一部区間の運賃は推定値です（公式で要確認）。");
+  if (allBuses.some((b) => b.estimated)) warnings.push("下り便の途中停留所の時刻は前後の便からの推定です（要現地確認）。");
+
+  return {
+    input: { port, arrival, hasLuggage },
+    days: [{ label: "1日目（土）", items: day1 }, { label: "2日目（日）", items: day2 }],
+    warnings, unresolved, fareTotal,
+    dataSource: tt.meta,
+  };
+}
+
+/** 説明文（PoCではテンプレ。後で /api/explain のLLM出力に差し替え可） */
+function explain(plan, spots) {
+  const { hasLuggage, port } = plan.input;
+  const p = port === "okada" ? "岡田港" : port === "motomachi" ? "元町港" : "港";
+  if (hasLuggage) {
+    return `${p}に着いたら、キャリーケースを持ったまま10分ほどでバス停へ。1本目のバスで椿・花ガーデンに向かい、平坦な園内をのんびり回ってお弁当ランチ。次のバスで大島温泉ホテルへ移動して荷物を預ければ、あとは身軽です。三原山は2日目のお楽しみ。荷物を持って山に登る必要はありません。`;
+  }
+  return `身軽なら1日目から三原山へ直行できます。${p}からのバスで山頂口へ上がり、火口方面を歩いたあと、バスで大島温泉ホテルへ。2日目はもう一度、朝いちばんのバスで山へ戻って裏砂漠まで足をのばすのもおすすめです。`;
+}
+
+</script>
+<script>
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+const state = { port: "motomachi", arrival: "10:00", hasLuggage: true, day: 0, plan: null };
+let tt, spots;
+
+async function load() {
+  [tt, spots] = [window.__TIMETABLE__, window.__SPOTS__];
+  bind();
+  render();
+}
+
+function bind() {
+  $("#port").addEventListener("change", (e) => { state.port = e.target.value; render(); });
+  $("#arrival").addEventListener("change", (e) => { state.arrival = e.target.value; render(); });
+  $("#lugOn").addEventListener("click", () => setLuggage(true));
+  $("#lugOff").addEventListener("click", () => setLuggage(false));
+  $("#explainBtn").addEventListener("click", () => {
+    const el = $("#explainText");
+    el.textContent = explain(state.plan, spots);
+    el.classList.add("show");
+  });
+  $("#modalClose").addEventListener("click", closeModal);
+  $("#modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
+}
+
+function setLuggage(v) {
+  state.hasLuggage = v;
+  $("#lugOn").classList.toggle("active", v);
+  $("#lugOff").classList.toggle("active", !v);
+  render();
+}
+
+function render() {
+  state.plan = planTrip({ tt, spots, port: state.port, arrival: state.arrival, hasLuggage: state.hasLuggage });
+  const p = state.plan;
+  $("#explainText").classList.remove("show");
+
+  // tabs
+  $("#dayTabs").innerHTML = p.days.map((d, i) => `<button class="tab ${i === state.day ? "active" : ""}" data-i="${i}">${esc(d.label)}</button>`).join("");
+  $("#dayTabs").querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => { state.day = +b.dataset.i; render(); }));
+
+  // warnings
+  $("#warnings").innerHTML =
+    p.unresolved.map((u) => `<div class="unres">⛔ ${esc(u)}</div>`).join("") +
+    p.warnings.map((w, i) => `<div class="warn ${i === 0 && state.hasLuggage ? "" : "soft"}">${esc(w)}</div>`).join("");
+
+  // timeline
+  const items = p.days[state.day].items;
+  $("#timeline").innerHTML = `<ul class="tl">${items.map(renderItem).join("")}</ul>`;
+  $("#timeline").querySelectorAll(".card.spot").forEach((c) => c.addEventListener("click", () => openSpot(c.dataset.spot)));
+
+  $("#fare").textContent = `🚌 バス運賃合計（2日間・片道換算）: ${p.fareTotal.toLocaleString()}円`;
+  $("#dataSource").innerHTML = `<p>${esc(p.dataSource.source)}</p><p>有効期間 ${esc(p.dataSource.validFrom)}〜${esc(p.dataSource.validTo)} / ${esc(p.dataSource.serviceNote)}</p><p><a href="${esc(p.dataSource.sourceUrl)}" target="_blank" rel="noopener">出典</a></p>`;
+}
+
+function renderItem(it) {
+  if (it.type === "event") {
+    return `<li><span class="t">${esc(it.time)}</span> ${esc(it.title)}<div class="small">${esc(it.note)}</div></li>`;
+  }
+  if (it.type === "bus") return `<li class="bus">${busCard(it)}</li>`;
+  if (it.type === "spot") {
+    return `<li class="spot"><span class="t">${esc(it.arr)}${it.dep ? "〜" + esc(it.dep) : ""}</span>
+      <div class="card spot" data-spot="${esc(it.spotId)}">
+        <div class="row"><b>${esc(it.emoji)} ${esc(it.name)}</b><span class="small">詳細 ›</span></div>
+        <div class="small">${esc(it.note)}</div>
+        ${it.cautions?.length ? `<div class="small">${it.cautions.map((c) => `<span class="tag warn">⚠ ${esc(c)}</span>`).join(" ")}</div>` : ""}
+      </div></li>`;
+  }
+  if (it.type === "alt") {
+    return `<li class="alt"><div class="altbox"><b>💡 ${esc(it.title)}</b><div class="small">${esc(it.note)}</div>
+      ${it.items.map((x) => x.type === "bus" ? busCard(x) : `<div class="card"><b>${esc(x.emoji)} ${esc(x.name)}</b> <span class="t">${esc(x.arr)}${x.dep ? "〜" + esc(x.dep) : ""}</span><div class="small">${esc(x.note)}</div></div>`).join("")}
+    </div></li>`;
+  }
+  return "";
+}
+
+function busCard(b) {
+  const from = tt.stops[b.from].name, to = tt.stops[b.to].name;
+  return `<span class="t">${esc(b.dep)}</span> 🚌 発
+    <div class="card bus">
+      <div class="row"><b>${esc(from)} → ${esc(to)}</b>
+        <span><span class="tag ok">✅ 時刻表と一致</span> ${b.estimated ? '<span class="tag est">途中時刻は推定</span>' : ""}</span></div>
+      <div class="small">${esc(b.dep)} 発 → ${esc(b.arr)} 着 ／ ${esc(b.routeName)} ／ ${b.fareYen ? b.fareYen + "円" : "運賃未確認"}${b.fareConfirmed ? "" : "（推定）"} ／ 便ID: ${esc(b.tripId)}</div>
+    </div>`;
+}
+
+function openSpot(id) {
+  const s = spots[id];
+  const now = "09:00";
+  const nexts = ["PORT", "TSUBAKI", "ONSEN", "SUMMIT"].filter((x) => x !== s.stopId).map((to) => {
+    const b = nextBus(tt, s.stopId, to, now, { port: state.port });
+    return b ? `${tt.stops[to].name}行き ${b.dep}` : null;
+  }).filter(Boolean);
+  $("#modalBody").innerHTML = `
+    <h3>${esc(s.emoji)} ${esc(s.name)}</h3>
+    <div class="small">荷物適性</div>
+    <div class="score">${[0, 1, 2].map((i) => `<span class="${i < s.luggageScore ? "on" : ""}"></span>`).join("")} <span class="small">${["× 荷物ありは不可", "△ 荷物ありはやや大変", "○ 荷物ありでもOK"][s.luggageScore]}</span></div>
+    <p>${esc(s.desc)}</p>
+    <div class="small">目安の滞在時間: ${s.minStayMin ? s.minStayMin + "分〜" : "—"}${s.checkIn ? " ／ チェックイン " + esc(s.checkIn) : ""}</div>
+    ${s.cautions.length ? `<b>⚠ 注意</b><ul>${s.cautions.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
+    ${s.todo.length ? `<b>❓ 現地で確認すること</b><ul>${s.todo.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
+    <div class="nextb"><b>🚌 最寄バス停「${esc(tt.stops[s.stopId].name)}」 ${now}以降の次発</b><br>${nexts.length ? nexts.map(esc).join("<br>") : "該当便なし"}</div>`;
+  $("#modal").hidden = false;
+}
+function closeModal() { $("#modal").hidden = true; }
+
+load();
+
+</script>
+</body>
+</html>
