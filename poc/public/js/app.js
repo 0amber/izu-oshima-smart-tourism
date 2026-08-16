@@ -6,11 +6,17 @@ const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<
 const state = { port: "motomachi", arrival: "10:00", hasLuggage: true, day: 0, plan: null };
 let tt, spots;
 
-async function load() {
-  [tt, spots] = await Promise.all([
+async function loadData() {
+  // スタンドアロン版（build_standalone.py）では window.__DATA__ に埋め込まれる
+  if (typeof window !== "undefined" && window.__DATA__) return [window.__DATA__.timetable, window.__DATA__.spots];
+  return Promise.all([
     fetch("data/timetable.json").then((r) => r.json()),
     fetch("data/spots.json").then((r) => r.json()),
   ]);
+}
+
+async function load() {
+  [tt, spots] = await loadData();
   bind();
   render();
 }
