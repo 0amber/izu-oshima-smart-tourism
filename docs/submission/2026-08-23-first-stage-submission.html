@@ -56,7 +56,7 @@ input[type=checkbox]{margin-right:6px}
 </tr>
 <tr>
 <td>提出前</td>
-<td>文字数制限はフォームの実物で確認し、下記文章を調整。<strong>8/21までに提出可能状態</strong>にしておく（8/23は現地検証日）</td>
+<td>文字数制限はフォームの実物で確認し、下記文章を調整。<strong>8/21までに提出可能状態</strong>にしておく（8/23当日は余裕がないため）</td>
 </tr>
 </tbody>
 </table>
@@ -64,10 +64,10 @@ input[type=checkbox]{margin-right:6px}
 <h2>① チーム情報</h2>
 <ul>
 <li>チーム名：SBC.別班連携チーム</li>
-<li>人数：＿名　連絡担当者：＿＿（メール・電話）</li>
+<li>人数：4名（清水・島田・志田・杉山）　連絡担当者：＿＿（メール・電話）</li>
 <li>学生賞対象：＿</li>
-<li>メンバー構成と役割：ドメイン設計・現地知見（清水）／PM・現地検証・提出物（島田）／データ（GTFS）・変換スクリプト／プロトタイプ・資料（＿＿）</li>
-<li>運用体制：ハッカソン期間はチームで運用。以後はGitHubで公開・更新し、大島町・観光協会・宿泊事業者への提供を想定</li>
+<li>メンバー構成と役割：清水道夫（ドメイン設計・GTFS）／島田光太郎（PM・提出物・開発）／志田健一（アドバイザー・地域連携・社会実装：SIDE BEACH CITY. 副理事長、Code for Hodogaya、NASA Space Apps Challenge Tokyo ローカルリード）／杉山由朗（オープンデータ・GTFS検証 ※本人確認後に確定）。詳細は docs/team/MEMBERS.md</li>
+<li>運用体制：ハッカソン期間はチームで運用。以後はGitHubでOSS公開・GTFS改定ごとに更新し、SIDE BEACH CITY.／Code for系ネットワークを通じて大島町・観光協会・宿泊事業者と協働。他の島しょ・地方へ横展開</li>
 </ul>
 <h2>② 提出作品の概要</h2>
 <ul>
@@ -84,7 +84,7 @@ input[type=checkbox]{margin-right:6px}
 </blockquote>
 <p><strong>解決方法</strong></p>
 <blockquote>
-<p>①GTFS-JP（公共交通オープンデータセンター）を、観光に関係する停留所だけの時刻表Markdown/CSVに自動変換する（識別子・座標・全停留所は含めず、元データを復元できない要約とすることでライセンスに配慮）。②現地の暗黙知を1トピック1ファイルのMarkdownで整理し、生成日・出典・「要確認」を明記する。③AIへの渡し方（貼り付け／添付／リンク／カスタムGPT）とプロンプト雛形を用意し、「表にない便を作らない」「帰りの船から逆算する」「荷物あり／なしで分ける」というルールを与える。④荷物の有無で旅程が組み替わる実証デモで、AIが出した旅程を時刻表と突き合わせて検証できることを示す。8/22–23に現地で実走し、暗黙知を更新します。</p>
+<p>①GTFS-JP（公共交通オープンデータセンター）を、観光に関係する停留所だけの時刻表Markdown/CSVに自動変換する（識別子・座標・全停留所は含めず、元データを復元できない要約とすることでライセンスに配慮）。②現地の暗黙知を1トピック1ファイルのMarkdownで整理し、生成日・出典・「要確認」を明記する。③AIへの渡し方（貼り付け／添付／リンク／カスタムGPT）とプロンプト雛形を用意し、「表にない便を作らない」「帰りの船から逆算する」「荷物あり／なしで分ける」というルールを与える。④荷物の有無で旅程が組み替わる実証デモで、AIが出した旅程を時刻表と突き合わせて検証できることを示す。公式時刻表との突合と事業者への電話確認で検証し、暗黙知を更新します。</p>
 </blockquote>
 <h2>③ 技術詳細</h2>
 <p><strong>技術選定の理由</strong></p>
@@ -152,7 +152,7 @@ input[type=checkbox]{margin-right:6px}
 </table>
 <h2>⑤ プレゼン資料</h2>
 <ul>
-<li>スライド：<code>slides.pdf</code>（16:9・8枚）※スライド1の写真は8/22現地撮影で差替、来島者数は最新値に更新</li>
+<li>スライド：<code>slides.pdf</code>（16:9・8枚）※写真はWikimedia Commonsのフリー素材（assets/CREDITS.md）、来島者数は最新値に更新</li>
 <li>画面キャプチャ（3点）：<code>01_input.png</code>（入力）／<code>02_plan_luggage.png</code>（荷物あり旅程）／<code>03_plan_light.png</code>（身軽旅程）</li>
 </ul>
 <h2>⑥ First Stage 収録日予約</h2>
@@ -161,7 +161,7 @@ input[type=checkbox]{margin-right:6px}
 </ul>
 <h2>⑦ 権利関係確認</h2>
 <ul>
-<li>生成AI利用あり（②③に明記）／GTFSはODPTのライセンスに従い、公開物は元データを復元できない要約に限定／写真はチーム撮影／出典明記／BGMなし／地図を使う場合はロゴ・帰属を隠さない</li>
+<li>生成AI利用あり（②③に明記）／GTFSはODPTのライセンスに従い、公開物は元データを復元できない要約に限定／写真はWikimedia Commonsのフリー素材（CC BY／CC BY-SA、assets/CREDITS.md に帰属明記）／出典明記／BGMなし／地図を使う場合はロゴ・帰属を隠さない</li>
 </ul>
 <hr />
 <h2>提出前チェック</h2>
@@ -169,7 +169,7 @@ input[type=checkbox]{margin-right:6px}
 <li><input type="checkbox" disabled> Slack #01_全体連絡でフォームURLを取得</li>
 <li><input type="checkbox" disabled> 文字数制限を確認し②③を調整</li>
 <li><input type="checkbox" disabled> 収録枠を⑥で予約（8/26–30）</li>
-<li><input type="checkbox" disabled> slides.pdf の写真・来島者数・デモURLを更新</li>
+<li><input type="checkbox" disabled> slides.pdf の来島者数・デモURLを更新</li>
 <li><input type="checkbox" disabled> デモURL（Cloudflare Pages）を確保、なければ操作動画</li>
 <li><input type="checkbox" disabled> チーム名・人数・連絡担当・学生賞を確定</li>
 <li><input type="checkbox" disabled> 8/21までに一度「提出できる状態」で通し確認</li>
