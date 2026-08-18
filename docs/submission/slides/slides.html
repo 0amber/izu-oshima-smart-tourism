@@ -21,7 +21,7 @@
   .cover .eyebrow{font-size:22px;opacity:.9;letter-spacing:.1em;margin-bottom:18px}
   .cover .tag{font-size:34px;font-weight:700;margin-top:26px;opacity:.95}
   .cover .team{position:absolute;bottom:40px;left:72px;font-size:22px;opacity:.9}
-  .cover .photo{position:absolute;right:72px;top:90px;width:420px;height:420px;border-radius:24px;background:rgba(255,255,255,.12);border:2px dashed rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;text-align:center;font-size:20px;padding:24px}
+  .cover .photo{position:absolute;right:72px;top:110px;width:400px;height:400px;border-radius:24px;background:rgba(255,255,255,.12);border:2px dashed rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;text-align:center;font-size:20px;padding:24px}
   .cover .photo img{width:100%;height:100%;object-fit:cover;border-radius:22px}
   .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;flex:1;align-content:center}
   .fact{background:var(--tsubaki-light);border:2px solid var(--tsubaki);border-radius:20px;padding:26px 24px}
@@ -67,6 +67,15 @@
   .next .box{justify-content:flex-start}
   .next li{margin:8px 0 8px 30px}
   .url{margin-top:auto;font-size:26px;font-weight:800;color:var(--sea);background:var(--sea-light);padding:12px 18px;border-radius:12px;display:inline-block}
+  .cover .photo{background:none;border:0;padding:0;overflow:hidden}
+  .fact{padding:0;overflow:hidden;display:flex;flex-direction:column}
+  .fact .ph{height:150px;background-size:cover;background-position:center}
+  .fact .body{padding:16px 22px 18px}
+  .credit{font-size:13px;color:var(--sub)}
+  .hero{display:grid;grid-template-columns:1fr 1fr;gap:26px;height:480px;flex:none}
+  .hero .img{border-radius:16px;overflow:hidden;min-height:0;position:relative}
+  .hero .img img{width:100%;height:100%;object-fit:cover;display:block}
+  .hero .img .lab{position:absolute;left:0;right:0;bottom:0;background:rgba(8,60,112,.85);color:#fff;font-size:17px;font-weight:800;padding:6px 12px}
   @page{size:1280px 720px;margin:0}
   @media print{html,body{background:#fff}.slide{margin:0}}
 </style>
@@ -76,9 +85,10 @@
 <!-- 1 -->
 <section class="slide cover">
   <div class="eyebrow">東京都知事杯オープンデータ・ハッカソン 2026 ｜ First Stage</div>
-  <h1>🏝️ 大島スマートコース</h1>
-  <div class="tag">キャリーケースがあっても、島を楽しみ尽くす。<br>GTFSで検証済みの、荷物の有無で変わる1泊2日プラン</div>
-  <div class="photo"><div>📷 現地写真（8/22撮影予定）<br><span style="font-size:16px;opacity:.85">港でキャリーケースを引く旅行者・バス停・時刻表</span></div></div>
+  <h1 style="max-width:720px">🏝️ 大島スマートコース</h1>
+  <div class="tag" style="max-width:720px;font-size:30px">キャリーケースがあっても、島を楽しみ尽くす。<br>GTFSで検証済みの、荷物の有無で変わる1泊2日プラン</div>
+  <div class="photo"><img src="../assets/jetfoil_okada.jpg" alt="岡田港に入るジェット船"></div>
+  <div class="team" style="left:auto;right:72px;bottom:24px;font-size:13px;opacity:.85">写真：Guilhem Vellut, CC BY 2.0（Wikimedia Commons）</div>
   <div class="team">SBC.別班連携チーム</div>
 </section>
 
@@ -86,12 +96,12 @@
 <section class="slide">
   <h2>港に着いた瞬間、旅は「荷物」に縛られる</h2>
   <div class="facts">
-    <div class="fact"><div class="big">500円</div><div class="lbl">大きな荷物はバスで有料<br>混雑時は乗車拒否も</div><div class="s">3辺合計1m超・10kg超が対象（大島バス手荷物規定）</div></div>
-    <div class="fact"><div class="big">15:00</div><div class="lbl">宿のチェックインまで<br>荷物を抱えたまま</div><div class="s">ジェット船は9:35〜10:00着。到着後の5時間が宙に浮く</div></div>
-    <div class="fact"><div class="big">未舗装</div><div class="lbl">三原山の遊歩道は<br>キャリーケースでは行けない</div><div class="s">一番行きたい場所に、一番行けない</div></div>
+    <div class="fact"><div class="ph" style="background-image:url(../assets/oshima_bus.jpg)"></div><div class="body"><div class="big">500円</div><div class="lbl">大きな荷物はバスで有料<br>混雑時は乗車拒否も</div><div class="s">3辺合計1m超・10kg超が対象（大島バス手荷物規定）</div></div></div>
+    <div class="fact"><div class="ph" style="background-image:url(../assets/port_arrival.jpg)"></div><div class="body"><div class="big">15:00</div><div class="lbl">宿のチェックインまで<br>荷物を抱えたまま</div><div class="s">ジェット船は9:35〜10:00着。到着後の5時間が宙に浮く</div></div></div>
+    <div class="fact"><div class="ph" style="background-image:url(../assets/mihara_trail.jpg)"></div><div class="body"><div class="big">未舗装</div><div class="lbl">三原山の遊歩道は<br>キャリーケースでは行けない</div><div class="s">一番行きたい場所に、一番行けない</div></div></div>
   </div>
   <p class="sub" style="margin-top:22px">伊豆大島の来島者は年間約20万人。到着直後の数時間を無駄にする不安が、滞在満足度と島での消費機会を下げている。</p>
-  <div class="foot"><span class="src">出典：大島旅客自動車「手荷物規定」／東海汽船 時刻表／東京都「伊豆諸島・小笠原諸島観光客入込実態調査」※来島者数は提出前に最新値で更新</span><span class="num">2 / 8</span></div>
+  <div class="foot"><span class="src">出典：大島旅客自動車「手荷物規定」／東海汽船 時刻表／東京都「伊豆諸島・小笠原諸島観光客入込実態調査」※来島者数は最新値で更新　写真：Cassiopeia sweet CC BY-SA 3.0／Yoshi Canopus CC BY-SA 4.0（Wikimedia Commons）</span><span class="num">2 / 8</span></div>
 </section>
 
 <!-- 3 -->
@@ -165,12 +175,17 @@
 
 <!-- 8 -->
 <section class="slide">
-  <h2>8/22–23、キャリーケースを持って実走します</h2>
-  <div class="next">
-    <div class="box blue"><h3>現地検証で確かめること</h3><ul><li>10:20便で椿・花ガーデン10:28着は本当か（遅延幅）</li><li>バスの手荷物ルールの運用実態</li><li>ホテルでチェックイン前に荷物を預けられるか</li><li>山頂口〜遊歩道でキャリーが困難な証拠（写真）</li></ul></div>
-    <div class="box gray"><h3>次のステップ</h3><ul><li>ODPT GTFS-JPの本番データに差し替え</li><li>生成AIの説明文をFunctionsで提供</li><li>大島町・観光協会と運用相談</li></ul><div class="url">🔗 デモ：https://oshima-smart-course.pages.dev/（公開後）</div></div>
+  <h2>検証と次のステップ</h2>
+  <div class="hero">
+    <div class="img"><img src="../assets/mihara.jpg" alt="三原山"><div class="lab">🌋 三原山：身軽な2日目に。上り08:38／下り11:20・13:30（8月毎日）</div></div>
+    <div class="box blue" style="height:480px;padding:18px 22px;overflow:hidden;justify-content:flex-start"><h3 style="font-size:24px;margin-bottom:8px">机上でも「実在する便」だけで組める</h3><ul style="font-size:19px;line-height:1.4;margin:0">
+      <li>三原山ライン全便と旅程を突合 → 1泊2日が実在便だけで成立</li>
+      <li>「12:58ホテル着→13:30便で山頂」は不成立（下り便）と判明 → 修正</li>
+      <li>電話確認：宿の荷物預かり／園内の飲食可否（「要確認」と明示）</li>
+      <li>次：GTFS-JPから自動生成 → GitHub公開 → 大島町・観光協会と運用相談</li>
+    </ul><div class="url" style="font-size:18px;margin-top:8px;padding:8px 12px">🔗 https://oshima-smart-course.pages.dev/（公開後）</div></div>
   </div>
-  <div class="foot"><span class="src">SBC.別班連携チーム ｜ 生成AI（Claude/ChatGPT）を説明文生成・開発補助に利用 ｜ 写真は自前撮影・出典は各頁に明記</span><span class="num">8 / 8</span></div>
+  <div class="foot"><span class="src">SBC.別班連携チーム ｜ 生成AI（ChatGPT／Claude／Claude Code）を利用 ｜ 写真：Kentaro Ohno CC BY 2.0（Wikimedia Commons）｜ 出典は各頁に明記</span><span class="num">8 / 8</span></div>
 </section>
 
 </body>
