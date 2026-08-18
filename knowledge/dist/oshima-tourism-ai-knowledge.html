@@ -1,0 +1,469 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>伊豆大島 観光AIナレッジ — 情報基盤ドキュメント</title><style>
+:root{--sea:#0b5aa6;--sea-deep:#083c70;--sea-light:#e6f0fb;--tsubaki:#d3283b;--line:#dde3ea;--sub:#5b6773}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;color:#1f2933;line-height:1.75;font-size:15px;background:#fff}
+.wrap{max-width:860px;margin:0 auto;padding:28px 24px 60px}
+h1{font-size:1.7rem;color:var(--sea-deep);border-bottom:3px solid var(--tsubaki);padding-bottom:6px;margin:44px 0 16px;page-break-before:always}
+h1:first-of-type{page-break-before:auto;font-size:2rem;border:0;margin-top:0}
+h2{font-size:1.25rem;color:var(--sea-deep);border-left:6px solid var(--tsubaki);padding-left:10px;margin:30px 0 10px}
+h3{font-size:1.05rem;color:var(--sea);margin:22px 0 8px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;margin:10px 0}th,td{border:1px solid var(--line);padding:6px 9px;vertical-align:top;text-align:left}th{background:var(--sea-light);color:var(--sea-deep)}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;background:#eef1f5;padding:1px 5px;border-radius:4px;font-size:.88em}
+pre{background:#0f1c2b;color:#dbe7f5;padding:12px;border-radius:8px;overflow-x:auto;font-size:.82rem;line-height:1.5}pre code{background:none;color:inherit;padding:0}
+blockquote{margin:10px 0;padding:8px 14px;background:#fff6dc;border-left:4px solid #f2a900;border-radius:4px;color:#3a2a00}
+a{color:var(--sea)}.toc{background:var(--sea-light);border-radius:10px;padding:12px 18px}.toc li{margin:2px 0}
+input[type=checkbox]{margin-right:6px}
+@media print{.wrap{max-width:none;padding:0}h1{page-break-before:always}h1:first-of-type{page-break-before:auto}pre,table,blockquote{page-break-inside:avoid}}
+</style></head><body><div class="wrap"><h1 id="ai">伊豆大島 観光AIナレッジ — 情報基盤ドキュメント</h1>
+<p>ChatGPTに時刻入りの旅程を提案させるための、AI-readableな時刻表と現地の暗黙知（SBC.別班連携チーム）</p>
+<p>生成日：2026-08-18　ブランチ：feature/ai-readable-knowledge</p>
+<h1 id="1">第1章 はじめに</h1>
+<h2 id="aioshima-tourism-ai-knowledge">伊豆大島 観光AIナレッジ（oshima-tourism-ai-knowledge）</h2>
+<p>伊豆大島の観光・移動に関する「現地の事情」と「バスの時刻」を、<strong>ChatGPTなどのAIがそのまま読める形</strong>（Markdown／CSV）で整理するプロジェクトです。<strong>アプリは作りません。情報基盤の整備だけを行います。</strong></p>
+<blockquote>
+<p>参考にした成果物イメージ：<a href="https://github.com/Mitchy888/toyama-tourism-ai-knowledge">Mitchy888/toyama-tourism-ai-knowledge</a>（富山県観光の暗黙知をAI-readableに整理したプロトタイプ）</p>
+</blockquote>
+<h3 id="_1">解決したい困りごと</h3>
+<ul>
+<li>ChatGPTに伊豆大島の旅程を頼んでも、<strong>大島バスの具体的な時刻が入った旅程が出てこない</strong></li>
+<li>大島バスの時刻表PDFは、ChatGPTが中身を読めない</li>
+<li>大島バスのGTFS（公共交通オープンデータ）はあるが、zipのままではChatGPTが読めない</li>
+</ul>
+<p>→ <strong>GTFSを正としてAIが読める表に変換し、現地の暗黙知と一緒に渡す</strong>ことで、時刻入りの旅程提案を可能にする。</p>
+<h3 id="docsdecisionsmd">決まっていること（詳細は docs/DECISIONS.md）</h3>
+<ol>
+<li><strong>時刻の情報源はGTFSのみ</strong>（ODPT 公共交通オープンデータセンター）。PDFからの手入力はしない</li>
+<li><strong>GTFSは各自でODPTに登録して取得する</strong>（無料、承認まで2〜3営業日）。zipは<strong>リポジトリにコミットしない</strong></li>
+<li><strong>ライセンス制約</strong>：GTFSを加工して公開するのはOK。ただし<strong>公開した加工物から元のGTFSを復元できてはいけない</strong>（docs/LICENSE-COMPLIANCE.md）</li>
+<li>成果物は「AIに読ませるための文書」。UI・経路探索エンジン・APIは作らない</li>
+</ol>
+<h3 id="_2">ディレクトリ</h3>
+<pre><code>knowledge/
+  README.md                 このファイル
+  docs/
+    DECISIONS.md            決定事項の記録（なぜB案か、ライセンス、役割）
+    LICENSE-COMPLIANCE.md   復元不可能性の基準とチェックリスト
+    ODPT-SETUP.md           ODPT登録〜GTFS取得の手順（各自）
+    HOW-TO-USE-WITH-CHATGPT.md  ChatGPTへの渡し方とプロンプト雛形
+  oshima/
+    knowledge/              現地の暗黙知（Markdown、1ファイル1トピック）
+    timetable/              GTFSから生成する時刻表（Markdown/CSV）※生成物。手で編集しない
+  scripts/
+    gtfs_to_knowledge.py    GTFS zip → oshima/timetable/*.md, *.csv（標準ライブラリのみ）
+    config/oshima.json      抽出対象（観光地に対応する停留所・路線）と表示名
+  data/                     GTFS zip 置き場（.gitignore 済み。各自取得）
+</code></pre>
+<h3 id="3">使い方（3ステップ）</h3>
+<ol>
+<li>docs/ODPT-SETUP.md の手順でGTFS zipを取得し <code>knowledge/data/</code> に置く</li>
+<li><code>python3 knowledge/scripts/gtfs_to_knowledge.py knowledge/data/AllLines.zip --date 20260822</code>
+   → <code>knowledge/oshima/timetable/</code> にMarkdown/CSVが生成される</li>
+<li>docs/HOW-TO-USE-WITH-CHATGPT.md のとおり、<code>oshima/knowledge/*.md</code> と <code>oshima/timetable/*.md</code> をChatGPTに渡して旅程を頼む</li>
+</ol>
+<h3 id="_3">注意</h3>
+<ul>
+<li>本ナレッジは作成日時点の情報に基づくプロトタイプです。運行・営業は変わるため、実際の旅行では各事業者の最新公式情報を必ず確認してください</li>
+<li>生成した時刻表には作成日・GTFSのバージョン（有効期間）を必ず記載します</li>
+</ul>
+<h3 id="_4">出典</h3>
+<ul>
+<li>大島バス GTFS-JP（公共交通オープンデータセンター）https://ckan.odpt.org/dataset/oshima_bus_all_lines</li>
+<li>大島旅客自動車 公式サイト http://www.oshima-bus.com/</li>
+<li>東海汽船 https://www.tokaikisen.co.jp/</li>
+</ul>
+<h1 id="2">第2章 決定事項の記録</h1>
+<h2 id="decision-log">決定事項の記録（Decision Log）</h2>
+<p>チーム内のやりとり（Messenger、2026-08-16〜17）を整理したものです。<strong>同じ説明を繰り返さなくて済むように</strong>、背景と理由を残します。新しい決定はこのファイルに追記してください。</p>
+<hr />
+<h3 id="d-1-ai2026-08-16">D-1. 目的は「アプリ」ではなく「AIが読める情報基盤」（2026-08-16）</h3>
+<ul>
+<li><strong>困りごと</strong>：ChatGPTに伊豆大島の旅程を頼んでも、大島バスの時刻入りの提案が出ない。時刻表PDFもGTFS zipも、ChatGPTはそのままでは読めない</li>
+<li><strong>決定</strong>：画面やアプリは作らない。<strong>GTFSをAIが読める形（Markdown/CSV）に変換したもの＋現地の暗黙知</strong>を成果物とする</li>
+<li><strong>成果物イメージ</strong>：<a href="https://github.com/Mitchy888/toyama-tourism-ai-knowledge">toyama-tourism-ai-knowledge</a>（清水さん作。README 1枚に富山県観光の暗黙知10項目をAI-readableに整理し、ChatGPTにリンクを読ませて1泊2日旅程を提案させた）</li>
+<li><strong>背景にある考え方</strong>（清水さん）：AI時代は「コードを書く」コストが下がり、ボトルネックは「何を作るべきかを決める設計思想」に移る。<strong>ドメイン知識のある人が問題を構造化して上流に入る</strong>ことが決定的に重要。エンジニア不要ではなく、役割分担が変わる</li>
+</ul>
+<h3 id="d-2-gtfsb2026-08-17">D-2. 時刻の情報源はGTFSのみ（B案）（2026-08-17）</h3>
+<ul>
+<li>検討した案：A) PDF→表を今すぐ手作業生成、後でGTFSに差替　B) GTFSのみを正としODPT取得を待つ　C) カスタムGPT ActionsでAPIを直接叩く</li>
+<li><strong>決定：B</strong>。理由：正確・再現可能・更新が自動化できる。「まだ一週間ある」ので取得を待てる</li>
+<li>PDFの手入力表は公開成果物にしない（PoC用途で作った手入力JSONは <code>poc/</code> に残るが、ナレッジの正ではない）</li>
+</ul>
+<h3 id="d-3-gtfsodpt2026-08-17">D-3. GTFSは各自がODPTに登録して取得する（2026-08-17）</h3>
+<ul>
+<li><strong>決定</strong>：チームメンバー全員がODPT（公共交通オープンデータセンター）の開発者登録をし、大島バスGTFSを各自で取得する</li>
+<li>無料。承認まで2〜3営業日（清水さんの実績）</li>
+<li><strong>GTFS zipはリポジトリにコミットしない</strong>（<code>knowledge/data/</code> は .gitignore）。取得手順は ODPT-SETUP.md</li>
+</ul>
+<h3 id="d-4-okng2026-08-17">D-4. ライセンス上の制約：加工公開はOK、復元可能はNG（2026-08-17）</h3>
+<ul>
+<li><strong>決定</strong>：GTFSを加工して公開することはライセンス上可能。ただし、<strong>公開した加工物から元のGTFSを復元できる状態はアウト</strong></li>
+<li>したがって公開する時刻表は「観光に必要な範囲だけを選抜した、不可逆な要約」にする。基準とチェックリストは LICENSE-COMPLIANCE.md</li>
+<li>具体的にやらないこと：GTFSファイル（stops.txt / stop_times.txt 等）の全文転記、全停留所・全便の網羅表、stop_id/trip_id/shape/座標の掲載、GTFSを機械的に再構成できる形式（列名や構造がGTFSと同一のCSV）での公開</li>
+</ul>
+<h3 id="d-5-2026-08-17">D-5. 役割分担（2026-08-17）</h3>
+<table>
+<thead>
+<tr>
+<th>役割</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ドメイン側（清水さん・現地担当）</td>
+<td>暗黙知の提供、何を表にすべきかの定義、「これは違う」の判断</td>
+</tr>
+<tr>
+<td>AI＋エンジニア</td>
+<td>GTFS→ナレッジ変換スクリプト、リポジトリ整備、ChatGPTへの渡し方の検証</td>
+</tr>
+<tr>
+<td>全員</td>
+<td>ODPT登録・GTFS取得、生成した表で実際にChatGPTに旅程を頼んで結果を持ち寄る</td>
+</tr>
+</tbody>
+</table>
+<h3 id="d-6-gtfs">D-6. 生成物には必ず「作成日・GTFS有効期間・出典」を入れる</h3>
+<ul>
+<li>富山の例に倣い、「○年○月○日時点の情報。運行・営業は変わるため公式で要確認」の注記を全ファイルに入れる</li>
+</ul>
+<hr />
+<h3 id="_5">未決事項（次回決める）</h3>
+<ul>
+<li><input type="checkbox" disabled> 公開先：このリポジトリ（GitHub公開）か、別リポジトリ <code>oshima-tourism-ai-knowledge</code> を新設するか</li>
+<li><input type="checkbox" disabled> 選抜する停留所・路線の最終リスト（観光地対応表 <code>scripts/config/oshima.json</code> のレビュー）</li>
+<li><input type="checkbox" disabled> 暗黙知の項目リスト（現在の草案 <code>oshima/knowledge/</code>）に清水さん・現地担当の知見を追加</li>
+<li><input type="checkbox" disabled> ChatGPTへの渡し方の本命（リンク／貼り付け／添付／カスタムGPT）を実験で決める</li>
+</ul>
+<h1 id="3_1">第3章 ライセンス・コンプライアンス</h1>
+<h2 id="_6">ライセンス・コンプライアンス：復元不可能性の基準</h2>
+<h3 id="d-4">制約（チーム決定 D-4）</h3>
+<p>大島バスGTFS（公共交通オープンデータセンター提供）は、<strong>加工して公開することは可能</strong>だが、<strong>公開した加工物から元のGTFSを復元できてはいけない</strong>。
+（一次情報：ODPTの利用規約・データセットのライセンス表示を各自確認すること。ここではチームで合意した運用基準を書く）</p>
+<h3 id="_7">基本方針：「観光に必要な範囲だけの、不可逆な要約」</h3>
+<p>生成スクリプト（<code>scripts/gtfs_to_knowledge.py</code>）は次を守る。</p>
+<h4 id="_8">やること（残す情報）</h4>
+<ul>
+<li><strong>選抜した停留所</strong>（観光地・港・宿の最寄りなど、<code>config/oshima.json</code> に列挙したものだけ）の発着時刻</li>
+<li>路線ごとに「上り／下り」の表。運行日区分は<strong>文章</strong>（例：「8月毎日」「土日祝」）で表す</li>
+<li>観光に必要な運賃ペア（港〜椿・花ガーデン など、config で指定したものだけ）</li>
+<li>生成日・GTFSの有効期間・出典URL</li>
+</ul>
+<h4 id="_9">やらないこと（落とす情報）</h4>
+<ul>
+<li>GTFSの各ファイル（stops.txt / stop_times.txt / trips.txt / calendar<em>.txt / shapes.txt / fare_</em>.txt 等）の<strong>転記・同等構造での出力</strong></li>
+<li><strong>全停留所・全便の網羅</strong>（選抜停留所以外は出さない。途中停留所の時刻も出さない）</li>
+<li><code>stop_id</code> / <code>trip_id</code> / <code>route_id</code> / <code>service_id</code> / <code>shape_id</code> などの<strong>識別子</strong></li>
+<li>停留所の<strong>緯度経度</strong>、路線形状（shape）</li>
+<li>カレンダー（<code>calendar.txt</code> / <code>calendar_dates.txt</code>）の日付列挙。→「運行日区分」の説明文に変換する</li>
+<li>出力CSVの列名をGTFSと同一にすること（<code>stop_sequence</code>, <code>arrival_time</code> などは使わない）</li>
+</ul>
+<h3 id="_10">復元不可能性の考え方</h3>
+<table>
+<thead>
+<tr>
+<th>観点</th>
+<th>元GTFS</th>
+<th>公開する要約</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>停留所</td>
+<td>全停留所＋座標＋ID</td>
+<td>観光に関係する数停留所の<strong>名前だけ</strong></td>
+</tr>
+<tr>
+<td>便</td>
+<td>全trip＋全stop_time</td>
+<td>選抜停留所を通る便の、選抜停留所での時刻だけ</td>
+</tr>
+<tr>
+<td>運行日</td>
+<td>service_id と日付の対応表</td>
+<td>「8月毎日」等の文章</td>
+</tr>
+<tr>
+<td>構造</td>
+<td>正規化された複数CSV</td>
+<td>人が読むMarkdown表＋観光向けの縦長CSV</td>
+</tr>
+</tbody>
+</table>
+<p>→ 公開物だけから、停留所マスタ・便の全停車パターン・カレンダー・形状は再構成できない。</p>
+<h3 id="_11">公開前チェックリスト</h3>
+<ul>
+<li><input type="checkbox" disabled> <code>oshima/timetable/</code> に stop_id / trip_id / route_id / service_id / shape_id / lat / lon の文字列が含まれていない（<code>scripts/check_compliance.py</code> で機械チェック）</li>
+<li><input type="checkbox" disabled> 表に出ている停留所が <code>config/oshima.json</code> の選抜リストの範囲内である</li>
+<li><input type="checkbox" disabled> GTFS zip・解凍したtxtがコミットされていない（<code>git status</code> と <code>.gitignore</code> 確認）</li>
+<li><input type="checkbox" disabled> 各ファイル冒頭に「生成日／GTFS有効期間／出典／注意」がある</li>
+<li><input type="checkbox" disabled> 元データ提供者（大島旅客自動車・ODPT）のクレジットを README と各ファイルに明記</li>
+<li><input type="checkbox" disabled> ODPTの利用規約に、成果物の公開形態が適合していることを最新の規約本文で確認した（担当：＿＿、日付：＿＿）</li>
+</ul>
+<h1 id="4-odptgtfs">第4章 ODPT登録とGTFS取得</h1>
+<h2 id="odpt-gtfs">ODPT登録 〜 大島バスGTFS取得（各自で行う）</h2>
+<p>チーム決定 D-3：<strong>メンバー全員が自分で取得</strong>します。無料。承認まで2〜3営業日（清水さん実績）。今週中に申請を。</p>
+<h3 id="1_1">1. 開発者登録</h3>
+<ol>
+<li>公共交通オープンデータセンター https://www.odpt.org/ → 「開発者登録」（Developer Registration）</li>
+<li>氏名・メール・利用目的（例：「都知事杯オープンデータ・ハッカソン2026 伊豆大島観光の旅程提案ナレッジ作成」）を記入して申請</li>
+<li>承認メールが届いたら、開発者サイトにログインし <strong>アクセストークン（consumerKey）</strong> を控える</li>
+</ol>
+<h3 id="2-gtfs">2. 大島バスGTFSを取得</h3>
+<ul>
+<li>データセットページ：https://ckan.odpt.org/dataset/oshima_bus_all_lines</li>
+<li>最新版（例：「大島バス-20260701」有効 2026/7/1〜9/30）のリソースURLは次の形式：
+  <code>https://api.odpt.org/api/v4/files/odpt/OshimaBus/AllLines.zip?date=20260701&amp;acl:consumerKey=&lt;自分のトークン&gt;</code></li>
+<li>ブラウザで開くか、ターミナルで：
+  <code>bash
+  curl -L -o knowledge/data/AllLines.zip \
+    "https://api.odpt.org/api/v4/files/odpt/OshimaBus/AllLines.zip?date=20260701&amp;acl:consumerKey=＜トークン＞"</code></li>
+<li>トークン無しでは403になります（確認済み）。<strong>トークンをチャットやリポジトリに貼らない</strong>こと</li>
+</ul>
+<h3 id="3_2">3. 置き場所と禁止事項</h3>
+<ul>
+<li><code>knowledge/data/AllLines.zip</code> に置く（<code>.gitignore</code> 済み。<strong>コミットしない</strong>）</li>
+<li>解凍したtxtもコミットしない</li>
+<li>個人のトークンは共有しない（各自の登録が前提）</li>
+</ul>
+<h3 id="4">4. 変換して確認</h3>
+<pre><code class="language-bash">python3 knowledge/scripts/gtfs_to_knowledge.py knowledge/data/AllLines.zip --date 20260822
+python3 knowledge/scripts/check_compliance.py       # 復元不可能性の機械チェック
+</code></pre>
+<p>生成物：<code>knowledge/oshima/timetable/*.md</code>, <code>*.csv</code></p>
+<h3 id="_12">参考</h3>
+<ul>
+<li>ODPT データセット一覧の大島バス：年4回改定（7/1, 10/1, 1/1, 4/1 目安）。ダイヤ改定時は <code>--date</code> と URL の <code>date=</code> を新版に合わせて再生成</li>
+<li>ライセンス表示・利用規約は各自でデータセットページから確認（LICENSE-COMPLIANCE.md）</li>
+</ul>
+<h1 id="5-chatgpt">第5章 ChatGPTへの渡し方</h1>
+<h2 id="chatgpt">ChatGPTへの渡し方と、旅程を頼むプロンプト雛形</h2>
+<h3 id="2_1">渡すもの（2種類）</h3>
+<ol>
+<li><strong>暗黙知</strong>：<code>knowledge/oshima/knowledge/00_index.md</code> と 01〜10 の各ファイル</li>
+<li><strong>時刻表</strong>：<code>knowledge/oshima/timetable/oshima-bus-timetable.md</code>（GTFSから生成。生成日・有効期間つき）</li>
+</ol>
+<h3 id="decisionsmd">渡し方（実験して本命を決める：DECISIONS.md 未決事項）</h3>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>やり方</th>
+<th>向き・注意</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A. 貼り付け</td>
+<td>上記Markdownの中身をチャットに貼る（時刻表→暗黙知の順）</td>
+<td>最も確実。長くても数千字なので1回で入る</td>
+</tr>
+<tr>
+<td>B. ファイル添付</td>
+<td><code>.md</code>／<code>.csv</code> を添付</td>
+<td>CSVは「Advanced Data Analysis」で集計に向く。表の読み違いに注意</td>
+</tr>
+<tr>
+<td>C. リンクを読ませる</td>
+<td>GitHubで公開し、READMEや各mdのURLを渡す（富山の例と同じ）</td>
+<td>公開先が決まってから。ChatGPTが取得できるのは公開ページのみ。GitHubの生ファイル（raw）URLの方が読みやすいことがある</td>
+</tr>
+<tr>
+<td>D. カスタムGPT</td>
+<td>Knowledgeにmd/csvを登録し、Instructionsに下記ルールを書く</td>
+<td>チームで繰り返し使うなら便利。データ更新時に差し替え</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">プロンプト雛形（貼り付け版）</h3>
+<pre><code>あなたは伊豆大島の旅程プランナーです。以下の【時刻表】と【現地の暗黙知】だけを根拠に、
+時刻入りの1泊2日の旅程を提案してください。
+
+ルール：
+- バスの時刻は【時刻表】にある便だけを使う。表にない時刻・便を作らない。
+- 使ったバス便は「路線／区間／発時刻→着時刻」を明記する。
+- 港（元町/岡田）が未確定なら、両港で成立する便を優先し、港が変わった場合の差分を書く。
+- 荷物あり／なしで行程を分け、荷物ありの時間帯は平坦でバス停に近い場所を選ぶ。
+- 帰りは船の時刻から逆算して「港に着く最後のバス」を先に固定する。
+- 未確認事項（宿の荷物預かり、園内の飲食可否など）は「要確認」と明示する。
+
+条件：
+- 日程：8/22（土）〜8/23（日）、一人旅
+- 往路：ジェット船 竹芝7:50発 → 大島9:35着（港は当日決定）
+- 復路：8/23 大型客船 大島14:20発（要確認）
+- 宿：大島温泉ホテル（三原山温泉バス停前）
+- 荷物：大きなキャリーケースあり
+- 行きたい：椿・花ガーデン、三原山
+
+【時刻表】
+（oshima-bus-timetable.md の内容を貼る）
+
+【現地の暗黙知】
+（00_index.md と 01〜10 の内容を貼る）
+</code></pre>
+<h3 id="_14">結果の確認ポイント（持ち寄り用）</h3>
+<ul>
+<li>提示された全バス便が時刻表に実在するか（列と時刻が一致）</li>
+<li>「午後にホテル→山頂へ上がる便」を勝手に作っていないか</li>
+<li>帰りの船に間に合う港着便を使っているか</li>
+<li>荷物ありの初日に三原山へ行かせていないか</li>
+<li>要確認事項を要確認と書いているか</li>
+</ul>
+<p>各自の試行結果は <code>knowledge/docs/EXPERIMENTS.md</code>（作成予定）に「渡し方／プロンプト／結果の良否／気づき」を追記する。</p>
+<h1 id="6-ai-readable">第6章 現地の暗黙知（AI-readable）</h1>
+<h2 id="ai-readable">伊豆大島 観光の暗黙知（AI-readable）— 目次</h2>
+<blockquote>
+<p>2026年8月18日時点。伊豆大島を初めて訪れる個人旅行者（特に大きな荷物を持つ人）が、一般的な観光情報だけでは分からない「島の交通・地理の事情」をAIに理解させるためのナレッジ。運行・営業は変わるため、実際の旅行前に各事業者の最新公式情報を必ず確認すること。
+バスの時刻そのものは <code>../timetable/oshima-bus-timetable.md</code>（GTFSから生成）を参照。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>トピック</th>
+<th>一言</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>01</td>
+<td>到着する港は当日決まる</td>
+<td>元町港か岡田港かは海況で当日決定。旅程は両方に対応させる</td>
+</tr>
+<tr>
+<td>02</td>
+<td>バスの手荷物ルール</td>
+<td>大きなキャリーケースは1個500円・混雑時は乗れないことも</td>
+</tr>
+<tr>
+<td>03</td>
+<td>バスは船と接続していない</td>
+<td>便数が少なく、船に合わせて待ってくれない</td>
+</tr>
+<tr>
+<td>04</td>
+<td>三原山ラインは1日3往復・午後の上りなし</td>
+<td>午後にホテル→山頂へ上がる便は無い。帰路確認が最重要</td>
+</tr>
+<tr>
+<td>05</td>
+<td>荷物があるなら初日は三原山に行かない</td>
+<td>平坦な椿・花ガーデン→ホテルに預ける→翌日三原山</td>
+</tr>
+<tr>
+<td>06</td>
+<td>チェックイン15時までの空白</td>
+<td>到着10時前後〜15時をどう使うか。荷物預かりの可否が鍵</td>
+</tr>
+<tr>
+<td>07</td>
+<td>ジェット船と大型客船の違い</td>
+<td>所要・到着時刻・翌朝着の夜行便。旅程が根本から変わる</td>
+</tr>
+<tr>
+<td>08</td>
+<td>支払いは後払い・現金/PayPay</td>
+<td>交通系ICは使えない</td>
+</tr>
+<tr>
+<td>09</td>
+<td>三原山は未舗装</td>
+<td>火口一周コース・裏砂漠。キャリーケースは不可</td>
+</tr>
+<tr>
+<td>10</td>
+<td>椿・花ガーデンの飲食事情</td>
+<td>園内カフェ休業の可能性。弁当持込は要確認</td>
+</tr>
+</tbody>
+</table>
+<h2 id="01">01 到着する港は当日決まる（元町港／岡田港）</h2>
+<ul>
+<li>東京（竹芝）からの船が着く港は<strong>元町港か岡田港</strong>。どちらになるかは<strong>当日の天候・海象で決まる</strong>（大島バス時刻表の注記「入港地・出港地とは日中の船の使用港」）。</li>
+<li>港が変わると、乗るバス停・乗れる便が変わる。例：三原山ラインの一部の便は<strong>元町港始発</strong>で、岡田港入港の日は港からは乗れない（途中の停留所からは乗れる）。</li>
+<li>AIが旅程を作るときは、<strong>「入港地発」の便を優先し、港が確定していない段階では両港で成立する案を出す</strong>こと。</li>
+<li>出港（帰り）も同じ。前日に東海汽船の運航案内で使用港を確認する。</li>
+</ul>
+<p>出典：大島旅客自動車 路線バス時刻表 注記／東海汽船 運航状況。2026-08-18時点。</p>
+<h2 id="02">02 バスの手荷物ルール（キャリーケース）</h2>
+<ul>
+<li>大島バスでは、<strong>三辺の和が1m超・10kg超</strong>の手回り品（キャリーケース、輪行袋、大型クーラーボックス等）は<strong>1個500円</strong>で持込可。<strong>多客時は断られることがある</strong>。</li>
+<li>つまり「大きな荷物を持ったまま観光地へバスで行く」は、追加料金と乗車拒否リスクがある。</li>
+<li>対策：港→宿に近い停留所へ最短で移動して荷物を置く／荷物ありでも成立する平坦な観光地を選ぶ／混雑時間の便を避ける。</li>
+<li>AIへの示唆：荷物の有無を必ず聞き、荷物ありなら「預ける前」と「預けた後」で行程を分けて提案する。</li>
+</ul>
+<p>出典：大島旅客自動車 手荷物規定・時刻表注記。2026-08-18時点。</p>
+<h2 id="03">03 バスは船・飛行機と接続していない</h2>
+<ul>
+<li>公式時刻表に「路線バスは船便・航空便と接続しておりません。ご乗船の場合、お時間に余裕を持ってご移動ください」と明記。</li>
+<li>便数が少ないため、船が遅れてもバスは待たない。逆に、帰りは<strong>港に着くバスの時刻＋余裕</strong>で船を選ぶ。</li>
+<li>例：ホテル前（三原山温泉）発の港行きは午後は13:37が最終（2026年夏ダイヤ）。13:55港着に対して大型客船14:20発は間に合うが、午前のジェット船（11時台）は成立しない。</li>
+<li>AIへの示唆：帰りの船の時刻から逆算して「港に着く最後の便」を先に固定し、その前の行程を組む（帰路確認）。</li>
+</ul>
+<p>出典：大島旅客自動車 時刻表注記。2026-08-18時点。</p>
+<h2 id="04-13">04 三原山ラインは1日3往復・午後の上りなし</h2>
+<ul>
+<li>港〜椿・花ガーデン〜三原山温泉〜三原山頂口を結ぶ「三原山ライン」は、2026年夏ダイヤ（8月毎日）で<strong>上り3本・下り3本</strong>しかない。</li>
+<li>上り：朝（元町港8時台）／午前（入港地10時台）／昼（元町港12時台）</li>
+<li>下り：午前9時台／11時台／13時台（山頂口発）</li>
+<li><strong>午後にホテル（三原山温泉）から山頂へ上がる便は無い</strong>。昼に山頂へ着いた便が最終の上り。</li>
+<li>ホテル前から港へ下る最終は<strong>13:37頃</strong>（要GTFS表で確認）。</li>
+<li>具体的な時刻は必ず <code>../timetable/oshima-bus-timetable.md</code> の生成表を見る（GTFSから作成）。</li>
+<li>AIへの示唆：「バスは1〜2時間に1本」ではなく「1日3往復」という前提で、<strong>乗り遅れ＝その日の計画が崩れる</strong>として組む。滞在時間は便に合わせて2時間単位で考える。</li>
+</ul>
+<p>出典：大島旅客自動車 路線バス時刻表（2026/7/1〜9/30）。GTFS生成表で再確認すること。2026-08-18時点。</p>
+<h2 id="05">05 荷物があるなら初日は三原山に行かない</h2>
+<ul>
+<li>三原山（山頂口〜火口）は未舗装で、キャリーケースを持って歩ける場所ではない（09参照）。バスにも手荷物ルールがある（02参照）。</li>
+<li>現実的な組み方（1泊2日・三原山温泉泊の場合）：
+  1. <strong>1日目</strong>：港→椿・花ガーデン（港から約8分・平坦・荷物ありでも回れる）→ 昼の便でホテル前へ → 荷物を預ける／チェックイン
+  2. <strong>2日目</strong>：朝の上りで山頂口へ → 三原山 → 昼の下りでホテルへ戻り荷物回収 → 午後の最終便で港 → 船</li>
+<li>逆に、荷物がなければ1日目から山頂へ直行できる（10時台の便で山頂口10:45頃着など）。</li>
+<li>AIへの示唆：<strong>「荷物あり／なし」で旅程を分岐</strong>させ、荷物ありの日は「平坦・バス停至近・屋根or休憩所あり」のスポットを選ぶ。</li>
+</ul>
+<p>出典：チーム検討（2026-08-16〜17）＋大島バス時刻表。2026-08-18時点。</p>
+<h2 id="06-15">06 チェックイン15時までの空白をどう使うか</h2>
+<ul>
+<li>ジェット船で朝到着（9:35〜10:00頃）すると、宿のチェックイン（多くは15時）まで<strong>5時間前後</strong>ある。荷物を持ったままこの時間を過ごすのが最大のストレス。</li>
+<li>選択肢：</li>
+<li>宿にチェックイン前の<strong>荷物預かり</strong>を頼む（可否・時間は宿ごとに違う。<strong>要電話確認</strong>）</li>
+<li>港のコインロッカー・観光案内所の預かり（有無・サイズは要確認）</li>
+<li>荷物ありでも成立するスポット（椿・花ガーデン等）で時間を使い、昼の便で宿へ</li>
+<li>三原山温泉（大島温泉ホテル前）に12:58頃着く便で行った場合、<strong>午後は山頂へ上がる便が無い</strong>ので、日帰り入浴・周辺散策・休憩が現実的。</li>
+<li>AIへの示唆：到着〜チェックインの「荷物あり時間帯」と、それ以降の「身軽時間帯」を分けて提案する。宿の荷物預かり可否は「要確認」と明示する。</li>
+</ul>
+<p>出典：チーム検討。2026-08-18時点。</p>
+<h2 id="07">07 ジェット船と大型客船の違い</h2>
+<ul>
+<li><strong>ジェット船</strong>：竹芝〜大島 約1時間45分〜2時間。夏ダイヤは朝に複数便（大島9:35〜10:00頃着）。速いが揺れに弱い日は欠航しやすい。</li>
+<li><strong>大型客船</strong>：夜行。竹芝を夜（22〜23時台）に出て<strong>翌朝6時頃</strong>大島着。帰りは大島14時台発→竹芝18時台着（8月ほぼ毎日）。</li>
+<li>どちらを使うかで、島での「使える時間」と「初日の荷物問題」が根本から変わる。夜行で朝6時着なら早朝便のバスもある（時刻表注記：早朝便の入港に合わせた接続バスあり）。</li>
+<li>「7:50竹芝発→9:35大島着」はジェット船（大型客船ではない）。</li>
+<li>AIへの示唆：船種と到着時刻を最初に確定させる。到着時刻が違えば最初に乗れるバスが変わる。</li>
+</ul>
+<p>出典：東海汽船 時刻表（2026夏期）。運航日・時刻は必ず公式で確認。2026-08-18時点。</p>
+<h2 id="08-paypay">08 バスの支払いは後払い・現金またはPayPay</h2>
+<ul>
+<li>大島バスは<strong>後払い</strong>。支払いは<strong>現金またはPayPayのみ</strong>（時刻表注記）。Suica等の交通系ICは使えない。</li>
+<li>小銭を用意する。シルバーパスは一部区間のみ利用可。</li>
+<li>水着・濡れた衣服での乗車は不可。</li>
+<li>AIへの示唆：旅程に「現金の用意」を一言添える。</li>
+</ul>
+<p>出典：大島旅客自動車 路線バス時刻表 注記。2026-08-18時点。</p>
+<h2 id="09">09 三原山は未舗装（キャリーケース不可）</h2>
+<ul>
+<li>三原山頂口バス停から火口へ向かう遊歩道は未舗装。火口一周コース・裏砂漠など、歩く時間は1.5〜3時間が目安。</li>
+<li>キャリーケースを引いて歩ける道ではない。荷物は宿か港に置いてから来る。</li>
+<li>山頂口には昼食を買える場所が限られる。<strong>弁当・飲み物は持参</strong>が無難（要現地確認）。</li>
+<li>帰りのバス（下り）の時刻を先に決めてから歩き始める（04参照）。</li>
+<li>AIへの示唆：三原山は「身軽な半日」として組み、行き帰りの便を明示する。</li>
+</ul>
+<p>出典：チーム検討。所要時間は目安。2026-08-18時点。</p>
+<h2 id="10">10 椿・花ガーデンの飲食事情（要確認）</h2>
+<ul>
+<li>港からバス約8分・運賃300円。園内は平坦で芝生の大広場があり、荷物ありでも回りやすい。</li>
+<li>2026年8月時点で、<strong>園内カフェ・ショップがリニューアル等で休業中の可能性</strong>がある。周辺に徒歩圏の飲食店は未確認。</li>
+<li>そのため「東京（竹芝）または船内で弁当を買って持ち込む」案が有力だが、<strong>飲食物の持込・園内での飲食が可能か</strong>は未確認（電話確認予定）。</li>
+<li>滞在時間は便に合わせて約2時間20分（10:28着→12:48発）が一つの型。</li>
+<li>AIへの示唆：昼食は「持参」を第一案とし、園の営業状況は「要確認」と明示する。</li>
+</ul>
+<p>出典：チーム検討（確認中）。2026-08-18時点。</p></div></body></html>
