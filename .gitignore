@@ -6,3 +6,5 @@ knowledge/data/*
 !knowledge/data/.gitkeep
 *.zip
 __pycache__/
+*.webm
+docs/submission/video/_rec/
