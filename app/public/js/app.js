@@ -208,7 +208,8 @@ function openSpot(id) {
     <div class="text-xs text-neutral-500 mt-2">目安の滞在時間: ${s.minStayMin ? s.minStayMin + "分〜" : "—"}${s.checkIn ? " ／ チェックイン " + esc(s.checkIn) : ""}</div>
     ${s.cautions.length ? `<b class="block text-sm mt-3">⚠ 注意</b><ul class="list-disc list-inside text-sm text-neutral-600 mt-1 space-y-0.5">${s.cautions.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
     ${s.todo.length ? `<b class="block text-sm mt-3">❓ 現地で確認すること</b><ul class="list-disc list-inside text-sm text-neutral-600 mt-1 space-y-0.5">${s.todo.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
-    <div class="mt-3 rounded-xl bg-sand p-3 text-sm"><b>🚌 最寄バス停「${esc(tt.stops[s.stopId].name)}」 ${now}以降の次発</b><br>${nexts.length ? nexts.map(esc).join("<br>") : "該当便なし"}</div>`;
+    <div class="mt-3 rounded-xl bg-sand p-3 text-sm"><b>🚌 最寄バス停「${esc(tt.stops[s.stopId].name)}」 ${now}以降の次発</b><br>${nexts.length ? nexts.map(esc).join("<br>") : "該当便なし"}</div>
+    <div class="mt-3 text-xs text-neutral-400">出典: <a class="underline" href="${esc(s.sourceUrl)}" target="_blank" rel="noopener">${esc(s.sourceName)}</a></div>`;
   $("#modal").hidden = false;
 }
 function closeModal() { $("#modal").hidden = true; }

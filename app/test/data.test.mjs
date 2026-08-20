@@ -11,6 +11,9 @@ test("timetable: 全tripのstopIdはstops定義に存在する", () => {
 test("spots: 全スポットのstopIdはstops定義に存在する", () => {
   for (const [id, s] of Object.entries(spots)) assert.ok(tt.stops[s.stopId], `${id}`);
 });
+test("spots: 全スポットに出典がある", () => {
+  for (const [id, s] of Object.entries(spots)) { assert.ok(s.sourceName, id); assert.ok(s.sourceUrl, id); }
+});
 test("ferry: 便に必須フィールドがある", () => {
   assert.ok(ferry.outbound.length >= 1, "outboundが空");
   for (const s of ferry.outbound) { assert.ok(s.shipType); assert.ok(s.depTakeshiba); assert.ok(s.arriveOshima); }
