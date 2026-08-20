@@ -47,7 +47,10 @@ async function load() {
   loadWeather(); // awaitしない(旅程表示をブロックしない)
 }
 
+let weatherLoading = false;
 async function loadWeather() {
+  if (weatherLoading) return;
+  weatherLoading = true;
   try {
     // ブラウザのHTTPキャッシュは使わない(エッジ側のCache APIが1hキャッシュしている)
     const w = await fetch("/api/weather", { cache: "no-store" }).then((r) => r.json());
@@ -57,6 +60,8 @@ async function loadWeather() {
   } catch {
     state.weather = null;
     $("#weatherChips").innerHTML = '<span class="text-xs opacity-60">天気情報を取得できませんでした</span>';
+  } finally {
+    weatherLoading = false;
   }
 }
 
@@ -159,6 +164,8 @@ function render() {
   $("#timeline").querySelectorAll("[data-spot]").forEach((c) => c.addEventListener("click", () => openSpot(c.dataset.spot)));
 
   $("#fare").textContent = `🚌 バス運賃合計（${p.days.length === 1 ? "日帰り" : p.days.length + "日間"}・片道換算）: ${p.fareTotal.toLocaleString()}円`;
+  // 初回取得に失敗していても、条件変更のタイミングで再取得を試みる
+  if (!state.weather) loadWeather();
   renderWeatherChips();
   $("#dataSource").innerHTML = `<p>${esc(p.dataSource.source)}</p><p>有効期間 ${esc(p.dataSource.validFrom)}〜${esc(p.dataSource.validTo)} / ${esc(p.dataSource.serviceNote)}</p><p><a class="underline text-sea" href="${esc(p.dataSource.sourceUrl)}" target="_blank" rel="noopener">出典</a></p>`;
 
