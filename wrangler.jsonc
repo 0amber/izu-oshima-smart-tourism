@@ -1,0 +1,14 @@
+// Cloudflare Workers Builds (Git連携) 用のルート設定。
+// リポジトリルートで `npx wrangler deploy` が実行されるため、ここに置く。
+// 実体は app/ 配下: 静的アセット = app/public、API = app/functions/api/*(worker/index.js が呼び出す)
+// ローカル開発は従来どおり app/ で `npm run dev:node` (macOS<13.5) または `npm run dev`。
+{
+  "name": "izu-oshima-smart-tourism",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "app/public",
+    "binding": "ASSETS"
+  }
+}
