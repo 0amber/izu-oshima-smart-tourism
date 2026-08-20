@@ -15,6 +15,12 @@ test("spots: 全スポットのstopIdはstops定義に存在する", () => {
 test("spots: 全スポットに出典がある", () => {
   for (const [id, s] of Object.entries(spots)) { assert.ok(s.sourceName, id); assert.ok(s.sourceUrl, id); }
 });
+test("spots: 全スポットに公式サイトURLとサムネイル写真がある", () => {
+  for (const [id, s] of Object.entries(spots)) {
+    assert.match(s.officialUrl ?? "", /^https:\/\//, `${id} officialUrl`);
+    assert.match(s.photo ?? "", /^img\//, `${id} photo`);
+  }
+});
 test("geo: 両港と全スポット停留所に伊豆大島圏内の座標がある", () => {
   const inOshima = (p) => p.lat > 34.68 && p.lat < 34.82 && p.lon > 139.32 && p.lon < 139.46;
   for (const k of ["motomachi", "okada"]) {

@@ -10,7 +10,7 @@ public/ → dist/oshima-smart-course.html（配布用の1ファイルHTML）を�
 使い方:  python3 scripts/build_standalone.py   （または npm run build:standalone）
 ※ 事前に `npm run build:css` で public/css/styles.css を生成しておくこと
 """
-import json, re, sys
+import base64, json, mimetypes, re, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -30,6 +30,18 @@ def main():
         "ferry": json.loads(read("data/ferry.json")),
         "geo": json.loads(read("data/geo.json")),
     }
+
+    # --- 画像(img/…参照)を data URI で埋め込み(オフラインでも表示できるように) ---
+    def embed_img(m):
+        attr, path = m.group(1), m.group(2)
+        f = PUB / path
+        if not f.exists():
+            return m.group(0)
+        mime = mimetypes.guess_type(str(f))[0] or "application/octet-stream"
+        b64 = base64.b64encode(f.read_bytes()).decode()
+        return f'{attr}="data:{mime};base64,{b64}"'
+    html = re.sub(r'(src|href)="(img/[^"]+)"', embed_img, html)
+    css = re.sub(r'url\((img/[^)]+)\)', lambda m: f'url(data:{mimetypes.guess_type(m.group(1))[0]};base64,{base64.b64encode((PUB / m.group(1)).read_bytes()).decode()})' if (PUB / m.group(1)).exists() else m.group(0), css)
 
     # --- JS を非モジュール化 ---
     strip_export = lambda s: re.sub(r"^export\s+(async\s+)?(const|function|let|class)\s", r"\1\2 ", s, flags=re.M)
