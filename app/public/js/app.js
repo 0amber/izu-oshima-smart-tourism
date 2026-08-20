@@ -50,11 +50,7 @@ function bind() {
   $("#arrival").addEventListener("change", (e) => { state.arrival = e.target.value; render(); });
   $("#lugOn").addEventListener("click", () => setLuggage(true));
   $("#lugOff").addEventListener("click", () => setLuggage(false));
-  $("#explainBtn").addEventListener("click", () => {
-    const el = $("#explainText");
-    el.textContent = explain(state.plan, spots);
-    el.classList.remove("hidden");
-  });
+  $("#explainBtn").addEventListener("click", () => runExplain());
   $("#modalClose").addEventListener("click", closeModal);
   $("#modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
 }
@@ -133,6 +129,55 @@ function renderItem(it) {
   return "";
 }
 
+async function runExplain() {
+  const el = $("#explainText");
+  const btn = $("#explainBtn");
+  el.classList.remove("hidden");
+  el.textContent = "";
+  btn.disabled = true;
+  btn.textContent = "✨ AIガイドが考えています…";
+  try {
+    await streamExplain(state.plan, state.weather, (t) => { el.textContent += t; });
+    btn.textContent = "✨ もう一度きく";
+  } catch {
+    el.textContent = explain(state.plan, spots);
+    el.insertAdjacentHTML("beforeend", '<div class="mt-2 text-xs text-neutral-400">※ AI解説を取得できなかったため簡易版を表示しています</div>');
+    btn.textContent = "✨ AIガイドの解説を聞く";
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// exported for tests
+export async function streamExplain(plan, weather, onText) {
+  const res = await fetch("/api/explain", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ itinerary: plan, conditions: plan.input, weather }),
+  });
+  if (!res.ok || !res.body) throw new Error(`explain http ${res.status}`);
+  const reader = res.body.getReader();
+  const dec = new TextDecoder();
+  let buf = "", ev = "message", got = false;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let nl;
+    while ((nl = buf.indexOf("\n")) >= 0) {
+      const line = buf.slice(0, nl).trimEnd();
+      buf = buf.slice(nl + 1);
+      if (line.startsWith("event: ")) ev = line.slice(7);
+      else if (line.startsWith("data: ")) {
+        if (ev === "fallback") throw new Error("server fallback");
+        if (ev === "message") { onText(JSON.parse(line.slice(6))); got = true; }
+        ev = "message";
+      }
+    }
+  }
+  if (!got) throw new Error("empty stream");
+}
+
 function openSpot(id) {
   const s = spots[id];
   const now = "09:00";
@@ -153,4 +198,6 @@ function openSpot(id) {
 }
 function closeModal() { $("#modal").hidden = true; }
 
-load();
+// guarded so this module can be imported under Node (e.g. for testing streamExplain)
+// without a DOM/document — browsers always have `document`, so behavior is unchanged.
+if (typeof document !== "undefined") load();
