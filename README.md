@@ -33,20 +33,40 @@
 
 ## 実証デモアプリ（`app/`）の動かし方
 
+### ローカルで起動する
+
 ```bash
 cd app
 npm install
 npm test                 # planner / data / prompt / SSE のテスト（node --test）
 cp .dev.vars.example .dev.vars   # ANTHROPIC_API_KEY を設定（なくてもテンプレ文で動く）
-npm run dev              # wrangler pages dev → http://localhost:8788/
+npm run dev:node         # Node製の開発サーバ → http://localhost:8788/
 ```
 
+- `npm run dev:node` は静的ファイル配信と `/api/*`（Pages Functions）をNodeだけで再現する開発ハーネス（`app/scripts/dev-node.mjs`）。**macOS 12以下でも動く**（このリポジトリの検証環境）
+- macOS 13.5+ / Linux なら本物のCloudflareランタイム（workerd）でも起動できる：`npm run dev`（= `wrangler pages dev`）。macOS 12以下では `Unsupported macOS version` エラーで起動しないため `dev:node` を使うこと
 - **AIが失敗してもテンプレ文にフォールバック**するので、APIキーなしでもデモは成立します
 - CSSを触ったら `npm run build:css`（Tailwind v4）
+
+### Cloudflare Pages で公開する
+
+```bash
+cd app
+npx wrangler login                        # 初回のみ（ブラウザでCloudflareにログイン）
+npx wrangler pages deploy public          # プロジェクト名等は wrangler.toml から読まれる
+npx wrangler pages secret put ANTHROPIC_API_KEY --project-name oshima-smart-course
+                                          # ↑ AI解説を有効にする場合のみ。未設定でもテンプレ文で動く
+```
+
+- プロジェクト設定は [`app/wrangler.toml`](app/wrangler.toml)（プロジェクト名 `oshima-smart-course`・公開ディレクトリ `public`）
+- `/api/explain` は Anthropic SDK（`node:` モジュール）を使うため **`nodejs_compat` フラグが必須**（`wrangler.toml` に設定済み。消すとデプロイ先で実行時エラーになる）
+- デプロイが済んだらURLを `docs/submission/` の提出文書に記入する
+
+### GTFSデータの差し替え
+
 - GTFS取得後は `npm run build:gtfs -- AllLines.zip --date 20260822` で `public/data/timetable.json` を差し替え（それまでは公式PDF起こしの手入力時刻表。画面に注記バナーが出ます）
 
 > **⚠️ GTFSの現状（8/21）**：ODPT開発者登録を申請済みだが、**承認まで2〜3営業日かかるため提出締切（8/23）には間に合わない見込み**。提出は手入力時刻表（公式PDF起こし・出典明記）で行い、変換パイプラインは合成GTFSによるテストで動作を示す。承認が下り次第、実データで `build:gtfs` / `gtfs_to_knowledge.py` を実行して差し替える。
-- 公開は Cloudflare Pages（`npx wrangler pages deploy public --project-name oshima-smart-course`）。`ANTHROPIC_API_KEY` はシークレットに設定
 
 ---
 
