@@ -21,7 +21,7 @@
 | ディレクトリ | 役割 | 状態 |
 |---|---|---|
 | [`knowledge/`](knowledge/README.md) | **作品の本体**。GTFS→AI可読時刻表の変換スクリプト＋現地の暗黙知10項目＋AIへの渡し方 | ✅ 完成（時刻表の生成はGTFS承認待ち。下記参照） |
-| [`app/`](app/) | **実証デモ**Webアプリ。Cloudflare Pages + Functions、旅程はブラウザ内で確定計算、Claude APIは解説文のみ | 🚧 開発中（設計: [docs/superpowers/specs/2026-08-21-oshima-app-design.md](docs/superpowers/specs/2026-08-21-oshima-app-design.md)） |
+| [`app/`](app/README.md) | **実証デモ**Webアプリ。旅程はブラウザ内で確定計算、Claude APIは解説文のみ | ✅ **公開中** → https://izu-oshima-smart-tourism.kotaroshimada38.workers.dev （設計: [docs/superpowers/specs/2026-08-21-oshima-app-design.md](docs/superpowers/specs/2026-08-21-oshima-app-design.md)） |
 | [`poc/`](poc/README.md) | 初期試作。提出書類・動画から参照済みのため**凍結**（壊さない） | ✅ 完成 |
 | [`docs/submission/`](docs/submission/) | 提出物一式：提出文書・Jotform回答・スライド・2分動画・画面キャプチャ | ✅ ほぼ完成（デモURL記入待ち） |
 | [`docs/itinerary/`](docs/itinerary/2026-08-22-23-plan.md) | 8/22–23 モデル旅程の詳細（帰りの船からの逆算つき） | ✅ |
@@ -32,6 +32,12 @@
 ---
 
 ## 実証デモアプリ（`app/`）の動かし方
+
+**公開URL（本番）**
+- https://izu-oshima-smart-tourism.kotaroshimada38.workers.dev — **main へのpushで自動デプロイ**（Cloudflare Workers Builds）
+- https://oshima-smart-course.pages.dev — Pages 直アップロード版（手動デプロイ）
+
+詳しい起動・デプロイ手順は [`app/README.md`](app/README.md) を参照。要点だけ：
 
 ### ローカルで起動する
 
@@ -48,25 +54,29 @@ npm run dev:node         # Node製の開発サーバ → http://localhost:8788/
 - **AIが失敗してもテンプレ文にフォールバック**するので、APIキーなしでもデモは成立します
 - CSSを触ったら `npm run build:css`（Tailwind v4）
 
-### Cloudflare Pages で公開する
+### Cloudflare へ公開する
+
+**通常は何もしなくてよい**：main にマージすれば Workers Builds が自動でビルド・デプロイする（設定はリポジトリルートの [`wrangler.jsonc`](wrangler.jsonc) と [`worker/index.js`](worker/index.js)）。
+
+手動デプロイとAPIキー設定：
 
 ```bash
-cd app
 npx wrangler login                        # 初回のみ（ブラウザでCloudflareにログイン）
-npx wrangler pages deploy public          # プロジェクト名等は wrangler.toml から読まれる
+npx wrangler deploy                       # リポジトリルートで実行 → Worker版を手動デプロイ
+npx wrangler secret put ANTHROPIC_API_KEY # AI解説を有効にする場合のみ。未設定でもテンプレ文で動く
+
+cd app                                    # （任意）Pages版もデプロイする場合
+npx wrangler pages deploy public
 npx wrangler pages secret put ANTHROPIC_API_KEY --project-name oshima-smart-course
-                                          # ↑ AI解説を有効にする場合のみ。未設定でもテンプレ文で動く
 ```
 
-- プロジェクト設定は [`app/wrangler.toml`](app/wrangler.toml)（プロジェクト名 `oshima-smart-course`・公開ディレクトリ `public`）
-- `/api/explain` は Anthropic SDK（`node:` モジュール）を使うため **`nodejs_compat` フラグが必須**（`wrangler.toml` に設定済み。消すとデプロイ先で実行時エラーになる）
-- デプロイが済んだらURLを `docs/submission/` の提出文書に記入する
+- `/api/explain` は Anthropic SDK（`node:` モジュール）を使うため **`nodejs_compat` フラグが必須**（ルート `wrangler.jsonc`・`app/wrangler.toml` の両方に設定済み。消すとデプロイ先で実行時エラーになる）
 
 ### GTFSデータの差し替え
 
 - GTFS取得後は `npm run build:gtfs -- AllLines.zip --date 20260822` で `public/data/timetable.json` を差し替え（それまでは公式PDF起こしの手入力時刻表。画面に注記バナーが出ます）
 
-> **⚠️ GTFSの現状（8/21）**：ODPT開発者登録を申請済みだが、**承認まで2〜3営業日かかるため提出締切（8/23）には間に合わない見込み**。提出は手入力時刻表（公式PDF起こし・出典明記）で行い、変換パイプラインは合成GTFSによるテストで動作を示す。承認が下り次第、実データで `build:gtfs` / `gtfs_to_knowledge.py` を実行して差し替える。
+> **⚠️ GTFSの現状（8/21・スキップ確定）**：ODPT開発者登録は申請済みだが承認まで2〜3営業日かかるため、**提出締切（8/23）は手入力時刻表（公式PDF起こし・出典明記）で提出する方針に確定**。変換パイプラインは合成GTFSによるテストで動作を示す。承認が下り次第、実データで `build:gtfs` / `gtfs_to_knowledge.py` を実行して差し替える。
 
 ---
 
@@ -86,7 +96,7 @@ npx wrangler pages secret put ANTHROPIC_API_KEY --project-name oshima-smart-cour
 
 - 提出文書（フォーム記入用・最終版）：[docs/submission/2026-08-23-first-stage-submission.md](docs/submission/2026-08-23-first-stage-submission.md)
 - 添付：`docs/submission/slides/slides.pdf`＋画面キャプチャ3点。2分動画は収録済み（写真はWikimedia Commonsのフリー素材、クレジットは `docs/submission/assets/CREDITS.md`）
-- **締切当日は余裕がないため、8/21までに提出可能な状態にする**（残タスク：デモURLの公開と記入 → フォーム提出）
+- **締切当日は余裕がないため、8/21までに提出可能な状態にする**（デモURLは公開済み：https://izu-oshima-smart-tourism.kotaroshimada38.workers.dev 。残タスク：提出文書へのURL記入 → フォーム提出）
 
 ---
 
