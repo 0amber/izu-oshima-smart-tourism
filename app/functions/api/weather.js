@@ -9,7 +9,11 @@ export async function onRequestGet(ctx) {
   // Node harness (dev:node) には caches.default が存在しないためガードする。
   // 本番の Cloudflare では Cache API が使える。
   const cache = globalThis.caches?.default;
-  const cacheKey = new Request(new URL(ctx.request.url).toString());
+  // レスポンス形式を変えたら CACHE_VERSION を上げて旧キャッシュを即時無効化する
+  const CACHE_VERSION = "v2";
+  const cu = new URL(ctx.request.url);
+  cu.searchParams.set("cv", CACHE_VERSION);
+  const cacheKey = new Request(cu.toString());
   if (cache) {
     const hit = await cache.match(cacheKey);
     if (hit) return hit;
