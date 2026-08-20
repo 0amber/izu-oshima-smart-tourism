@@ -23,6 +23,18 @@
     <h2 class="font-bold text-sea">1. あなたの条件</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
       <label class="block">
+        <span class="text-sm text-neutral-500">出発日</span>
+        <input type="date" id="tripDate" value="2026-08-22" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 bg-white">
+      </label>
+      <label class="block">
+        <span class="text-sm text-neutral-500">期間</span>
+        <select id="stay" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 bg-white">
+          <option value="0">日帰り</option>
+          <option value="1" selected>1泊2日</option>
+          <option value="2">2泊3日</option>
+        </select>
+      </label>
+      <label class="block">
         <span class="text-sm text-neutral-500">到着する港</span>
         <select id="port" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 bg-white">
           <option value="motomachi">元町港</option>
@@ -43,7 +55,7 @@
       </div>
       <label class="block">
         <span class="text-sm text-neutral-500">宿泊</span>
-        <input type="text" value="大島温泉ホテル(三原山温泉)" disabled class="mt-1 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2 text-neutral-500">
+        <input type="text" id="hotelField" value="大島温泉ホテル(三原山温泉)" disabled class="mt-1 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2 text-neutral-500">
       </label>
     </div>
   </section>
@@ -62,6 +74,7 @@
     <div class="mt-4 border-t border-neutral-100 pt-4">
       <button type="button" id="explainBtn" class="w-full rounded-xl bg-tsubaki text-white font-bold py-3 active:opacity-80">✨ AIガイドの解説を聞く</button>
       <div id="explainText" class="hidden mt-3 rounded-xl bg-sand p-4 text-sm leading-relaxed whitespace-pre-wrap"></div>
+      <button type="button" id="speakBtn" class="hidden mt-2 w-full rounded-xl border-2 border-sea text-sea font-bold py-2 active:opacity-80">🔊 ガイドさんの声で聞く</button>
     </div>
     <details class="mt-4 text-xs text-neutral-500"><summary>使っているオープンデータ</summary><div id="dataSource" class="mt-2 space-y-1"></div></details>
   </section>

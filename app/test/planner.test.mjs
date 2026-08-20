@@ -82,3 +82,44 @@ test("planTrip: returnNote を渡すと2日目最後のイベントに反映さ�
   assert.equal(last.type, "event");
   assert.ok(last.note.includes("テスト便 15:00発"));
 });
+
+test("planTrip: 日帰り(stayNights=0)は1日で港に戻る(身軽は三原山)", () => {
+  const p = planTrip({ tt, spots, port: "motomachi", arrival: "10:00", hasLuggage: false, stayNights: 0 });
+  assert.equal(p.days.length, 1);
+  const items = p.days[0].items;
+  const last = items.at(-1);
+  assert.equal(last.type, "event");
+  assert.ok(last.title.includes("港に到着"), last.title);
+  const spotIds = items.filter((i) => i.type === "spot").map((i) => i.spotId);
+  assert.deepEqual(spotIds, ["SUMMIT"]);
+  for (const b of items.filter((i) => i.type === "bus")) assert.ok(b.verified);
+});
+
+test("planTrip: 日帰り荷物ありは椿・花ガーデンへ(山頂には行かない)", () => {
+  const p = planTrip({ tt, spots, port: "motomachi", arrival: "10:00", hasLuggage: true, stayNights: 0 });
+  const spotIds = p.days[0].items.filter((i) => i.type === "spot").map((i) => i.spotId);
+  assert.deepEqual(spotIds, ["TSUBAKI"]);
+});
+
+test("planTrip: 2泊3日(stayNights=2)は3日構成で中日は三原山、最終日は山に行かず港へ", () => {
+  const p = planTrip({ tt, spots, port: "motomachi", arrival: "10:00", hasLuggage: true, stayNights: 2 });
+  assert.equal(p.days.length, 3);
+  const d2spots = p.days[1].items.filter((i) => i.type === "spot").map((i) => i.spotId);
+  assert.ok(d2spots.includes("SUMMIT"), "中日に三原山がない");
+  const d3spots = p.days[2].items.filter((i) => i.type === "spot").map((i) => i.spotId);
+  assert.ok(!d3spots.includes("SUMMIT"), "最終日に三原山が入っている");
+  const d3last = p.days[2].items.at(-1);
+  assert.ok(d3last.title.includes("港に到着"), d3last.title);
+});
+
+test("planTrip: dateを渡すと日付+曜日ラベルになる", () => {
+  const p = planTrip({ tt, spots, port: "motomachi", arrival: "10:00", hasLuggage: true, date: "2026-08-22" });
+  assert.equal(p.days[0].label, "8/22（土）");
+  assert.equal(p.days[1].label, "8/23（日）");
+});
+
+test("planTrip: dateなしは従来ラベルのまま(後方互換)", () => {
+  const p = planTrip({ tt, spots, port: "motomachi", arrival: "10:00", hasLuggage: true });
+  assert.equal(p.days[0].label, "1日目（土）");
+  assert.equal(p.days[1].label, "2日目（日）");
+});

@@ -3,7 +3,7 @@ import { planTrip, nextBus, explain, addMin } from "./planner.js";
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-const state = { port: "motomachi", arrival: "10:00", hasLuggage: true, day: 0, plan: null, weather: null };
+const state = { port: "motomachi", arrival: "10:00", hasLuggage: true, day: 0, plan: null, weather: null, date: "2026-08-22", stayNights: 1 };
 let tt, spots, ferry, geo;
 
 async function loadData() {
@@ -49,24 +49,60 @@ async function load() {
 
 async function loadWeather() {
   try {
-    const w = await fetch("/api/weather").then((r) => r.json());
+    // ブラウザのHTTPキャッシュは使わない(エッジ側のCache APIが1hキャッシュしている)
+    const w = await fetch("/api/weather", { cache: "no-store" }).then((r) => r.json());
     if (w.unavailable) throw new Error("unavailable");
     state.weather = w;
-    $("#weatherChips").innerHTML = w.forecast.map((f) =>
-      `<span class="text-xs rounded-full bg-white/20 px-2 py-1">${esc(f.date.slice(5).replace("-", "/"))} ${esc(f.weather.split(/[\s　]/)[0])}${f.pop != null ? ` ☔${esc(f.pop)}%` : ""}</span>`
-    ).join("");
+    renderWeatherChips();
   } catch {
     state.weather = null;
     $("#weatherChips").innerHTML = '<span class="text-xs opacity-60">天気情報を取得できませんでした</span>';
   }
 }
 
+/** 選択中の旅行日程(出発日〜最終日)のYYYY-MM-DD配列 */
+function tripDates() {
+  if (!state.date) return null;
+  const n = state.plan?.days.length ?? state.stayNights + 1;
+  const d = new Date(`${state.date}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return null;
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    out.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`);
+    d.setDate(d.getDate() + 1);
+  }
+  return out;
+}
+
+/** 旅行日程に該当する予報だけに絞る(AI解説にも渡す)。該当なしは null */
+function weatherForTrip() {
+  if (!state.weather) return null;
+  const dates = tripDates();
+  const list = dates
+    ? state.weather.forecast.filter((f) => dates.includes(f.date))
+    : state.weather.forecast.slice(0, state.plan?.days.length ?? 2);
+  return list.length ? { forecast: list, source: state.weather.source } : null;
+}
+
+function renderWeatherChips() {
+  if (!state.weather) return; // 取得失敗時は loadWeather 側の表示のまま
+  const w = weatherForTrip();
+  $("#weatherChips").innerHTML = w
+    ? w.forecast.map((f) =>
+        `<span class="text-xs rounded-full bg-white/20 px-2 py-1">${esc(f.date.slice(5).replace("-", "/"))} ${esc(f.weather.split(/[\s　]/)[0])}${f.pop != null ? ` ☔${esc(f.pop)}%` : ""}</span>`
+      ).join("")
+    : '<span class="text-xs opacity-60">選択日の予報はまだありません（予報は7日先まで）</span>';
+}
+
 function bind() {
   $("#port").addEventListener("change", (e) => { state.port = e.target.value; render(); });
   $("#arrival").addEventListener("change", (e) => { state.arrival = e.target.value; render(); });
+  $("#tripDate").addEventListener("change", (e) => { state.date = e.target.value || null; render(); });
+  $("#stay").addEventListener("change", (e) => { state.stayNights = +e.target.value; state.day = 0; render(); });
   $("#lugOn").addEventListener("click", () => setLuggage(true));
   $("#lugOff").addEventListener("click", () => setLuggage(false));
   $("#explainBtn").addEventListener("click", () => runExplain());
+  $("#speakBtn").addEventListener("click", () => toggleSpeak());
   $("#modalClose").addEventListener("click", closeModal);
   $("#modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
 }
@@ -99,8 +135,13 @@ function busCard(b) {
 function render() {
   const ret = (ferry.inbound || [])[0];
   state.plan = planTrip({ tt, spots, port: state.port, arrival: state.arrival, hasLuggage: state.hasLuggage,
+    stayNights: state.stayNights, date: state.date,
     returnNote: ret ? `帰りの船: ${ret.shipType} ${ret.depOshima}発 → 竹芝${ret.arriveTakeshiba}着(${ferry.meta.validNote})` : undefined });
   const p = state.plan;
+  if (state.day >= p.days.length) state.day = 0;
+  $("#hotelField").value = state.stayNights === 0 ? "なし（日帰り）" : "大島温泉ホテル(三原山温泉)";
+  stopSpeak();
+  $("#speakBtn").classList.add("hidden");
   $("#explainText").classList.add("hidden");
 
   // tabs
@@ -117,7 +158,8 @@ function render() {
   $("#timeline").innerHTML = `<ul class="space-y-2">${items.map(renderItem).join("")}</ul>`;
   $("#timeline").querySelectorAll("[data-spot]").forEach((c) => c.addEventListener("click", () => openSpot(c.dataset.spot)));
 
-  $("#fare").textContent = `🚌 バス運賃合計（2日間・片道換算）: ${p.fareTotal.toLocaleString()}円`;
+  $("#fare").textContent = `🚌 バス運賃合計（${p.days.length === 1 ? "日帰り" : p.days.length + "日間"}・片道換算）: ${p.fareTotal.toLocaleString()}円`;
+  renderWeatherChips();
   $("#dataSource").innerHTML = `<p>${esc(p.dataSource.source)}</p><p>有効期間 ${esc(p.dataSource.validFrom)}〜${esc(p.dataSource.validTo)} / ${esc(p.dataSource.serviceNote)}</p><p><a class="underline text-sea" href="${esc(p.dataSource.sourceUrl)}" target="_blank" rel="noopener">出典</a></p>`;
 
   renderMap();
@@ -211,12 +253,14 @@ function renderItem(it) {
 async function runExplain() {
   const el = $("#explainText");
   const btn = $("#explainBtn");
+  stopSpeak();
+  $("#speakBtn").classList.add("hidden");
   el.classList.remove("hidden");
   el.textContent = "";
   btn.disabled = true;
   btn.textContent = "✨ AIガイドが考えています…";
   try {
-    await streamExplain(state.plan, state.weather, (t) => { el.textContent += t; });
+    await streamExplain(state.plan, weatherForTrip(), (t) => { el.textContent += t; });
     btn.textContent = "✨ もう一度きく";
   } catch {
     el.textContent = explain(state.plan, spots);
@@ -224,7 +268,56 @@ async function runExplain() {
     btn.textContent = "✨ AIガイドの解説を聞く";
   } finally {
     btn.disabled = false;
+    if ("speechSynthesis" in window && el.textContent.trim()) $("#speakBtn").classList.remove("hidden");
   }
+}
+
+// ---- ガイド音声（Web Speech API / ブラウザ内蔵TTS・APIキー不要） ----
+function speechText() {
+  // Markdown記号・矢印・注記は読み上げから除く
+  return $("#explainText").textContent
+    .replace(/※\s*AI解説を取得できなかったため簡易版を表示しています/g, "")
+    .replace(/[#*`>]+/g, " ")
+    .replace(/→/g, "、")
+    .replace(/\s+/g, " ").trim();
+}
+function setSpeakUI(on) { $("#speakBtn").textContent = on ? "⏹ 音声を止める" : "🔊 ガイドさんの声で聞く"; }
+let speakTimer = null;
+function stopSpeak() {
+  if (speakTimer) { clearInterval(speakTimer); speakTimer = null; }
+  if (typeof window !== "undefined" && window.speechSynthesis?.speaking) window.speechSynthesis.cancel();
+  const b = typeof document !== "undefined" && document.querySelector("#speakBtn");
+  if (b) setSpeakUI(false);
+}
+function toggleSpeak() {
+  const synth = window.speechSynthesis;
+  if (!synth) return;
+  if (synth.speaking) { stopSpeak(); return; }
+  // 長文を1つのutteranceで渡すとChrome系は途中で無音停止する既知バグがあるため、
+  // 文の区切り(。！？)で最大120字ずつに分割してキューに積む
+  const parts = [];
+  let buf = "";
+  for (const s of speechText().split(/(?<=[。！？])/)) {
+    if (buf && (buf + s).length > 120) { parts.push(buf); buf = s; } else buf += s;
+  }
+  if (buf.trim()) parts.push(buf);
+  if (!parts.length) return;
+  const ja = synth.getVoices().find((v) => v.lang?.startsWith("ja"));
+  parts.forEach((text, i) => {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "ja-JP";
+    if (ja) u.voice = ja;
+    u.rate = 1.05;  // 少しテンポよく
+    u.pitch = 1.15; // 明るいバスガイドさん風に少し高め
+    if (i === parts.length - 1) u.onend = () => stopSpeak();
+    synth.speak(u);
+  });
+  // 保険: 一時停止状態で固まったら resume。読み上げが終わっていたらUIを戻す
+  speakTimer = setInterval(() => {
+    if (!synth.speaking) stopSpeak();
+    else synth.resume();
+  }, 5000);
+  setSpeakUI(true);
 }
 
 // exported for tests
