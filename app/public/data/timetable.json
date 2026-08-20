@@ -1,0 +1,98 @@
+{
+  "meta": {
+    "source": "大島バス 路線バス時刻表（2026/7/1〜9/30版 PDF 260612_jikoku.pdf）三原山ライン 主要停留所の全便を転記。ODPTのGTFS-JP取得後は scripts/build_gtfs.py で生成したものに差し替える",
+    "sourceUrl": "http://www.oshima-bus.com/rosen-bus.html",
+    "validFrom": "2026-07-01",
+    "validTo": "2026-09-30",
+    "serviceNote": "8月は全便毎日運行（9月は便により土日祝のみ）。『入港地/出港地』は日中の船の使用港で当日決定。元町港発の便は岡田港入港日には港から乗れない",
+    "generatedBy": "manual"
+  },
+  "stops": {
+    "PORT": { "name": "入港地（元町港／岡田港）", "note": "当日の海況で決まる" },
+    "TSUBAKI": { "name": "椿・花ガーデン" },
+    "ONSEN": { "name": "三原山温泉（大島温泉ホテル前）" },
+    "SUMMIT": { "name": "三原山頂口" }
+  },
+  "fares": {
+    "PORT-TSUBAKI": { "yen": 300, "confirmed": true },
+    "PORT-ONSEN": { "yen": 790, "confirmed": true },
+    "PORT-SUMMIT": { "yen": 1090, "confirmed": true },
+    "TSUBAKI-ONSEN": { "yen": 490, "confirmed": false },
+    "TSUBAKI-SUMMIT": { "yen": 790, "confirmed": false },
+    "ONSEN-SUMMIT": { "yen": 410, "confirmed": true }
+  },
+  "trips": [
+    {
+      "tripId": "MIHARA_UP_0820",
+      "routeName": "三原山ライン（港→山頂口）",
+      "serviceId": "8月毎日",
+      "ports": ["motomachi"],
+      "stops": [
+        { "stopId": "PORT",    "dep": "08:20" },
+        { "stopId": "TSUBAKI", "arr": "08:28", "dep": "08:28" },
+        { "stopId": "ONSEN",   "arr": "08:38", "dep": "08:38" },
+        { "stopId": "SUMMIT",  "arr": "08:45" }
+      ]
+    },
+    {
+      "tripId": "MIHARA_UP_1020",
+      "routeName": "三原山ライン（港→山頂口）",
+      "serviceId": "8月毎日",
+      "ports": ["motomachi", "okada"],
+      "stops": [
+        { "stopId": "PORT",    "dep": "10:20" },
+        { "stopId": "TSUBAKI", "arr": "10:28", "dep": "10:28" },
+        { "stopId": "ONSEN",   "arr": "10:38", "dep": "10:38" },
+        { "stopId": "SUMMIT",  "arr": "10:45" }
+      ]
+    },
+    {
+      "tripId": "MIHARA_UP_1240",
+      "routeName": "三原山ライン（港→山頂口）",
+      "serviceId": "8月毎日",
+      "ports": ["motomachi"],
+      "stops": [
+        { "stopId": "PORT",    "dep": "12:40" },
+        { "stopId": "TSUBAKI", "arr": "12:48", "dep": "12:48" },
+        { "stopId": "ONSEN",   "arr": "12:58", "dep": "12:58" },
+        { "stopId": "SUMMIT",  "arr": "13:05" }
+      ]
+    },
+    {
+      "tripId": "MIHARA_DOWN_0930",
+      "routeName": "三原山ライン（山頂口→港）",
+      "serviceId": "8月毎日",
+      "ports": ["motomachi", "okada"],
+      "stops": [
+        { "stopId": "SUMMIT",  "dep": "09:30" },
+        { "stopId": "ONSEN",   "arr": "09:37", "dep": "09:37" },
+        { "stopId": "TSUBAKI", "arr": "09:47", "dep": "09:47" },
+        { "stopId": "PORT",    "arr": "09:55" }
+      ]
+    },
+    {
+      "tripId": "MIHARA_DOWN_1120",
+      "routeName": "三原山ライン（山頂口→元町港）",
+      "serviceId": "8月毎日",
+      "ports": ["motomachi"],
+      "stops": [
+        { "stopId": "SUMMIT",  "dep": "11:20" },
+        { "stopId": "ONSEN",   "arr": "11:27", "dep": "11:27" },
+        { "stopId": "TSUBAKI", "arr": "11:37", "dep": "11:37" },
+        { "stopId": "PORT",    "arr": "11:45" }
+      ]
+    },
+    {
+      "tripId": "MIHARA_DOWN_1330",
+      "routeName": "三原山ライン（山頂口→港）",
+      "serviceId": "8月毎日",
+      "ports": ["motomachi", "okada"],
+      "stops": [
+        { "stopId": "SUMMIT",  "dep": "13:30" },
+        { "stopId": "ONSEN",   "arr": "13:37", "dep": "13:37" },
+        { "stopId": "TSUBAKI", "arr": "13:47", "dep": "13:47" },
+        { "stopId": "PORT",    "arr": "13:55" }
+      ]
+    }
+  ]
+}
