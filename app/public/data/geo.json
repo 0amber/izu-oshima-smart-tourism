@@ -1,0 +1,16 @@
+{
+  "meta": {
+    "source": "OpenStreetMap (Nominatim検索, 2026-08-21取得)",
+    "attribution": "© OpenStreetMap contributors",
+    "note": "座標はOSM由来。ODPT GTFSの停留所座標は使用していない(ライセンス方針)"
+  },
+  "ports": {
+    "motomachi": { "name": "元町港", "lat": 34.75196, "lon": 139.35251 },
+    "okada": { "name": "岡田港", "lat": 34.79056, "lon": 139.39064 }
+  },
+  "stops": {
+    "TSUBAKI": { "name": "椿花ガーデン", "lat": 34.77041, "lon": 139.37442 },
+    "ONSEN": { "name": "大島温泉ホテル(三原山温泉)", "lat": 34.75347, "lon": 139.40194 },
+    "SUMMIT": { "name": "三原山頂口", "lat": 34.73828, "lon": 139.38015 }
+  }
+}
