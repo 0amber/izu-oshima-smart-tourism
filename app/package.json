@@ -1,0 +1,23 @@
+{
+  "name": "oshima-smart-course-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "GTFS×生成AI 伊豆大島スマートモデルコース(東京都知事杯ODH2026)",
+  "scripts": {
+    "test": "node --test test/*.mjs",
+    "dev": "wrangler pages dev public",
+    "dev:node": "node scripts/dev-node.mjs",
+    "build:css": "tailwindcss -i src/styles.css -o public/css/styles.css --minify",
+    "watch:css": "tailwindcss -i src/styles.css -o public/css/styles.css --watch",
+    "build:standalone": "python3 scripts/build_standalone.py",
+    "build:gtfs": "python3 scripts/build_gtfs.py"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "latest"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4",
+    "wrangler": "^4"
+  }
+}

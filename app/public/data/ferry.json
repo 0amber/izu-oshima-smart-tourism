@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "source": "東海汽船公式サイト転記(要再確認)。公式サイト(tokaikisen.co.jp)を2回取得したが竹芝7:50発の到着時刻等が取得のたびに不一致だったため、README/docs/itinerary/2026-08-22-23-plan.mdに記録済みの確認値(2026年8月ダイヤ、大島バス時刻表・東海汽船時刻表の突合結果)を採用",
+    "sourceUrl": "https://www.tokaikisen.co.jp/boarding/timetable/",
+    "validNote": "就航状況・発着港は当日の海況で変わるため公式で要確認"
+  },
+  "outbound": [
+    { "shipType": "ジェット船", "depTakeshiba": "07:25", "arriveOshima": "09:35" },
+    { "shipType": "ジェット船", "depTakeshiba": "08:15", "arriveOshima": "10:00" },
+    { "shipType": "大型客船", "depTakeshiba": "23:00", "arriveOshima": "06:00", "note": "翌朝着" }
+  ],
+  "inbound": [
+    { "shipType": "大型客船", "depOshima": "14:20", "arriveTakeshiba": "18:40" }
+  ]
+}

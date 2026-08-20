@@ -1,0 +1,66 @@
+{
+  "TSUBAKI": {
+    "name": "椿・花ガーデン",
+    "emoji": "🌺",
+    "stopId": "TSUBAKI",
+    "luggageScore": 2,
+    "minStayMin": 120,
+    "desc": "港からバス8分。園内は平坦で、荷物を持ったままでも回れる。芝生の大広場あり。",
+    "cautions": [
+      "園内カフェ・ショップは休業中の可能性（弁当持込・園内での飲食可否は要確認）"
+    ],
+    "todo": [
+      "弁当持込OK？",
+      "芝生で食べてOK？",
+      "荷物を置ける場所は？"
+    ],
+    "sourceName": "大島町公式サイト",
+    "sourceUrl": "https://www.town.oshima.tokyo.jp/"
+  },
+  "SUMMIT": {
+    "name": "三原山（山頂口〜火口）",
+    "emoji": "🌋",
+    "stopId": "SUMMIT",
+    "luggageScore": 0,
+    "minStayMin": 150,
+    "desc": "伊豆大島のシンボル。山頂口から火口までは未舗装の遊歩道。身軽で行きたい。",
+    "cautions": [
+      "未舗装トレイル。キャリーケースは現実的でない",
+      "バスの大型手荷物は1個500円・混雑時は乗車拒否あり"
+    ],
+    "todo": [
+      "遊歩道でキャリーが困難な写真を撮る"
+    ],
+    "sourceName": "大島町公式サイト",
+    "sourceUrl": "https://www.town.oshima.tokyo.jp/"
+  },
+  "ONSEN": {
+    "name": "大島温泉ホテル（三原山温泉）",
+    "emoji": "♨️",
+    "stopId": "ONSEN",
+    "luggageScore": 2,
+    "minStayMin": 0,
+    "checkIn": "15:00",
+    "desc": "バス停直結。チェックイン前でも荷物を預けられれば、身軽になって三原山へ行ける。",
+    "cautions": [],
+    "todo": [
+      "チェックイン前の荷物預かりは可能か？"
+    ],
+    "sourceName": "大島町公式サイト",
+    "sourceUrl": "https://www.town.oshima.tokyo.jp/"
+  },
+  "MOTOMACHI": {
+    "name": "元町散策",
+    "emoji": "🏘️",
+    "stopId": "PORT",
+    "luggageScore": 1,
+    "minStayMin": 60,
+    "desc": "港周辺の街歩き。坂道が多く、荷物ありだとやや大変。",
+    "cautions": [
+      "坂道"
+    ],
+    "todo": [],
+    "sourceName": "大島町公式サイト",
+    "sourceUrl": "https://www.town.oshima.tokyo.jp/"
+  }
+}

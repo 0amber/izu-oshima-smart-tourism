@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>大島スマートコース</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-sand text-neutral-800">
+<header class="bg-sea text-white">
+  <div class="max-w-2xl mx-auto px-4 py-4">
+    <div class="text-lg font-bold">🏝️ 大島スマートコース</div>
+    <div class="text-sm opacity-90">オープンデータ × 生成AI で、荷物にやさしい1泊2日</div>
+    <div id="weatherChips" class="flex gap-2 mt-2 flex-wrap"></div>
+  </div>
+</header>
+
+<main class="max-w-2xl mx-auto px-4 pb-16">
+  <div id="staleBanner" class="hidden mt-4 rounded-xl bg-warn/10 border border-warn text-warn px-4 py-2 text-sm"></div>
+
+  <section class="mt-4 bg-white rounded-2xl shadow-sm p-4">
+    <h2 class="font-bold text-sea">1. あなたの条件</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+      <label class="block">
+        <span class="text-sm text-neutral-500">到着する港</span>
+        <select id="port" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 bg-white">
+          <option value="motomachi">元町港</option>
+          <option value="okada">岡田港</option>
+          <option value="unknown">まだわからない(当日決定)</option>
+        </select>
+      </label>
+      <label class="block">
+        <span class="text-sm text-neutral-500">到着時刻(東海汽船)</span>
+        <select id="arrival" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 bg-white"></select>
+      </label>
+      <div class="block">
+        <span class="text-sm text-neutral-500">荷物</span>
+        <div class="mt-1 grid grid-cols-2 gap-2" role="radiogroup" aria-label="荷物">
+          <button type="button" id="lugOn" class="tbtn rounded-xl border px-3 py-2 text-sm">🧳 キャリーケースあり</button>
+          <button type="button" id="lugOff" class="tbtn rounded-xl border px-3 py-2 text-sm">🎒 身軽</button>
+        </div>
+      </div>
+      <label class="block">
+        <span class="text-sm text-neutral-500">宿泊</span>
+        <input type="text" value="大島温泉ホテル(三原山温泉)" disabled class="mt-1 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2 text-neutral-500">
+      </label>
+    </div>
+  </section>
+
+  <section class="mt-4 bg-white rounded-2xl shadow-sm p-4">
+    <div class="flex items-center justify-between">
+      <h2 class="font-bold text-sea">2. あなたの旅程</h2>
+      <div id="dayTabs" class="flex gap-1"></div>
+    </div>
+    <div id="warnings" class="mt-3 space-y-2"></div>
+    <div id="timeline" class="mt-3"></div>
+    <div id="fare" class="mt-3 text-sm font-bold"></div>
+    <div class="mt-4 border-t border-neutral-100 pt-4">
+      <button type="button" id="explainBtn" class="w-full rounded-xl bg-tsubaki text-white font-bold py-3 active:opacity-80">✨ AIガイドの解説を聞く</button>
+      <div id="explainText" class="hidden mt-3 rounded-xl bg-sand p-4 text-sm leading-relaxed whitespace-pre-wrap"></div>
+    </div>
+    <details class="mt-4 text-xs text-neutral-500"><summary>使っているオープンデータ</summary><div id="dataSource" class="mt-2 space-y-1"></div></details>
+  </section>
+</main>
+
+<div id="modal" class="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center p-4" hidden>
+  <div class="bg-white rounded-2xl max-w-md w-full max-h-[80vh] overflow-y-auto p-5 relative">
+    <button type="button" id="modalClose" class="absolute top-3 right-3 text-neutral-400 text-xl" aria-label="閉じる">×</button>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<footer class="max-w-2xl mx-auto px-4 py-6 text-xs text-neutral-400">
+  SBC.別班連携チーム / 東京都知事杯オープンデータ・ハッカソン 2026<br>
+  データ: 大島バス時刻表(GTFS-JP/公式PDF) ・ 気象庁 ・ 東京都オープンデータカタログ ・ 東海汽船
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

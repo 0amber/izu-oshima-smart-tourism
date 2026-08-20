@@ -1,0 +1,11 @@
+{
+  "name": "izu-oshima-smart-tourism",
+  "private": true,
+  "description": "Workers Builds用ルート: worker/index.js が app/functions をバンドルする際の依存解決",
+  "dependencies": {
+    "@anthropic-ai/sdk": "latest"
+  },
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}
