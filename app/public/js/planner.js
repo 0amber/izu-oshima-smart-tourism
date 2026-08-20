@@ -55,7 +55,7 @@ function spotItem(spotId, spots, arr, dep, note, hasLuggage = true) {
  * 荷物なし: 港→山頂口(直行)→ホテル
  * 2日目  : ホテル(荷物預け)→山頂→港
  */
-export function planTrip({ tt, spots, port = "motomachi", arrival = "10:00", hasLuggage = true }) {
+export function planTrip({ tt, spots, port = "motomachi", arrival = "10:00", hasLuggage = true, returnNote }) {
   const warnings = [];
   const unresolved = [];
   const day1 = [];
@@ -133,7 +133,7 @@ export function planTrip({ tt, spots, port = "motomachi", arrival = "10:00", has
       if (!c3) unresolved.push("2日目 三原山温泉→港の便が見つかりません（ホテル送迎の有無を確認）");
       else {
         day2.push(busItem(c3, tt));
-        day2.push({ type: "event", time: c3.arr, title: "港に到着", note: "帰りの船：大型客船 14:20発→竹芝18:40着（8月毎日・要最終確認）。午後のジェット船は要確認" });
+        day2.push({ type: "event", time: c3.arr, title: "港に到着", note: returnNote || "帰りの船は東海汽船公式で要確認" });
       }
     }
   }

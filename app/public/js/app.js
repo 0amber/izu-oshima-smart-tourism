@@ -28,10 +28,20 @@ function arrivalOptions(ferry) {
   return opts;
 }
 
+function checkStale(tt) {
+  const today = new Date().toISOString().slice(0, 10);
+  if (tt.meta.validTo && today > tt.meta.validTo) {
+    const el = $("#staleBanner");
+    el.textContent = `⚠ この時刻表の有効期間(〜${tt.meta.validTo})を過ぎています。最新ダイヤを確認してください。`;
+    el.classList.remove("hidden");
+  }
+}
+
 async function load() {
   [tt, spots, ferry] = await loadData();
   $("#arrival").innerHTML = arrivalOptions(ferry).map((o) => `<option value="${esc(o.value)}" ${o.value === state.arrival ? "selected" : ""}>${esc(o.label)}</option>`).join("");
   bind();
+  checkStale(tt);
   render();
 }
 
@@ -75,7 +85,9 @@ function busCard(b) {
 }
 
 function render() {
-  state.plan = planTrip({ tt, spots, port: state.port, arrival: state.arrival, hasLuggage: state.hasLuggage });
+  const ret = (ferry.inbound || [])[0];
+  state.plan = planTrip({ tt, spots, port: state.port, arrival: state.arrival, hasLuggage: state.hasLuggage,
+    returnNote: ret ? `帰りの船: ${ret.shipType} ${ret.depOshima}発 → 竹芝${ret.arriveTakeshiba}着(${ferry.meta.validNote})` : undefined });
   const p = state.plan;
   $("#explainText").classList.add("hidden");
 

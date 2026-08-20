@@ -75,3 +75,10 @@ test("planTrip: 運賃合計を計算する", () => {
   const p = planTrip({ tt, spots, port: "motomachi", arrival: "10:00", hasLuggage: true });
   assert.ok(p.fareTotal > 0);
 });
+
+test("planTrip: returnNote を渡すと2日目最後のイベントに反映される", () => {
+  const p = planTrip({ tt, spots, port: "motomachi", arrival: "10:00", hasLuggage: true, returnNote: "帰りの船: テスト便 15:00発" });
+  const last = p.days[1].items.at(-1);
+  assert.equal(last.type, "event");
+  assert.ok(last.note.includes("テスト便 15:00発"));
+});
