@@ -1,11 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  --color-tsubaki: #c0392b;
-  --color-sea: #1a6b8a;
-  --color-sand: #faf7f2;
+  --color-tsubaki: #c94f56;
+  --color-tsubaki-deep: #a83a44;
+  --color-sea: #0e7490;
+  --color-sea-deep: #155e75;
+  --color-sky: #e0f2fe;
+  --color-foam: #cffafe;
+  --color-sand: #fdf9f0;
+  --color-sand-deep: #f3e9d7;
+  --color-sunset: #f59e0b;
   --color-warn: #b7791f;
   --font-body: "Hiragino Sans", "Noto Sans JP", sans-serif;
 }
 
 body { font-family: var(--font-body); }
+
+/* プラン生成時にカードが順に浮かび上がる */
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.anim-rise { animation: rise .4s ease-out both; }
+@media (prefers-reduced-motion: reduce) { .anim-rise { animation: none; } }

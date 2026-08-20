@@ -15,7 +15,9 @@
       "荷物を置ける場所は？"
     ],
     "sourceName": "大島町公式サイト",
-    "sourceUrl": "https://www.town.oshima.tokyo.jp/"
+    "sourceUrl": "https://www.town.oshima.tokyo.jp/",
+    "officialUrl": "https://www.izu-oshima.or.jp/",
+    "photo": "img/camellia.jpg"
   },
   "SUMMIT": {
     "name": "三原山（山頂口〜火口）",
@@ -32,7 +34,9 @@
       "遊歩道でキャリーが困難な写真を撮る"
     ],
     "sourceName": "大島町公式サイト",
-    "sourceUrl": "https://www.town.oshima.tokyo.jp/"
+    "sourceUrl": "https://www.town.oshima.tokyo.jp/",
+    "officialUrl": "https://www.izu-oshima.or.jp/",
+    "photo": "img/mihara-trail.jpg"
   },
   "ONSEN": {
     "name": "大島温泉ホテル（三原山温泉）",
@@ -47,7 +51,9 @@
       "チェックイン前の荷物預かりは可能か？"
     ],
     "sourceName": "大島町公式サイト",
-    "sourceUrl": "https://www.town.oshima.tokyo.jp/"
+    "sourceUrl": "https://www.town.oshima.tokyo.jp/",
+    "officialUrl": "https://www.oshima-onsen.co.jp/",
+    "photo": "img/mihara.jpg"
   },
   "MOTOMACHI": {
     "name": "元町散策",
@@ -61,6 +67,8 @@
     ],
     "todo": [],
     "sourceName": "大島町公式サイト",
-    "sourceUrl": "https://www.town.oshima.tokyo.jp/"
+    "sourceUrl": "https://www.town.oshima.tokyo.jp/",
+    "officialUrl": "https://www.town.oshima.tokyo.jp/",
+    "photo": "img/motomachi.jpg"
   }
 }

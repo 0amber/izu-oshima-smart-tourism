@@ -108,19 +108,48 @@ function bind() {
   $("#lugOff").addEventListener("click", () => setLuggage(false));
   $("#explainBtn").addEventListener("click", () => runExplain());
   $("#speakBtn").addEventListener("click", () => toggleSpeak());
+  bindShare();
   $("#modalClose").addEventListener("click", closeModal);
   $("#modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
 }
 
 function setLuggage(v) {
   state.hasLuggage = v;
-  $("#lugOn").className = `tbtn rounded-xl border px-3 py-2 text-sm ${v ? "bg-tsubaki text-white border-tsubaki" : "bg-white border-neutral-300"}`;
-  $("#lugOff").className = `tbtn rounded-xl border px-3 py-2 text-sm ${!v ? "bg-tsubaki text-white border-tsubaki" : "bg-white border-neutral-300"}`;
+  const on = "bg-sea text-white border-sea shadow-md scale-[1.02]";
+  const off = "bg-white border-neutral-200 text-neutral-500";
+  $("#lugOn").className = `tbtn rounded-xl border px-3 py-2 text-sm transition-all duration-150 ${v ? on : off}`;
+  $("#lugOff").className = `tbtn rounded-xl border px-3 py-2 text-sm transition-all duration-150 ${!v ? on : off}`;
   render();
 }
 
-function tabBtn(label, i, active) {
-  return `<button class="tab rounded-full px-3 py-1 text-sm ${active ? "bg-sea text-white" : "bg-neutral-100 text-neutral-500"}" data-i="${i}">${esc(label)}</button>`;
+// ---- SNS共有(𝕏 / LINE / Web Share API・リンクコピー) ----
+const SHARE_TEXT = "伊豆大島の1泊2日をAIが自動設計!「大島スマートコース」";
+function bindShare() {
+  $("#shareX")?.addEventListener("click", () => {
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(SHARE_TEXT)}&url=${encodeURIComponent(location.href)}`, "_blank", "noopener");
+  });
+  $("#shareLine")?.addEventListener("click", () => {
+    window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href)}&text=${encodeURIComponent(SHARE_TEXT)}`, "_blank", "noopener");
+  });
+  $("#shareBtn")?.addEventListener("click", async () => {
+    const b = $("#shareBtn");
+    if (navigator.share) {
+      try { await navigator.share({ title: "大島スマートコース", text: SHARE_TEXT, url: location.href }); } catch { /* キャンセルは無視 */ }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(location.href);
+      b.textContent = "✅ コピーしました";
+      setTimeout(() => { b.textContent = "🔗 共有"; }, 1500);
+    } catch { /* http等でclipboard不可なら何もしない */ }
+  });
+}
+
+function tabBtn(label, i, active, isLast) {
+  const cls = active
+    ? (isLast && i > 0 ? "bg-sunset text-white" : "bg-sea text-white")
+    : "bg-neutral-100 text-neutral-500";
+  return `<button class="tab rounded-full px-4 py-1 text-sm shadow-sm transition-colors duration-200 ${cls}" data-i="${i}">${esc(label)}</button>`;
 }
 function warnBox(text, hard) {
   return `<div class="rounded-xl px-3 py-2 text-sm ${hard ? "bg-warn/10 border border-warn/40 text-warn" : "bg-neutral-50 text-neutral-500"}">${esc(text)}</div>`;
@@ -130,7 +159,7 @@ function unresBox(text) {
 }
 function busCard(b) {
   const from = tt.stops[b.from].name, to = tt.stops[b.to].name;
-  return `<div class="rounded-xl border-l-4 border-sea bg-white shadow-sm p-3 my-1">
+  return `<div class="rounded-xl border-l-4 border-sea bg-white shadow-sm p-3 my-1 transition-all duration-200">
     <div class="flex justify-between items-start gap-2"><b class="text-sm">🚌 ${esc(from)} → ${esc(to)}</b>
       <span class="shrink-0"><span class="text-xs rounded-full bg-emerald-50 text-emerald-700 px-2 py-0.5">✅ 時刻表と一致</span>${b.estimated ? '<span class="text-xs rounded-full bg-neutral-100 text-neutral-500 px-2 py-0.5 ml-1">途中時刻は推定</span>' : ""}</span></div>
     <div class="text-xs text-neutral-500 mt-1">${esc(b.dep)}発 → ${esc(b.arr)}着 ／ ${esc(b.routeName)} ／ ${b.fareYen ? b.fareYen + "円" : "運賃未確認"}${b.fareConfirmed ? "" : "(推定)"} ／ 便ID: ${esc(b.tripId)}</div>
@@ -147,10 +176,11 @@ function render() {
   $("#hotelField").value = state.stayNights === 0 ? "なし（日帰り）" : "大島温泉ホテル(三原山温泉)";
   stopSpeak();
   $("#speakBtn").classList.add("hidden");
+  $("#explainLabel").classList.add("hidden");
   $("#explainText").classList.add("hidden");
 
   // tabs
-  $("#dayTabs").innerHTML = p.days.map((d, i) => tabBtn(d.label, i, i === state.day)).join("");
+  $("#dayTabs").innerHTML = p.days.map((d, i) => tabBtn(d.label, i, i === state.day, i === p.days.length - 1)).join("");
   $("#dayTabs").querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => { state.day = +b.dataset.i; render(); }));
 
   // warnings
@@ -158,12 +188,16 @@ function render() {
     p.unresolved.map((u) => unresBox(u)).join("") +
     p.warnings.map((w, i) => warnBox(w, i === 0 && state.hasLuggage)).join("");
 
-  // timeline
+  // timeline(左に旅のルート線、カードは順に浮かび上がる)
   const items = p.days[state.day].items;
-  $("#timeline").innerHTML = `<ul class="space-y-2">${items.map(renderItem).join("")}</ul>`;
+  $("#timeline").innerHTML = `<ul class="space-y-2 relative pl-4 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-[3px] before:rounded-full before:bg-gradient-to-b before:from-sea before:to-tsubaki">${items.map(renderItem).join("")}</ul>`;
+  $("#timeline").querySelectorAll("ul > li").forEach((li, i) => {
+    li.classList.add("anim-rise");
+    li.style.animationDelay = `${Math.min(i * 60, 480)}ms`;
+  });
   $("#timeline").querySelectorAll("[data-spot]").forEach((c) => c.addEventListener("click", () => openSpot(c.dataset.spot)));
 
-  $("#fare").textContent = `🚌 バス運賃合計（${p.days.length === 1 ? "日帰り" : p.days.length + "日間"}・片道換算）: ${p.fareTotal.toLocaleString()}円`;
+  $("#fare").innerHTML = `<span>🎟 バス運賃合計（${p.days.length === 1 ? "日帰り" : p.days.length + "日間"}・片道換算）</span><span class="text-tsubaki text-lg font-black shrink-0">${p.fareTotal.toLocaleString()}円</span>`;
   // 初回取得に失敗していても、条件変更のタイミングで再取得を試みる
   if (!state.weather) loadWeather();
   renderWeatherChips();
@@ -241,10 +275,15 @@ function renderItem(it) {
   if (it.type === "spot") {
     return `<li>
       <div class="flex items-baseline gap-2 mb-1"><span class="font-mono text-sea font-bold text-sm">${esc(it.arr)}${it.dep ? "〜" + esc(it.dep) : ""}</span></div>
-      <div class="rounded-xl border border-neutral-200 bg-white shadow-sm p-3 cursor-pointer active:opacity-80" data-spot="${esc(it.spotId)}">
-        <div class="flex justify-between items-start gap-2"><b class="text-sm">${esc(it.emoji)} ${esc(it.name)}</b><span class="text-xs text-neutral-400 shrink-0">詳細 ›</span></div>
-        <div class="text-xs text-neutral-500 mt-1">${esc(it.note)}</div>
-        ${it.cautions?.length ? `<div class="mt-1 flex flex-wrap gap-1">${it.cautions.map((c) => `<span class="text-xs rounded-full bg-warn/10 text-warn px-2 py-0.5">⚠ ${esc(c)}</span>`).join("")}</div>` : ""}
+      <div class="rounded-xl border border-sea/15 bg-gradient-to-br from-white to-foam/60 shadow-sm p-3 cursor-pointer transition-all duration-200 active:scale-[0.99]" data-spot="${esc(it.spotId)}">
+        <div class="flex gap-3">
+          <div class="min-w-0 flex-1">
+            <div class="flex justify-between items-start gap-2"><b class="text-sm"><span class="text-2xl align-middle mr-1">${esc(it.emoji)}</span>${esc(it.name)}</b><span class="text-xs text-neutral-400 shrink-0">詳細 ›</span></div>
+            <div class="text-xs text-neutral-500 mt-1">${esc(it.note)}</div>
+            ${it.cautions?.length ? `<div class="mt-1 flex flex-wrap gap-1">${it.cautions.map((c) => `<span class="text-xs rounded-full bg-warn/10 text-warn px-2 py-0.5">⚠ ${esc(c)}</span>`).join("")}</div>` : ""}
+          </div>
+          ${spots[it.spotId]?.photo ? `<img src="${esc(spots[it.spotId].photo)}" alt="" loading="lazy" class="w-16 h-16 shrink-0 rounded-lg object-cover self-center">` : ""}
+        </div>
       </div></li>`;
   }
   if (it.type === "alt") {
@@ -262,6 +301,7 @@ async function runExplain() {
   const btn = $("#explainBtn");
   stopSpeak();
   $("#speakBtn").classList.add("hidden");
+  $("#explainLabel").classList.remove("hidden");
   el.classList.remove("hidden");
   el.textContent = "";
   btn.disabled = true;
@@ -365,6 +405,7 @@ function openSpot(id) {
     return b ? `${tt.stops[to].name}行き ${b.dep}` : null;
   }).filter(Boolean);
   $("#modalBody").innerHTML = `
+    ${s.photo ? `<img src="${esc(s.photo)}" alt="${esc(s.name)}" loading="lazy" class="w-full h-36 object-cover rounded-xl mb-3">` : ""}
     <h3 class="text-lg font-bold">${esc(s.emoji)} ${esc(s.name)}</h3>
     <div class="text-xs text-neutral-500 mt-2">荷物適性</div>
     <div class="flex items-center gap-1 mt-1">${[0, 1, 2].map((i) => `<span class="inline-block w-3 h-3 rounded-full ${i < s.luggageScore ? "bg-tsubaki" : "bg-neutral-200"}"></span>`).join("")} <span class="text-xs text-neutral-500 ml-1">${["× 荷物ありは不可", "△ 荷物ありはやや大変", "○ 荷物ありでもOK"][s.luggageScore]}</span></div>
@@ -373,6 +414,7 @@ function openSpot(id) {
     ${s.cautions.length ? `<b class="block text-sm mt-3">⚠ 注意</b><ul class="list-disc list-inside text-sm text-neutral-600 mt-1 space-y-0.5">${s.cautions.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
     ${s.todo.length ? `<b class="block text-sm mt-3">❓ 現地で確認すること</b><ul class="list-disc list-inside text-sm text-neutral-600 mt-1 space-y-0.5">${s.todo.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
     <div class="mt-3 rounded-xl bg-sand p-3 text-sm"><b>🚌 最寄バス停「${esc(tt.stops[s.stopId].name)}」 ${now}以降の次発</b><br>${nexts.length ? nexts.map(esc).join("<br>") : "該当便なし"}</div>
+    ${s.officialUrl ? `<a class="mt-3 block w-full text-center rounded-xl bg-sea text-white text-sm font-bold py-2.5 transition-transform active:scale-[0.98]" href="${esc(s.officialUrl)}" target="_blank" rel="noopener">🔗 公式サイトを見る</a>` : ""}
     <div class="mt-3 text-xs text-neutral-400">出典: <a class="underline" href="${esc(s.sourceUrl)}" target="_blank" rel="noopener">${esc(s.sourceName)}</a></div>`;
   $("#modal").hidden = false;
 }
