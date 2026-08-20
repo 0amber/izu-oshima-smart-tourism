@@ -55,18 +55,49 @@ function spotItem(spotId, spots, arr, dep, note, hasLuggage = true) {
  * 荷物なし: 港→山頂口(直行)→ホテル
  * 2日目  : ホテル(荷物預け)→山頂→港
  */
-export function planTrip({ tt, spots, port = "motomachi", arrival = "10:00", hasLuggage = true, returnNote }) {
+const WDAYS = ["日", "月", "火", "水", "木", "金", "土"];
+/** i日目のタブ名。date(YYYY-MM-DD)があれば実日付+曜日、なければ従来の固定ラベル */
+function dayLabel(i, date, fallback) {
+  if (!date) return fallback;
+  const d = new Date(`${date}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return fallback;
+  d.setDate(d.getDate() + i);
+  return `${d.getMonth() + 1}/${d.getDate()}（${WDAYS[d.getDay()]}）`;
+}
+
+export function planTrip({ tt, spots, port = "motomachi", arrival = "10:00", hasLuggage = true, returnNote, stayNights = 1, date }) {
   const warnings = [];
   const unresolved = [];
   const day1 = [];
   const day2 = [];
   const opts = { port };
   const ready = addMin(arrival, WALK_BUFFER);
+  const portName = port === "okada" ? "岡田港" : port === "motomachi" ? "元町港" : "入港地";
 
   if (port === "unknown") warnings.push("入港地が未定のため、元町・岡田どちらでも乗れる便だけで組んでいます（当日、港が決まったら切替）。");
   if (hasLuggage) warnings.push("大島バスの大型手荷物（3辺1m超/10kg超）は1個500円・混雑時は乗車を断られることがあります。1日目のバスは早めに並びましょう。");
 
-  day1.push({ type: "event", time: arrival, title: `${port === "okada" ? "岡田港" : port === "motomachi" ? "元町港" : "入港地"}に到着`, note: hasLuggage ? "キャリーケースあり 🧳" : "身軽 🎒" });
+  // ---- 日帰り: 港→スポット1箇所→港 ----
+  if (stayNights === 0) {
+    if (hasLuggage) warnings.push("日帰りで大きな荷物がある場合は、港の手荷物預かりの利用がおすすめです（有無・料金は要確認）。");
+    day1.push({ type: "event", time: arrival, title: `${portName}に到着`, note: hasLuggage ? "キャリーケースあり 🧳" : "身軽 🎒" });
+    const spotId = hasLuggage ? "TSUBAKI" : "SUMMIT";
+    const g1 = nextBus(tt, "PORT", spotId, ready, opts);
+    if (!g1) unresolved.push(`港→${spots[spotId].name}の便が見つかりません（到着時刻/港を確認）`);
+    else {
+      day1.push(busItem(g1, tt));
+      const g2 = nextBus(tt, spotId, "PORT", addMin(g1.arr, spots[spotId].minStayMin), opts);
+      day1.push(spotItem(spotId, spots, g1.arr, g2 ? g2.dep : null, hasLuggage ? "平坦な園内をゆっくり（お弁当ランチ）" : "火口一周コースなど（昼食は持参）", hasLuggage));
+      if (!g2) unresolved.push(`${spots[spotId].name}→港の便が見つかりません`);
+      else {
+        day1.push(busItem(g2, tt));
+        day1.push({ type: "event", time: g2.arr, title: "港に到着", note: returnNote || "帰りの船は東海汽船公式で要確認" });
+      }
+    }
+    return finalize([{ label: null, items: day1 }], { port, arrival, hasLuggage, stayNights, date }, warnings, unresolved, tt);
+  }
+
+  day1.push({ type: "event", time: arrival, title: `${portName}に到着`, note: hasLuggage ? "キャリーケースあり 🧳" : "身軽 🎒" });
 
   if (hasLuggage) {
     // 港 → 椿・花ガーデン
@@ -113,7 +144,42 @@ export function planTrip({ tt, spots, port = "motomachi", arrival = "10:00", has
     }
   }
 
-  // ---- 2日目: ホテル(荷物預け) → 山頂 → ホテル(荷物回収) → 港 ----
+  const days = [{ label: null, items: day1 }];
+
+  // ---- 2泊3日: 中日はまる一日三原山、最終日は山に行かず港へ ----
+  if (stayNights === 2) {
+    const mid = [];
+    mid.push({ type: "event", time: "08:20", title: "荷物はホテルに置いて、まる一日三原山へ", note: "身軽になって出発 🎒" });
+    const m1 = nextBus(tt, "ONSEN", "SUMMIT", "08:20", opts);
+    if (!m1) unresolved.push("中日 三原山温泉→山頂口の便が見つかりません");
+    else {
+      mid.push(busItem(m1, tt));
+      // 中日は時間に余裕があるので、通常の滞在時間+2hの便を優先(無ければ通常)
+      const m2 = nextBus(tt, "SUMMIT", "ONSEN", addMin(m1.arr, spots.SUMMIT.minStayMin + 120), opts)
+        || nextBus(tt, "SUMMIT", "ONSEN", addMin(m1.arr, spots.SUMMIT.minStayMin), opts);
+      mid.push(spotItem("SUMMIT", spots, m1.arr, m2 ? m2.dep : null, "たっぷり時間があるので火口一周＋裏砂漠まで", false));
+      if (!m2) unresolved.push("中日 山頂→三原山温泉の便が見つかりません");
+      else {
+        mid.push(busItem(m2, tt));
+        mid.push({ type: "event", time: m2.arr, title: "ホテルに戻って温泉", note: "連泊なので荷造り不要でゆっくり ♨️" });
+      }
+    }
+    days.push({ label: null, items: mid });
+
+    const fin = [];
+    fin.push({ type: "event", time: "09:00", title: "チェックアウト・荷物を持って出発", note: hasLuggage ? "キャリーケースあり 🧳" : "身軽 🎒" });
+    const f1 = nextBus(tt, "ONSEN", "PORT", "09:00", opts);
+    if (!f1) unresolved.push("最終日 三原山温泉→港の便が見つかりません（ホテル送迎の有無を確認）");
+    else {
+      fin.push(busItem(f1, tt));
+      if (port !== "okada") fin.push(spotItem("MOTOMACHI", spots, f1.arr, null, "出港までお土産・ランチ", hasLuggage));
+      fin.push({ type: "event", time: f1.arr, title: "港に到着", note: returnNote || "帰りの船は東海汽船公式で要確認" });
+    }
+    days.push({ label: null, items: fin });
+    return finalize(days, { port, arrival, hasLuggage, stayNights, date }, warnings, unresolved, tt);
+  }
+
+  // ---- 2日目(1泊2日の最終日): ホテル(荷物預け) → 山頂 → ホテル(荷物回収) → 港 ----
   const DAY2_READY = "08:20"; // 朝食後、ホテル前バス停に出られる時刻
   day2.push({ type: "event", time: DAY2_READY, title: "ホテルにキャリーケースを預けて出発", note: "身軽になって三原山へ 🎒" });
   const c1 = nextBus(tt, "ONSEN", "SUMMIT", DAY2_READY, opts);
@@ -138,17 +204,21 @@ export function planTrip({ tt, spots, port = "motomachi", arrival = "10:00", has
     }
   }
 
-  const allBuses = [...day1, ...day2].filter((i) => i.type === "bus");
+  days.push({ label: null, items: day2 });
+  return finalize(days, { port, arrival, hasLuggage, stayNights, date }, warnings, unresolved, tt);
+}
+
+/** ラベル付け・運賃合計・共通warningをまとめて返す */
+function finalize(days, input, warnings, unresolved, tt) {
+  const fallbacks = input.stayNights === 0 ? ["日帰り"]
+    : input.stayNights === 1 ? ["1日目（土）", "2日目（日）"]
+    : ["1日目", "2日目", "3日目"];
+  days.forEach((d, i) => { d.label = dayLabel(i, input.date, fallbacks[i] ?? `${i + 1}日目`); });
+  const allBuses = days.flatMap((d) => d.items).filter((i) => i.type === "bus");
   const fareTotal = allBuses.reduce((s, b) => s + (b.fareYen || 0), 0);
   if (allBuses.some((b) => !b.fareConfirmed)) warnings.push("一部区間の運賃は推定値です（公式で要確認）。");
   if (allBuses.some((b) => b.estimated)) warnings.push("下り便の途中停留所の時刻は前後の便からの推定です（要現地確認）。");
-
-  return {
-    input: { port, arrival, hasLuggage },
-    days: [{ label: "1日目（土）", items: day1 }, { label: "2日目（日）", items: day2 }],
-    warnings, unresolved, fareTotal,
-    dataSource: tt.meta,
-  };
+  return { input, days, warnings, unresolved, fareTotal, dataSource: tt.meta };
 }
 
 /** 説明文（PoCではテンプレ。後で /api/explain のLLM出力に差し替え可） */
