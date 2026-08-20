@@ -43,6 +43,21 @@ async function load() {
   bind();
   checkStale(tt);
   render();
+  loadWeather(); // awaitしない(旅程表示をブロックしない)
+}
+
+async function loadWeather() {
+  try {
+    const w = await fetch("/api/weather").then((r) => r.json());
+    if (w.unavailable) throw new Error("unavailable");
+    state.weather = w;
+    $("#weatherChips").innerHTML = w.forecast.map((f) =>
+      `<span class="text-xs rounded-full bg-white/20 px-2 py-1">${esc(f.date.slice(5).replace("-", "/"))} ${esc(f.weather.split(/[\s　]/)[0])}${f.pop != null ? ` ☔${esc(f.pop)}%` : ""}</span>`
+    ).join("");
+  } catch {
+    state.weather = null;
+    $("#weatherChips").innerHTML = '<span class="text-xs opacity-60">天気情報を取得できませんでした</span>';
+  }
 }
 
 function bind() {
