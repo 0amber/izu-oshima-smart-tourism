@@ -28,6 +28,7 @@ def main():
         "timetable": json.loads(read("data/timetable.json")),
         "spots": json.loads(read("data/spots.json")),
         "ferry": json.loads(read("data/ferry.json")),
+        "geo": json.loads(read("data/geo.json")),
     }
 
     # --- JS を非モジュール化 ---

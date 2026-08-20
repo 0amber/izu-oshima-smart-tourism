@@ -4,15 +4,16 @@ const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 const state = { port: "motomachi", arrival: "10:00", hasLuggage: true, day: 0, plan: null, weather: null };
-let tt, spots, ferry;
+let tt, spots, ferry, geo;
 
 async function loadData() {
   // スタンドアロン版（build_standalone.py）では window.__DATA__ に埋め込まれる
-  if (typeof window !== "undefined" && window.__DATA__) return [window.__DATA__.timetable, window.__DATA__.spots, window.__DATA__.ferry];
+  if (typeof window !== "undefined" && window.__DATA__) return [window.__DATA__.timetable, window.__DATA__.spots, window.__DATA__.ferry, window.__DATA__.geo ?? null];
   return Promise.all([
     fetch("data/timetable.json").then((r) => r.json()),
     fetch("data/spots.json").then((r) => r.json()),
     fetch("data/ferry.json").then((r) => r.json()),
+    fetch("data/geo.json").then((r) => r.json()).catch(() => null), // 地図は無くても旅程は成立する
   ]);
 }
 
@@ -38,7 +39,7 @@ function checkStale(tt) {
 }
 
 async function load() {
-  [tt, spots, ferry] = await loadData();
+  [tt, spots, ferry, geo] = await loadData();
   $("#arrival").innerHTML = arrivalOptions(ferry).map((o) => `<option value="${esc(o.value)}" ${o.value === state.arrival ? "selected" : ""}>${esc(o.label)}</option>`).join("");
   bind();
   checkStale(tt);
@@ -118,6 +119,69 @@ function render() {
 
   $("#fare").textContent = `🚌 バス運賃合計（2日間・片道換算）: ${p.fareTotal.toLocaleString()}円`;
   $("#dataSource").innerHTML = `<p>${esc(p.dataSource.source)}</p><p>有効期間 ${esc(p.dataSource.validFrom)}〜${esc(p.dataSource.validTo)} / ${esc(p.dataSource.serviceNote)}</p><p><a class="underline text-sea" href="${esc(p.dataSource.sourceUrl)}" target="_blank" rel="noopener">出典</a></p>`;
+
+  renderMap();
+}
+
+// ---- 地図（Leaflet + OpenStreetMap） ----
+// geo.json が無い / Leaflet未ロード(オフライン・スタンドアロン)なら地図ごと非表示にする。
+let map, routeLayer;
+
+function coordOf(stopId) {
+  if (stopId === "PORT") return state.port === "okada" ? geo.ports.okada : state.port === "motomachi" ? geo.ports.motomachi : null; // 当日決定は起点なし
+  return geo.stops[stopId] ?? null;
+}
+
+function numIcon(n) {
+  return L.divIcon({ className: "", iconSize: [26, 26], iconAnchor: [13, 13],
+    html: `<div style="background:#0e7490;color:#fff;border-radius:9999px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:13px;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.4)">${n}</div>` });
+}
+
+function renderMap() {
+  const el = $("#routeMap");
+  if (!geo || typeof L === "undefined") { el.classList.add("hidden"); $("#mapNote").classList.add("hidden"); return; }
+  el.classList.remove("hidden");
+  $("#mapNote").classList.remove("hidden");
+  if (!map) {
+    map = L.map("routeMap", { scrollWheelZoom: false });
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 17,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+    routeLayer = L.layerGroup().addTo(map);
+  }
+  routeLayer.clearLayers();
+
+  // その日のバス便から訪問順の停留所列を作る（第2案(alt)の中身は描かない）
+  const items = state.plan.days[state.day].items;
+  const seq = [];
+  for (const it of items) {
+    if (it.type !== "bus") continue;
+    for (const id of [it.from, it.to]) if (seq[seq.length - 1] !== id) seq.push(id);
+  }
+  const pts = [];        // 経路線用（訪問順どおり）
+  const firstVisit = []; // マーカー用（初訪問のみ番号を振る）
+  for (const id of seq) {
+    const c = coordOf(id);
+    if (!c) continue;
+    pts.push([c.lat, c.lon]);
+    if (!firstVisit.some((f) => f.id === id)) firstVisit.push({ id, c, n: firstVisit.length + 1 });
+  }
+  for (const f of firstVisit) {
+    L.marker([f.c.lat, f.c.lon], { icon: numIcon(f.n) }).addTo(routeLayer)
+      .bindTooltip(`${f.n}. ${f.c.name}`, { direction: "top", offset: [0, -14] });
+  }
+  if (state.port === "unknown") {
+    for (const p of [geo.ports.motomachi, geo.ports.okada]) {
+      L.circleMarker([p.lat, p.lon], { radius: 7, color: "#737373", fillColor: "#a3a3a3", fillOpacity: 0.7 })
+        .addTo(routeLayer).bindTooltip(`${p.name}（当日決定）`, { direction: "top" });
+    }
+  }
+  if (pts.length >= 2) L.polyline(pts, { color: "#0e7490", weight: 3, dashArray: "6 6" }).addTo(routeLayer);
+
+  const all = [...pts, ...(state.port === "unknown" ? [[geo.ports.motomachi.lat, geo.ports.motomachi.lon], [geo.ports.okada.lat, geo.ports.okada.lon]] : [])];
+  if (all.length) map.fitBounds(L.latLngBounds(all), { padding: [30, 30], maxZoom: 14 });
+  map.invalidateSize();
 }
 
 function renderItem(it) {
