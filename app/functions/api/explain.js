@@ -27,7 +27,7 @@ export async function onRequestPost(ctx) {
         system: SYSTEM_PROMPT,
         messages: [{ role: "user", content: buildExplainPrompt(body) }],
       });
-      stream.on("text", (t) => { sse(`data: ${JSON.stringify(t)}\n\n`); });
+      stream.on("text", (t) => { sse(`data: ${JSON.stringify(t)}\n\n`).catch(() => {}); });
       const final = await stream.finalMessage();
       if (final.stop_reason === "refusal") {
         await sse(`event: fallback\ndata: "refusal"\n\n`);
