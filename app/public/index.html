@@ -11,22 +11,23 @@
 <header class="relative overflow-hidden text-white">
   <img src="img/hero-jetfoil.jpg" alt="" aria-hidden="true" class="absolute inset-0 w-full h-full object-cover">
   <div class="absolute inset-0 bg-gradient-to-b from-sea-deep/55 via-sea/50 to-sea-deep/80"></div>
+  <button type="button" id="langBtn" class="absolute top-3 right-3 z-20 rounded-full bg-white/90 text-sea-deep text-xs font-bold px-3 py-1.5 shadow transition-transform active:scale-95">🌐 English</button>
   <div class="relative max-w-2xl mx-auto px-4 pt-10 text-center">
-    <div class="text-sm font-bold tracking-[.3em] opacity-95">🏝️ 大島スマートコース</div>
-    <h1 class="mt-3 text-3xl sm:text-5xl font-black leading-tight drop-shadow-lg">船を降りたら、<br>あとは島にまかせて。</h1>
-    <p class="mt-3 text-sm opacity-95 drop-shadow">キャリーケースの有無で変わる1泊2日を、<br class="sm:hidden">オープンデータ × 生成AI が自動設計。</p>
+    <div class="text-sm font-bold tracking-[.3em] opacity-95" data-i18n="brand">🏝️ 大島スマートコース</div>
+    <h1 class="mt-3 text-3xl sm:text-5xl font-black leading-tight drop-shadow-lg" data-i18n-html="heroTitle">船を降りたら、<br>あとは島にまかせて。</h1>
+    <p class="mt-3 text-sm opacity-95 drop-shadow" data-i18n-html="heroSub">キャリーケースの有無で変わる1泊2日を、<br class="sm:hidden">オープンデータ × 生成AI が自動設計。</p>
     <div id="weatherChips" class="flex gap-2 mt-4 flex-wrap justify-center"></div>
     <div class="mt-5 -mb-14 relative z-10 mx-auto max-w-sm rounded-2xl bg-white/95 backdrop-blur shadow-xl p-4 text-neutral-700 text-left">
       <div class="flex items-center gap-4">
         <img src="img/qr-app.svg" alt="このアプリを開くQRコード" class="w-24 h-24 shrink-0 rounded-lg border border-neutral-200 bg-white">
         <div class="min-w-0">
-          <div class="text-sm font-bold text-sea-deep">📱 スマホでこのアプリを開く</div>
-          <div class="mt-0.5 text-xs text-neutral-500">QRを読み取って、仲間にもシェア！</div>
+          <div class="text-sm font-bold text-sea-deep" data-i18n="qrTitle">📱 スマホでこのアプリを開く</div>
+          <div class="mt-0.5 text-xs text-neutral-500" data-i18n="qrSub">QRを読み取って、仲間にもシェア！</div>
           <div class="mt-2 flex flex-wrap gap-1.5">
-            <button type="button" id="shareX" class="rounded-full bg-neutral-900 text-white text-xs font-bold px-3 py-1.5 transition-transform active:scale-95">𝕏 ポスト</button>
-            <button type="button" id="shareLine" class="rounded-full bg-[#06C755] text-white text-xs font-bold px-3 py-1.5 transition-transform active:scale-95">LINEで送る</button>
-            <button type="button" id="shareBtn" class="rounded-full border border-sea text-sea text-xs font-bold px-3 py-1.5 transition-transform active:scale-95">🔗 共有</button>
-            <a href="#promoVideo" class="rounded-full bg-tsubaki text-white text-xs font-bold px-3 py-1.5 transition-transform active:scale-95">▶ 紹介ビデオ(2分)</a>
+            <button type="button" id="shareX" class="rounded-full bg-neutral-900 text-white text-xs font-bold px-3 py-1.5 transition-transform active:scale-95" data-i18n="shareX">𝕏 ポスト</button>
+            <button type="button" id="shareLine" class="rounded-full bg-[#06C755] text-white text-xs font-bold px-3 py-1.5 transition-transform active:scale-95" data-i18n="shareLine">LINEで送る</button>
+            <button type="button" id="shareBtn" class="rounded-full border border-sea text-sea text-xs font-bold px-3 py-1.5 transition-transform active:scale-95" data-i18n="share">🔗 共有</button>
+            <a href="#promoVideo" class="rounded-full bg-tsubaki text-white text-xs font-bold px-3 py-1.5 transition-transform active:scale-95" data-i18n="videoLink">▶ 紹介ビデオ(2分)</a>
           </div>
         </div>
       </div>
@@ -44,41 +45,41 @@
 
   <section class="mt-4 bg-white rounded-2xl shadow-sm p-4">
     <span class="inline-flex items-center gap-1 rounded-full bg-sea/10 text-sea text-xs font-bold px-3 py-1">🎫 STEP 1</span>
-    <h2 class="mt-1 text-lg font-black text-sea-deep">あなたの条件をえらぶ</h2>
+    <h2 class="mt-1 text-lg font-black text-sea-deep" data-i18n="step1Title">あなたの条件をえらぶ</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
       <label class="block">
-        <span class="text-sm text-neutral-500">出発日</span>
+        <span class="text-sm text-neutral-500" data-i18n="lblDate">出発日</span>
         <input type="date" id="tripDate" value="2026-08-22" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 bg-white">
       </label>
       <label class="block">
-        <span class="text-sm text-neutral-500">期間</span>
+        <span class="text-sm text-neutral-500" data-i18n="lblStay">期間</span>
         <select id="stay" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 bg-white">
-          <option value="0">日帰り</option>
-          <option value="1" selected>1泊2日</option>
-          <option value="2">2泊3日</option>
+          <option value="0" data-i18n="stay0">日帰り</option>
+          <option value="1" selected data-i18n="stay1">1泊2日</option>
+          <option value="2" data-i18n="stay2">2泊3日</option>
         </select>
       </label>
       <label class="block">
-        <span class="text-sm text-neutral-500">到着する港</span>
+        <span class="text-sm text-neutral-500" data-i18n="lblPort">到着する港</span>
         <select id="port" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 bg-white">
-          <option value="motomachi">元町港</option>
-          <option value="okada">岡田港</option>
-          <option value="unknown">まだわからない(当日決定)</option>
+          <option value="motomachi" data-i18n="portMoto">元町港</option>
+          <option value="okada" data-i18n="portOkada">岡田港</option>
+          <option value="unknown" data-i18n="portUnknown">まだわからない(当日決定)</option>
         </select>
       </label>
       <label class="block">
-        <span class="text-sm text-neutral-500">到着時刻(東海汽船)</span>
+        <span class="text-sm text-neutral-500" data-i18n="lblArrival">到着時刻(東海汽船)</span>
         <select id="arrival" class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2 bg-white"></select>
       </label>
       <div class="block">
-        <span class="text-sm text-neutral-500">荷物</span>
+        <span class="text-sm text-neutral-500" data-i18n="lblLuggage">荷物</span>
         <div class="mt-1 grid grid-cols-2 gap-2" role="radiogroup" aria-label="荷物">
-          <button type="button" id="lugOn" class="tbtn rounded-xl border px-3 py-2 text-sm">🧳 キャリーケースあり</button>
-          <button type="button" id="lugOff" class="tbtn rounded-xl border px-3 py-2 text-sm">🎒 身軽</button>
+          <button type="button" id="lugOn" class="tbtn rounded-xl border px-3 py-2 text-sm" data-i18n="lugOn">🧳 キャリーケースあり</button>
+          <button type="button" id="lugOff" class="tbtn rounded-xl border px-3 py-2 text-sm" data-i18n="lugOff">🎒 身軽</button>
         </div>
       </div>
       <label class="block">
-        <span class="text-sm text-neutral-500">宿泊</span>
+        <span class="text-sm text-neutral-500" data-i18n="lblHotel">宿泊</span>
         <input type="text" id="hotelField" value="大島温泉ホテル(三原山温泉)" disabled class="mt-1 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2 text-neutral-500">
       </label>
     </div>
@@ -87,44 +88,44 @@
   <section class="mt-4 bg-white rounded-2xl shadow-sm p-4">
     <span class="inline-flex items-center gap-1 rounded-full bg-tsubaki/10 text-tsubaki text-xs font-bold px-3 py-1">🚌 STEP 2</span>
     <div class="mt-1 flex items-center justify-between gap-2 flex-wrap">
-      <h2 class="text-lg font-black text-sea-deep">島をめぐるプラン</h2>
+      <h2 class="text-lg font-black text-sea-deep" data-i18n="step2Title">島をめぐるプラン</h2>
       <div id="dayTabs" class="flex gap-1"></div>
     </div>
     <div id="warnings" class="mt-3 space-y-2"></div>
     <!-- 地図はLeaflet未ロード(オフライン等)なら hidden のまま。z-index:0 でモーダルより下に固定 -->
     <div id="routeMap" class="hidden mt-3 rounded-xl" style="height:280px;position:relative;z-index:0"></div>
-    <div id="mapNote" class="hidden mt-1 text-xs text-neutral-400">経路線は停留所間の模式図(実際の道路形状ではありません)。地図: © OpenStreetMap contributors</div>
+    <div id="mapNote" class="hidden mt-1 text-xs text-neutral-400" data-i18n="mapNote">経路線は停留所間の模式図(実際の道路形状ではありません)。地図: © OpenStreetMap contributors</div>
     <div id="timeline" class="mt-3"></div>
     <div id="fare" class="mt-3 rounded-xl bg-white border border-dashed border-sea/40 px-4 py-3 flex justify-between items-center gap-2 text-sm font-bold"></div>
     <div class="mt-4 border-t border-neutral-100 pt-4">
-      <button type="button" id="explainBtn" class="w-full rounded-2xl bg-gradient-to-r from-tsubaki to-tsubaki-deep text-white font-bold py-3.5 text-base shadow-lg shadow-tsubaki/30 transition-transform duration-150 active:scale-[0.98]">✨ AIガイドの解説を聞く</button>
-      <button type="button" id="speakBtn" class="hidden mt-2 w-full rounded-xl border-2 border-sea text-sea font-bold py-2 transition-transform duration-150 active:scale-[0.98]">🔊 ガイドさんの声で聞く</button>
-      <div id="explainLabel" class="hidden mt-3 text-xs font-bold text-tsubaki">🌺 島ガイドより</div>
+      <button type="button" id="explainBtn" class="w-full rounded-2xl bg-gradient-to-r from-tsubaki to-tsubaki-deep text-white font-bold py-3.5 text-base shadow-lg shadow-tsubaki/30 transition-transform duration-150 active:scale-[0.98]" data-i18n="explainBtn">✨ AIガイドの解説を聞く</button>
+      <button type="button" id="speakBtn" class="hidden mt-2 w-full rounded-xl border-2 border-sea text-sea font-bold py-2 transition-transform duration-150 active:scale-[0.98]" data-i18n="speak">🔊 ガイドさんの声で聞く</button>
+      <div id="explainLabel" class="hidden mt-3 text-xs font-bold text-tsubaki" data-i18n="explainLabel">🌺 島ガイドより</div>
       <div id="explainText" class="hidden mt-1 rounded-r-xl bg-sand-deep/50 border-l-4 border-tsubaki p-4 text-sm leading-relaxed whitespace-pre-wrap"></div>
     </div>
-    <details class="mt-4 text-xs text-neutral-500"><summary>使っているオープンデータ</summary><div id="dataSource" class="mt-2 space-y-1"></div></details>
+    <details class="mt-4 text-xs text-neutral-500"><summary data-i18n="openData">使っているオープンデータ</summary><div id="dataSource" class="mt-2 space-y-1"></div></details>
   </section>
 
   <section class="mt-4 bg-white rounded-2xl shadow-sm p-4">
     <span class="inline-flex items-center gap-1 rounded-full bg-sunset/15 text-warn text-xs font-bold px-3 py-1">📷 GALLERY</span>
-    <h2 class="mt-1 text-lg font-black text-sea-deep">島のいろどり</h2>
+    <h2 class="mt-1 text-lg font-black text-sea-deep" data-i18n="galleryTitle">島のいろどり</h2>
     <div class="mt-3 flex gap-3 overflow-x-auto snap-x pb-2 -mx-1 px-1">
-      <figure class="w-44 shrink-0 snap-start"><img src="img/mihara.jpg" alt="三原山" loading="lazy" class="w-44 h-28 object-cover rounded-xl shadow-sm"><figcaption class="mt-1 text-xs text-neutral-500">🌋 三原山 — 島のシンボル</figcaption></figure>
-      <figure class="w-44 shrink-0 snap-start"><img src="img/mihara-crater.jpg" alt="三原山の火口" loading="lazy" class="w-44 h-28 object-cover rounded-xl shadow-sm"><figcaption class="mt-1 text-xs text-neutral-500">🕳 火口一周コース</figcaption></figure>
-      <figure class="w-44 shrink-0 snap-start"><img src="img/mihara-trail.jpg" alt="ゴジラ岩" loading="lazy" class="w-44 h-28 object-cover rounded-xl shadow-sm"><figcaption class="mt-1 text-xs text-neutral-500">🦖 ゴジラ岩</figcaption></figure>
-      <figure class="w-44 shrink-0 snap-start"><img src="img/camellia.jpg" alt="椿のプロムナード" loading="lazy" class="w-44 h-28 object-cover rounded-xl shadow-sm"><figcaption class="mt-1 text-xs text-neutral-500">🌺 椿のプロムナード</figcaption></figure>
-      <figure class="w-44 shrink-0 snap-start"><img src="img/ashitaba.jpg" alt="明日葉" loading="lazy" class="w-44 h-28 object-cover rounded-xl shadow-sm"><figcaption class="mt-1 text-xs text-neutral-500">🥬 名物・明日葉（天ぷらが絶品）</figcaption></figure>
-      <figure class="w-44 shrink-0 snap-start"><img src="img/motomachi.jpg" alt="元町港" loading="lazy" class="w-44 h-28 object-cover rounded-xl shadow-sm"><figcaption class="mt-1 text-xs text-neutral-500">⛴ 元町港の海</figcaption></figure>
-      <figure class="w-44 shrink-0 snap-start"><img src="img/oshima-bus.jpg" alt="大島バス" loading="lazy" class="w-44 h-28 object-cover rounded-xl shadow-sm"><figcaption class="mt-1 text-xs text-neutral-500">🚌 島をめぐる大島バス</figcaption></figure>
+      <figure class="w-44 shrink-0 snap-start"><img src="img/mihara.jpg" alt="三原山" loading="lazy" class="w-44 h-28 object-cover rounded-xl shadow-sm"><figcaption class="mt-1 text-xs text-neutral-500" data-i18n="g1">🌋 三原山 — 島のシンボル</figcaption></figure>
+      <figure class="w-44 shrink-0 snap-start"><img src="img/mihara-crater.jpg" alt="三原山の火口" loading="lazy" class="w-44 h-28 object-cover rounded-xl shadow-sm"><figcaption class="mt-1 text-xs text-neutral-500" data-i18n="g2">🕳 火口一周コース</figcaption></figure>
+      <figure class="w-44 shrink-0 snap-start"><img src="img/mihara-trail.jpg" alt="ゴジラ岩" loading="lazy" class="w-44 h-28 object-cover rounded-xl shadow-sm"><figcaption class="mt-1 text-xs text-neutral-500" data-i18n="g3">🦖 ゴジラ岩</figcaption></figure>
+      <figure class="w-44 shrink-0 snap-start"><img src="img/camellia.jpg" alt="椿のプロムナード" loading="lazy" class="w-44 h-28 object-cover rounded-xl shadow-sm"><figcaption class="mt-1 text-xs text-neutral-500" data-i18n="g4">🌺 椿のプロムナード</figcaption></figure>
+      <figure class="w-44 shrink-0 snap-start"><img src="img/ashitaba.jpg" alt="明日葉" loading="lazy" class="w-44 h-28 object-cover rounded-xl shadow-sm"><figcaption class="mt-1 text-xs text-neutral-500" data-i18n="g5">🥬 名物・明日葉（天ぷらが絶品）</figcaption></figure>
+      <figure class="w-44 shrink-0 snap-start"><img src="img/motomachi.jpg" alt="元町港" loading="lazy" class="w-44 h-28 object-cover rounded-xl shadow-sm"><figcaption class="mt-1 text-xs text-neutral-500" data-i18n="g6">⛴ 元町港の海</figcaption></figure>
+      <figure class="w-44 shrink-0 snap-start"><img src="img/oshima-bus.jpg" alt="大島バス" loading="lazy" class="w-44 h-28 object-cover rounded-xl shadow-sm"><figcaption class="mt-1 text-xs text-neutral-500" data-i18n="g7">🚌 島をめぐる大島バス</figcaption></figure>
     </div>
-    <div class="mt-2 text-xs text-neutral-400">リンク: <a class="underline" href="https://www.izu-oshima.or.jp/" target="_blank" rel="noopener">大島観光協会</a> ・ <a class="underline" href="https://www.oshima-onsen.co.jp/" target="_blank" rel="noopener">大島温泉ホテル</a> ・ <a class="underline" href="https://www.town.oshima.tokyo.jp/" target="_blank" rel="noopener">大島町公式</a> ・ <a class="underline" href="https://www.tokaikisen.co.jp/" target="_blank" rel="noopener">東海汽船</a></div>
+    <div class="mt-2 text-xs text-neutral-400"><span data-i18n="links">リンク:</span> <a class="underline" href="https://www.izu-oshima.or.jp/" target="_blank" rel="noopener">大島観光協会</a> ・ <a class="underline" href="https://www.oshima-onsen.co.jp/" target="_blank" rel="noopener">大島温泉ホテル</a> ・ <a class="underline" href="https://www.town.oshima.tokyo.jp/" target="_blank" rel="noopener">大島町公式</a> ・ <a class="underline" href="https://www.tokaikisen.co.jp/" target="_blank" rel="noopener">東海汽船</a></div>
   </section>
 
   <section id="promoVideo" class="mt-4 bg-white rounded-2xl shadow-sm p-4 scroll-mt-4">
     <span class="inline-flex items-center gap-1 rounded-full bg-sea/10 text-sea text-xs font-bold px-3 py-1">🎬 MOVIE</span>
-    <h2 class="mt-1 text-lg font-black text-sea-deep">2分でわかる大島スマートコース</h2>
+    <h2 class="mt-1 text-lg font-black text-sea-deep" data-i18n="movieTitle">2分でわかる大島スマートコース</h2>
     <video src="video/promo-2min.mp4" controls preload="metadata" playsinline class="mt-3 w-full rounded-xl shadow-sm bg-black" aria-label="紹介ビデオ(2分・無音・テロップ付き)"></video>
-    <div class="mt-1 text-xs text-neutral-400">無音・テロップ付き。直接URL: <a class="underline" href="video/promo-2min.mp4" target="_blank" rel="noopener">/video/promo-2min.mp4</a></div>
+    <div class="mt-1 text-xs text-neutral-400"><span data-i18n="movieNote">無音・テロップ付き。直接URL:</span> <a class="underline" href="video/promo-2min.mp4" target="_blank" rel="noopener">/video/promo-2min.mp4</a></div>
   </section>
 </main>
 

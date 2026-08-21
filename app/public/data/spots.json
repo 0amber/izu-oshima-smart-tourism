@@ -17,7 +17,19 @@
     "sourceName": "大島町公式サイト",
     "sourceUrl": "https://www.town.oshima.tokyo.jp/",
     "officialUrl": "https://www.izu-oshima.or.jp/",
-    "photo": "img/camellia.jpg"
+    "photo": "img/camellia.jpg",
+    "en": {
+      "name": "Tsubaki Flower Garden",
+      "desc": "8 min by bus from the port. The grounds are flat, easy to stroll even with your suitcase. Big lawn square.",
+      "cautions": [
+        "The garden cafe/shop may be closed (confirm whether bringing/eating a bento in the garden is allowed)"
+      ],
+      "todo": [
+        "Bento allowed?",
+        "OK to eat on the lawn?",
+        "Anywhere to leave luggage?"
+      ]
+    }
   },
   "SUMMIT": {
     "name": "三原山（山頂口〜火口）",
@@ -36,7 +48,18 @@
     "sourceName": "大島町公式サイト",
     "sourceUrl": "https://www.town.oshima.tokyo.jp/",
     "officialUrl": "https://www.izu-oshima.or.jp/",
-    "photo": "img/mihara-trail.jpg"
+    "photo": "img/mihara-trail.jpg",
+    "en": {
+      "name": "Mt. Mihara (summit trailhead to crater)",
+      "desc": "The symbol of Izu Oshima. The path from the trailhead to the crater is unpaved — travel light.",
+      "cautions": [
+        "Unpaved trail — not realistic with a suitcase",
+        "Large bags on the bus cost ¥500 each; boarding may be refused when crowded"
+      ],
+      "todo": [
+        "Take a photo showing how hard the trail is with a suitcase"
+      ]
+    }
   },
   "ONSEN": {
     "name": "大島温泉ホテル（三原山温泉）",
@@ -53,7 +76,15 @@
     "sourceName": "大島町公式サイト",
     "sourceUrl": "https://www.town.oshima.tokyo.jp/",
     "officialUrl": "https://www.oshima-onsen.co.jp/",
-    "photo": "img/mihara.jpg"
+    "photo": "img/mihara.jpg",
+    "en": {
+      "name": "Oshima Onsen Hotel (Mihara Onsen)",
+      "desc": "Right at the bus stop. If they store your bags before check-in, you can head to Mt. Mihara traveling light.",
+      "cautions": [],
+      "todo": [
+        "Can they store luggage before check-in?"
+      ]
+    }
   },
   "MOTOMACHI": {
     "name": "元町散策",
@@ -69,6 +100,14 @@
     "sourceName": "大島町公式サイト",
     "sourceUrl": "https://www.town.oshima.tokyo.jp/",
     "officialUrl": "https://www.town.oshima.tokyo.jp/",
-    "photo": "img/motomachi.jpg"
+    "photo": "img/motomachi.jpg",
+    "en": {
+      "name": "Motomachi stroll",
+      "desc": "A walk around the port town. Lots of slopes — a bit tough with luggage.",
+      "cautions": [
+        "Slopes"
+      ],
+      "todo": []
+    }
   }
 }
