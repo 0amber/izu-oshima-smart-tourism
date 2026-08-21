@@ -25,31 +25,36 @@ def caption(page, text):
 
 def scroll_to(page, sel, block="center"):
     page.evaluate("s=>document.querySelector(s).scrollIntoView({behavior:'smooth',block:'%s'})" % block, sel)
-    time.sleep(0.7)
+    time.sleep(0.5)
 
 def play_part(page, part):
     page.goto(f"file://{PROMO}?part={part}", wait_until="load")
     dur = page.evaluate("window.__DURATION")
     time.sleep(dur)
 
+CHAP_JS = """()=>{const c=document.createElement('div');c.id='chap';c.textContent='実演デモ｜公開Webアプリ';
+c.style.cssText='position:fixed;top:22px;left:26px;z-index:9999;background:rgba(255,255,255,.94);color:#0b3a5c;font:800 20px/1 -apple-system,Hiragino Sans,sans-serif;padding:10px 20px;border-radius:999px;box-shadow:0 2px 10px rgba(0,0,0,.18)';
+document.body.appendChild(c);}"""
+
 def run_app(page):
     page.goto(APP, wait_until="load"); page.wait_for_selector("#timeline li"); time.sleep(0.4)
-    caption(page, "公開Webアプリ — QRコードを読むだけで、誰でもすぐ使えます"); time.sleep(3.0)
+    page.evaluate(CHAP_JS)  # 左上のチャプターラベル
+    caption(page, "公開Webアプリ — QRコードを読むだけで、誰でもすぐ使えます"); time.sleep(2.6)
     scroll_to(page, "#tripDate")
-    caption(page, "日付・期間（日帰り〜2泊3日）・港・荷物を選ぶだけ"); time.sleep(3.0)
+    caption(page, "日付・期間（日帰り〜2泊3日）・港・荷物を選ぶだけ"); time.sleep(2.6)
     scroll_to(page, "#timeline", "start")
-    caption(page, "🧳 荷物あり：10:20港発 → 椿・花ガーデン → ホテルへ。すべて実在の便（✅時刻表と一致）"); time.sleep(4.6)
-    page.click("#lugOff"); time.sleep(0.4); scroll_to(page, "#timeline", "start")
-    caption(page, "🎒 身軽に切り替えると三原山へ直行。旅程が瞬時に組み替わる"); time.sleep(4.2)
-    page.click("#lugOn"); time.sleep(0.3)
-    page.click("#dayTabs .tab:nth-child(2)"); time.sleep(0.4)
+    caption(page, "🧳 荷物あり：10:20港発 → 椿・花ガーデン → ホテルへ。すべて実在の便（✅時刻表と一致）"); time.sleep(4.2)
+    page.click("#lugOff"); time.sleep(0.3); scroll_to(page, "#timeline", "start")
+    caption(page, "🎒 身軽に切り替えると三原山へ直行。旅程が瞬時に組み替わる"); time.sleep(3.8)
+    page.click("#lugOn"); time.sleep(0.2)
+    page.click("#dayTabs .tab:nth-child(2)"); time.sleep(0.3)
     scroll_to(page, "#routeMap")
-    caption(page, "2日目：荷物を預けて山頂へ → 13:37最終便 → 14:20の船に接続。ルートは地図で確認"); time.sleep(4.8)
+    caption(page, "2日目：荷物を預けて山頂へ → 13:37最終便 → 14:20の船に接続。ルートは地図で確認"); time.sleep(4.4)
     scroll_to(page, "#explainBtn")
     page.click("#explainBtn")
-    caption(page, "AIガイドが旅程を解説（実在便だけを引用）。🔊 バスガイド風の音声読み上げにも対応"); time.sleep(1.4)
+    caption(page, "AIガイドが旅程を解説（実在便だけを引用）。🔊 バスガイド風の音声読み上げにも対応"); time.sleep(1.2)
     scroll_to(page, "#explainText")
-    time.sleep(4.6)
+    time.sleep(3.8)
 
 def main():
     tmp = HERE / "_rec"; shutil.rmtree(tmp, ignore_errors=True); tmp.mkdir()
