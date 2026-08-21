@@ -22,6 +22,16 @@ export function buildExplainPrompt({ itinerary, conditions, weather }) {
     JSON.stringify(itinerary),
   ];
   if (weather) parts.push("## 天気予報(JSON)", JSON.stringify(weather));
+  if (conditions?.lang === "en") {
+    parts.push([
+      "## Output language",
+      "Write the response entirely in English (cheerful bus-guide tone). Use these four ### headings instead of the Japanese ones:",
+      "### Highlights of this itinerary",
+      "### Luggage notes",
+      "### Rainy-day alternatives",
+      "### A quick local guide",
+    ].join("\n"));
+  }
   return parts.join("\n");
 }
 

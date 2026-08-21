@@ -123,3 +123,19 @@ test("planTrip: dateなしは従来ラベルのまま(後方互換)", () => {
   assert.equal(p.days[0].label, "1日目（土）");
   assert.equal(p.days[1].label, "2日目（日）");
 });
+
+test("planTrip: lang=en で旅程の文言・スポット名が英語になる", () => {
+  const p = planTrip({ tt, spots, port: "motomachi", arrival: "10:00", hasLuggage: true, lang: "en" });
+  assert.equal(p.days[0].label, "Day 1 (Sat)");
+  assert.equal(p.days[0].items[0].title, "Arrive at Motomachi Port");
+  const spot = p.days[0].items.find((i) => i.type === "spot");
+  assert.equal(spot.name, "Tsubaki Flower Garden");
+  assert.ok(p.days[1].items.at(-1).title.includes("Arrive at the port"), p.days[1].items.at(-1).title);
+  assert.ok(p.warnings.some((w) => w.includes("Oshima Bus")), JSON.stringify(p.warnings));
+});
+
+test("planTrip: lang=en + date で英語の日付ラベルになる", () => {
+  const p = planTrip({ tt, spots, port: "motomachi", arrival: "10:00", hasLuggage: true, date: "2026-08-22", lang: "en" });
+  assert.equal(p.days[0].label, "Sat, Aug 22");
+  assert.equal(p.days[1].label, "Sun, Aug 23");
+});

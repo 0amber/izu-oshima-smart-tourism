@@ -22,6 +22,15 @@ test("buildExplainPrompt: 天気なしでも動く", () => {
   const p = buildExplainPrompt({ itinerary, conditions: { hasLuggage: false, port: "okada" }, weather: null });
   assert.ok(p.includes("okada"));
 });
+test("buildExplainPrompt: lang=en なら英語で書く指示と英語見出しが入る", () => {
+  const p = buildExplainPrompt({ itinerary, conditions: { hasLuggage: true, port: "motomachi", lang: "en" }, weather: null });
+  assert.ok(p.includes("entirely in English"));
+  assert.ok(p.includes("Highlights of this itinerary"));
+});
+test("buildExplainPrompt: lang未指定なら英語指示は入らない", () => {
+  const p = buildExplainPrompt({ itinerary, conditions: { hasLuggage: true, port: "motomachi" }, weather: null });
+  assert.ok(!p.includes("English"));
+});
 test("fallbackExplain: 荷物有無で文面が変わる", () => {
   assert.notEqual(fallbackExplain({ hasLuggage: true, port: "motomachi" }), fallbackExplain({ hasLuggage: false, port: "motomachi" }));
 });

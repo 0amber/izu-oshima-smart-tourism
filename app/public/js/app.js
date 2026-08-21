@@ -3,8 +3,54 @@ import { planTrip, nextBus, explain, addMin } from "./planner.js";
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-const state = { port: "motomachi", arrival: "10:00", hasLuggage: true, day: 0, plan: null, weather: null, date: "2026-08-22", stayNights: 1 };
+const state = { port: "motomachi", arrival: "10:00", hasLuggage: true, day: 0, plan: null, weather: null, date: "2026-08-22", stayNights: 1,
+  lang: (typeof localStorage !== "undefined" && localStorage.getItem("lang")) === "en" ? "en" : "ja" };
 let tt, spots, ferry, geo;
+
+// ---- i18n: 静的UIは data-i18n 属性 + UI辞書、動的文言は T() で切替。旅程文言は planner.js 側 ----
+const T = (ja, en) => (state.lang === "en" ? en : ja);
+const UI = {
+  brand: "🏝️ Oshima Smart Course",
+  heroTitle: "Step off the ferry,<br>and let the island take over.",
+  heroSub: 'A trip that reshapes itself around your luggage,<br class="sm:hidden">auto-planned with open data × generative AI.',
+  qrTitle: "📱 Open this app on your phone", qrSub: "Scan the QR and share with your crew!",
+  shareX: "𝕏 Post", shareLine: "Share on LINE", share: "🔗 Share", videoLink: "▶ Intro video (2 min)",
+  step1Title: "Choose your conditions",
+  lblDate: "Departure date", lblStay: "Duration",
+  stay0: "Day trip", stay1: "2 days / 1 night", stay2: "3 days / 2 nights",
+  lblPort: "Arrival port", portMoto: "Motomachi Port", portOkada: "Okada Port", portUnknown: "Not sure yet (decided that day)",
+  lblArrival: "Arrival time (Tokai Kisen)", lblLuggage: "Luggage",
+  lugOn: "🧳 With suitcase", lugOff: "🎒 Traveling light", lblHotel: "Stay",
+  step2Title: "Your island plan",
+  mapNote: "Route lines are schematic between stops (not actual roads). Map: © OpenStreetMap contributors",
+  explainBtn: "✨ Hear the AI guide", speak: "🔊 Listen to the guide", explainLabel: "🌺 From your island guide",
+  openData: "Open data used",
+  galleryTitle: "Colors of the island",
+  g1: "🌋 Mt. Mihara — symbol of the island", g2: "🕳 Crater rim course", g3: "🦖 Godzilla Rock",
+  g4: "🌺 Camellia promenade", g5: "🥬 Ashitaba — local greens (great as tempura)",
+  g6: "⛴ The sea at Motomachi Port", g7: "🚌 Oshima Bus around the island",
+  links: "Links:", movieTitle: "Oshima Smart Course in 2 minutes", movieNote: "Silent, with captions. Direct URL:",
+};
+function applyI18n() {
+  document.documentElement.lang = state.lang;
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    if (el.dataset.ja === undefined) el.dataset.ja = el.textContent;
+    el.textContent = state.lang === "en" ? (UI[el.dataset.i18n] ?? el.dataset.ja) : el.dataset.ja;
+  });
+  document.querySelectorAll("[data-i18n-html]").forEach((el) => {
+    if (el.dataset.ja === undefined) el.dataset.ja = el.innerHTML;
+    el.innerHTML = state.lang === "en" ? (UI[el.dataset.i18nHtml] ?? el.dataset.ja) : el.dataset.ja;
+  });
+  $("#langBtn").textContent = state.lang === "en" ? "🌐 日本語" : "🌐 English";
+}
+const SHIP_EN = { "ジェット船": "Jet ferry", "大型客船": "Overnight ferry" };
+const shipName = (s) => (state.lang === "en" ? SHIP_EN[s] || s : s);
+const STOP_EN = { PORT: "Port (Motomachi/Okada)", TSUBAKI: "Tsubaki Flower Garden", ONSEN: "Mihara Onsen (hotel front)", SUMMIT: "Mt. Mihara Trailhead" };
+const stopName = (id) => (state.lang === "en" ? STOP_EN[id] || tt.stops[id].name : tt.stops[id].name);
+const ROUTE_EN = [["三原山ライン", "Mihara Line"], ["（港→山頂口）", " (port → summit)"], ["（山頂口→港）", " (summit → port)"], ["（", " ("], ["）", ")"]];
+const routeName = (r) => (state.lang === "en" ? ROUTE_EN.reduce((a, [j, e]) => a.replaceAll(j, e), r) : r);
+const WEATHER_EN = [["晴れ", "Sunny"], ["くもり", "Cloudy"], ["雨", "Rain"], ["雪", "Snow"], ["時々", "/"], ["のち", "→"], ["一時", "/"]];
+const weatherText = (w) => (state.lang === "en" ? WEATHER_EN.reduce((a, [j, e]) => a.replaceAll(j, e), w.split(/[\s　]/)[0]) : w.split(/[\s　]/)[0]);
 
 async function loadData() {
   // スタンドアロン版（build_standalone.py）では window.__DATA__ に埋め込まれる
@@ -18,29 +64,33 @@ async function loadData() {
 }
 
 function arrivalOptions(ferry) {
-  const opts = (ferry.outbound || [])
-    .filter((s) => s.arriveOshima)
-    .map((s) => ({ value: s.arriveOshima, label: `${s.arriveOshima}(${s.shipType} 竹芝${s.depTakeshiba}発)` }));
-  if (!opts.length) return [
-    { value: "09:35", label: "09:35(ジェット船 竹芝7:25/7:50発)" },
-    { value: "10:00", label: "10:00(ジェット船 竹芝8:15発)" },
-    { value: "06:00", label: "06:00(大型客船 竹芝23:00発)" },
+  const label = (arr, ship, dep) => T(`${arr}(${ship} 竹芝${dep}発)`, `${arr} (${shipName(ship)}, Takeshiba ${dep} dep.)`);
+  const rows = (ferry.outbound || []).filter((s) => s.arriveOshima);
+  if (rows.length) return rows.map((s) => ({ value: s.arriveOshima, label: label(s.arriveOshima, s.shipType, s.depTakeshiba) }));
+  return [
+    { value: "09:35", label: label("09:35", "ジェット船", "7:25/7:50") },
+    { value: "10:00", label: label("10:00", "ジェット船", "8:15") },
+    { value: "06:00", label: label("06:00", "大型客船", "23:00") },
   ];
-  return opts;
+}
+function renderArrivalOptions() {
+  $("#arrival").innerHTML = arrivalOptions(ferry).map((o) => `<option value="${esc(o.value)}" ${o.value === state.arrival ? "selected" : ""}>${esc(o.label)}</option>`).join("");
 }
 
 function checkStale(tt) {
   const today = new Date().toISOString().slice(0, 10);
   if (tt.meta.validTo && today > tt.meta.validTo) {
     const el = $("#staleBanner");
-    el.textContent = `⚠ この時刻表の有効期間(〜${tt.meta.validTo})を過ぎています。最新ダイヤを確認してください。`;
+    el.textContent = T(`⚠ この時刻表の有効期間(〜${tt.meta.validTo})を過ぎています。最新ダイヤを確認してください。`,
+      `⚠ This timetable's validity (until ${tt.meta.validTo}) has passed. Check the latest schedule.`);
     el.classList.remove("hidden");
   }
 }
 
 async function load() {
   [tt, spots, ferry, geo] = await loadData();
-  $("#arrival").innerHTML = arrivalOptions(ferry).map((o) => `<option value="${esc(o.value)}" ${o.value === state.arrival ? "selected" : ""}>${esc(o.label)}</option>`).join("");
+  applyI18n();
+  renderArrivalOptions();
   bind();
   checkStale(tt);
   render();
@@ -59,7 +109,7 @@ async function loadWeather() {
     renderWeatherChips();
   } catch {
     state.weather = null;
-    $("#weatherChips").innerHTML = '<span class="text-xs opacity-60">天気情報を取得できませんでした</span>';
+    $("#weatherChips").innerHTML = `<span class="text-xs opacity-60">${esc(T("天気情報を取得できませんでした", "Weather is unavailable right now"))}</span>`;
   } finally {
     weatherLoading = false;
   }
@@ -94,9 +144,9 @@ function renderWeatherChips() {
   const w = weatherForTrip();
   $("#weatherChips").innerHTML = w
     ? w.forecast.map((f) =>
-        `<span class="text-xs rounded-full bg-white/20 px-2 py-1">${esc(f.date.slice(5).replace("-", "/"))} ${esc(f.weather.split(/[\s　]/)[0])}${f.pop != null ? ` ☔${esc(f.pop)}%` : ""}</span>`
+        `<span class="text-xs rounded-full bg-white/20 px-2 py-1">${esc(f.date.slice(5).replace("-", "/"))} ${esc(weatherText(f.weather))}${f.pop != null ? ` ☔${esc(f.pop)}%` : ""}</span>`
       ).join("")
-    : '<span class="text-xs opacity-60">選択日の予報はまだありません（予報は7日先まで）</span>';
+    : `<span class="text-xs opacity-60">${esc(T("選択日の予報はまだありません（予報は7日先まで）", "No forecast for the selected dates yet (available up to 7 days ahead)"))}</span>`;
 }
 
 function bind() {
@@ -108,6 +158,14 @@ function bind() {
   $("#lugOff").addEventListener("click", () => setLuggage(false));
   $("#explainBtn").addEventListener("click", () => runExplain());
   $("#speakBtn").addEventListener("click", () => toggleSpeak());
+  $("#langBtn").addEventListener("click", () => {
+    state.lang = state.lang === "en" ? "ja" : "en";
+    try { localStorage.setItem("lang", state.lang); } catch { /* private mode等は無視 */ }
+    stopSpeak();
+    applyI18n();
+    renderArrivalOptions();
+    render();
+  });
   bindShare();
   $("#modalClose").addEventListener("click", closeModal);
   $("#modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
@@ -123,24 +181,24 @@ function setLuggage(v) {
 }
 
 // ---- SNS共有(𝕏 / LINE / Web Share API・リンクコピー) ----
-const SHARE_TEXT = "伊豆大島の1泊2日をAIが自動設計!「大島スマートコース」";
+const shareText = () => T("伊豆大島の1泊2日をAIが自動設計!「大島スマートコース」", "AI-planned Izu Oshima trips that adapt to your luggage — Oshima Smart Course");
 function bindShare() {
   $("#shareX")?.addEventListener("click", () => {
-    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(SHARE_TEXT)}&url=${encodeURIComponent(location.href)}`, "_blank", "noopener");
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText())}&url=${encodeURIComponent(location.href)}`, "_blank", "noopener");
   });
   $("#shareLine")?.addEventListener("click", () => {
-    window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href)}&text=${encodeURIComponent(SHARE_TEXT)}`, "_blank", "noopener");
+    window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(location.href)}&text=${encodeURIComponent(shareText())}`, "_blank", "noopener");
   });
   $("#shareBtn")?.addEventListener("click", async () => {
     const b = $("#shareBtn");
     if (navigator.share) {
-      try { await navigator.share({ title: "大島スマートコース", text: SHARE_TEXT, url: location.href }); } catch { /* キャンセルは無視 */ }
+      try { await navigator.share({ title: T("大島スマートコース", "Oshima Smart Course"), text: shareText(), url: location.href }); } catch { /* キャンセルは無視 */ }
       return;
     }
     try {
       await navigator.clipboard.writeText(location.href);
-      b.textContent = "✅ コピーしました";
-      setTimeout(() => { b.textContent = "🔗 共有"; }, 1500);
+      b.textContent = T("✅ コピーしました", "✅ Copied");
+      setTimeout(() => { b.textContent = T("🔗 共有", "🔗 Share"); }, 1500);
     } catch { /* http等でclipboard不可なら何もしない */ }
   });
 }
@@ -158,22 +216,26 @@ function unresBox(text) {
   return `<div class="rounded-xl px-3 py-2 text-sm bg-tsubaki/10 border border-tsubaki/40 text-tsubaki">⛔ ${esc(text)}</div>`;
 }
 function busCard(b) {
-  const from = tt.stops[b.from].name, to = tt.stops[b.to].name;
+  const times = T(`${b.dep}発 → ${b.arr}着`, `Dep ${b.dep} → Arr ${b.arr}`);
+  const fareStr = b.fareYen ? T(`${b.fareYen}円`, `¥${b.fareYen}`) : T("運賃未確認", "fare TBD");
   return `<div class="rounded-xl border-l-4 border-sea bg-white shadow-sm p-3 my-1 transition-all duration-200">
-    <div class="flex justify-between items-start gap-2"><b class="text-sm">🚌 ${esc(from)} → ${esc(to)}</b>
-      <span class="shrink-0"><span class="text-xs rounded-full bg-emerald-50 text-emerald-700 px-2 py-0.5">✅ 時刻表と一致</span>${b.estimated ? '<span class="text-xs rounded-full bg-neutral-100 text-neutral-500 px-2 py-0.5 ml-1">途中時刻は推定</span>' : ""}</span></div>
-    <div class="text-xs text-neutral-500 mt-1">${esc(b.dep)}発 → ${esc(b.arr)}着 ／ ${esc(b.routeName)} ／ ${b.fareYen ? b.fareYen + "円" : "運賃未確認"}${b.fareConfirmed ? "" : "(推定)"} ／ 便ID: ${esc(b.tripId)}</div>
+    <div class="flex justify-between items-start gap-2"><b class="text-sm">🚌 ${esc(stopName(b.from))} → ${esc(stopName(b.to))}</b>
+      <span class="shrink-0"><span class="text-xs rounded-full bg-emerald-50 text-emerald-700 px-2 py-0.5">${esc(T("✅ 時刻表と一致", "✅ Matches timetable"))}</span>${b.estimated ? `<span class="text-xs rounded-full bg-neutral-100 text-neutral-500 px-2 py-0.5 ml-1">${esc(T("途中時刻は推定", "times est."))}</span>` : ""}</span></div>
+    <div class="text-xs text-neutral-500 mt-1">${esc(times)} ／ ${esc(routeName(b.routeName))} ／ ${esc(fareStr)}${b.fareConfirmed ? "" : esc(T("(推定)", " (est.)"))} ／ ${esc(T("便ID", "Trip ID"))}: ${esc(b.tripId)}</div>
   </div>`;
 }
 
 function render() {
   const ret = (ferry.inbound || [])[0];
   state.plan = planTrip({ tt, spots, port: state.port, arrival: state.arrival, hasLuggage: state.hasLuggage,
-    stayNights: state.stayNights, date: state.date,
-    returnNote: ret ? `帰りの船: ${ret.shipType} ${ret.depOshima}発 → 竹芝${ret.arriveTakeshiba}着(${ferry.meta.validNote})` : undefined });
+    stayNights: state.stayNights, date: state.date, lang: state.lang,
+    returnNote: ret ? T(`帰りの船: ${ret.shipType} ${ret.depOshima}発 → 竹芝${ret.arriveTakeshiba}着(${ferry.meta.validNote})`,
+      `Return ferry: ${shipName(ret.shipType)} dep ${ret.depOshima} → Takeshiba ${ret.arriveTakeshiba} (confirm on the day — port/schedule depend on sea conditions)`) : undefined });
   const p = state.plan;
   if (state.day >= p.days.length) state.day = 0;
-  $("#hotelField").value = state.stayNights === 0 ? "なし（日帰り）" : "大島温泉ホテル(三原山温泉)";
+  $("#hotelField").value = state.stayNights === 0
+    ? T("なし（日帰り）", "None (day trip)")
+    : T("大島温泉ホテル(三原山温泉)", "Oshima Onsen Hotel (Mihara Onsen)");
   stopSpeak();
   $("#speakBtn").classList.add("hidden");
   $("#explainLabel").classList.add("hidden");
@@ -197,11 +259,13 @@ function render() {
   });
   $("#timeline").querySelectorAll("[data-spot]").forEach((c) => c.addEventListener("click", () => openSpot(c.dataset.spot)));
 
-  $("#fare").innerHTML = `<span>🎟 バス運賃合計（${p.days.length === 1 ? "日帰り" : p.days.length + "日間"}・片道換算）</span><span class="text-tsubaki text-lg font-black shrink-0">${p.fareTotal.toLocaleString()}円</span>`;
+  const fareLabel = T(`🎟 バス運賃合計（${p.days.length === 1 ? "日帰り" : p.days.length + "日間"}・片道換算）`,
+    `🎟 Total bus fare (${p.days.length === 1 ? "day trip" : p.days.length + " days"}, one-way basis)`);
+  $("#fare").innerHTML = `<span>${esc(fareLabel)}</span><span class="text-tsubaki text-lg font-black shrink-0">${T(`${p.fareTotal.toLocaleString()}円`, `¥${p.fareTotal.toLocaleString()}`)}</span>`;
   // 初回取得に失敗していても、条件変更のタイミングで再取得を試みる
   if (!state.weather) loadWeather();
   renderWeatherChips();
-  $("#dataSource").innerHTML = `<p>${esc(p.dataSource.source)}</p><p>有効期間 ${esc(p.dataSource.validFrom)}〜${esc(p.dataSource.validTo)} / ${esc(p.dataSource.serviceNote)}</p><p><a class="underline text-sea" href="${esc(p.dataSource.sourceUrl)}" target="_blank" rel="noopener">出典</a></p>`;
+  $("#dataSource").innerHTML = `<p>${esc(p.dataSource.source)}</p><p>${esc(T("有効期間", "Valid"))} ${esc(p.dataSource.validFrom)}〜${esc(p.dataSource.validTo)} / ${esc(p.dataSource.serviceNote)}</p><p><a class="underline text-sea" href="${esc(p.dataSource.sourceUrl)}" target="_blank" rel="noopener">${esc(T("出典", "Source"))}</a></p>`;
 
   renderMap();
 }
@@ -250,14 +314,15 @@ function renderMap() {
     pts.push([c.lat, c.lon]);
     if (!firstVisit.some((f) => f.id === id)) firstVisit.push({ id, c, n: firstVisit.length + 1 });
   }
+  const geoName = (c) => (state.lang === "en" ? c.en ?? c.name : c.name);
   for (const f of firstVisit) {
     L.marker([f.c.lat, f.c.lon], { icon: numIcon(f.n) }).addTo(routeLayer)
-      .bindTooltip(`${f.n}. ${f.c.name}`, { direction: "top", offset: [0, -14] });
+      .bindTooltip(`${f.n}. ${geoName(f.c)}`, { direction: "top", offset: [0, -14] });
   }
   if (state.port === "unknown") {
     for (const p of [geo.ports.motomachi, geo.ports.okada]) {
       L.circleMarker([p.lat, p.lon], { radius: 7, color: "#737373", fillColor: "#a3a3a3", fillOpacity: 0.7 })
-        .addTo(routeLayer).bindTooltip(`${p.name}（当日決定）`, { direction: "top" });
+        .addTo(routeLayer).bindTooltip(T(`${p.name}（当日決定）`, `${geoName(p)} (decided that day)`), { direction: "top" });
     }
   }
   if (pts.length >= 2) L.polyline(pts, { color: "#0e7490", weight: 3, dashArray: "6 6" }).addTo(routeLayer);
@@ -278,7 +343,7 @@ function renderItem(it) {
       <div class="rounded-xl border border-sea/15 bg-gradient-to-br from-white to-foam/60 shadow-sm p-3 cursor-pointer transition-all duration-200 active:scale-[0.99]" data-spot="${esc(it.spotId)}">
         <div class="flex gap-3">
           <div class="min-w-0 flex-1">
-            <div class="flex justify-between items-start gap-2"><b class="text-sm"><span class="text-2xl align-middle mr-1">${esc(it.emoji)}</span>${esc(it.name)}</b><span class="text-xs text-neutral-400 shrink-0">詳細 ›</span></div>
+            <div class="flex justify-between items-start gap-2"><b class="text-sm"><span class="text-2xl align-middle mr-1">${esc(it.emoji)}</span>${esc(it.name)}</b><span class="text-xs text-neutral-400 shrink-0">${esc(T("詳細 ›", "Details ›"))}</span></div>
             <div class="text-xs text-neutral-500 mt-1">${esc(it.note)}</div>
             ${it.cautions?.length ? `<div class="mt-1 flex flex-wrap gap-1">${it.cautions.map((c) => `<span class="text-xs rounded-full bg-warn/10 text-warn px-2 py-0.5">⚠ ${esc(c)}</span>`).join("")}</div>` : ""}
           </div>
@@ -305,14 +370,14 @@ async function runExplain() {
   el.classList.remove("hidden");
   el.textContent = "";
   btn.disabled = true;
-  btn.textContent = "✨ AIガイドが考えています…";
+  btn.textContent = T("✨ AIガイドが考えています…", "✨ The AI guide is thinking…");
   try {
     await streamExplain(state.plan, weatherForTrip(), (t) => { el.textContent += t; });
-    btn.textContent = "✨ もう一度きく";
+    btn.textContent = T("✨ もう一度きく", "✨ Ask again");
   } catch {
     el.textContent = explain(state.plan, spots);
-    el.insertAdjacentHTML("beforeend", '<div class="mt-2 text-xs text-neutral-400">※ AI解説を取得できなかったため簡易版を表示しています</div>');
-    btn.textContent = "✨ AIガイドの解説を聞く";
+    el.insertAdjacentHTML("beforeend", `<div class="mt-2 text-xs text-neutral-400">${esc(T("※ AI解説を取得できなかったため簡易版を表示しています", "* The AI guide is unavailable, showing a simplified version"))}</div>`);
+    btn.textContent = T("✨ AIガイドの解説を聞く", "✨ Hear the AI guide");
   } finally {
     btn.disabled = false;
     if ("speechSynthesis" in window && el.textContent.trim()) $("#speakBtn").classList.remove("hidden");
@@ -324,11 +389,14 @@ function speechText() {
   // Markdown記号・矢印・注記は読み上げから除く
   return $("#explainText").textContent
     .replace(/※\s*AI解説を取得できなかったため簡易版を表示しています/g, "")
+    .replace(/\*\s*The AI guide is unavailable, showing a simplified version/g, "")
     .replace(/[#*`>]+/g, " ")
-    .replace(/→/g, "、")
+    .replace(/→/g, T("、", ", "))
     .replace(/\s+/g, " ").trim();
 }
-function setSpeakUI(on) { $("#speakBtn").textContent = on ? "⏹ 音声を止める" : "🔊 ガイドさんの声で聞く"; }
+function setSpeakUI(on) {
+  $("#speakBtn").textContent = on ? T("⏹ 音声を止める", "⏹ Stop audio") : T("🔊 ガイドさんの声で聞く", "🔊 Listen to the guide");
+}
 let speakTimer = null;
 function stopSpeak() {
   if (speakTimer) { clearInterval(speakTimer); speakTimer = null; }
@@ -344,16 +412,17 @@ function toggleSpeak() {
   // 文の区切り(。！？)で最大120字ずつに分割してキューに積む
   const parts = [];
   let buf = "";
-  for (const s of speechText().split(/(?<=[。！？])/)) {
+  for (const s of speechText().split(/(?<=[。！？.!?])/)) {
     if (buf && (buf + s).length > 120) { parts.push(buf); buf = s; } else buf += s;
   }
   if (buf.trim()) parts.push(buf);
   if (!parts.length) return;
-  const ja = synth.getVoices().find((v) => v.lang?.startsWith("ja"));
+  const wantLang = state.lang === "en" ? "en" : "ja";
+  const voice = synth.getVoices().find((v) => v.lang?.startsWith(wantLang));
   parts.forEach((text, i) => {
     const u = new SpeechSynthesisUtterance(text);
-    u.lang = "ja-JP";
-    if (ja) u.voice = ja;
+    u.lang = state.lang === "en" ? "en-US" : "ja-JP";
+    if (voice) u.voice = voice;
     u.rate = 1.05;  // 少しテンポよく
     u.pitch = 1.15; // 明るいバスガイドさん風に少し高め
     if (i === parts.length - 1) u.onend = () => stopSpeak();
@@ -399,23 +468,27 @@ export async function streamExplain(plan, weather, onText) {
 
 function openSpot(id) {
   const s = spots[id];
+  const loc = state.lang === "en" && s.en ? s.en : s; // name/desc/cautions/todo の言語別ビュー
   const now = "09:00";
   const nexts = ["PORT", "TSUBAKI", "ONSEN", "SUMMIT"].filter((x) => x !== s.stopId).map((to) => {
     const b = nextBus(tt, s.stopId, to, now, { port: state.port });
-    return b ? `${tt.stops[to].name}行き ${b.dep}` : null;
+    return b ? T(`${stopName(to)}行き ${b.dep}`, `To ${stopName(to)}: ${b.dep}`) : null;
   }).filter(Boolean);
+  const lugLabels = state.lang === "en"
+    ? ["× Not doable with luggage", "△ Tough with luggage", "○ Fine with luggage"]
+    : ["× 荷物ありは不可", "△ 荷物ありはやや大変", "○ 荷物ありでもOK"];
   $("#modalBody").innerHTML = `
-    ${s.photo ? `<img src="${esc(s.photo)}" alt="${esc(s.name)}" loading="lazy" class="w-full h-36 object-cover rounded-xl mb-3">` : ""}
-    <h3 class="text-lg font-bold">${esc(s.emoji)} ${esc(s.name)}</h3>
-    <div class="text-xs text-neutral-500 mt-2">荷物適性</div>
-    <div class="flex items-center gap-1 mt-1">${[0, 1, 2].map((i) => `<span class="inline-block w-3 h-3 rounded-full ${i < s.luggageScore ? "bg-tsubaki" : "bg-neutral-200"}"></span>`).join("")} <span class="text-xs text-neutral-500 ml-1">${["× 荷物ありは不可", "△ 荷物ありはやや大変", "○ 荷物ありでもOK"][s.luggageScore]}</span></div>
-    <p class="text-sm mt-3">${esc(s.desc)}</p>
-    <div class="text-xs text-neutral-500 mt-2">目安の滞在時間: ${s.minStayMin ? s.minStayMin + "分〜" : "—"}${s.checkIn ? " ／ チェックイン " + esc(s.checkIn) : ""}</div>
-    ${s.cautions.length ? `<b class="block text-sm mt-3">⚠ 注意</b><ul class="list-disc list-inside text-sm text-neutral-600 mt-1 space-y-0.5">${s.cautions.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
-    ${s.todo.length ? `<b class="block text-sm mt-3">❓ 現地で確認すること</b><ul class="list-disc list-inside text-sm text-neutral-600 mt-1 space-y-0.5">${s.todo.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
-    <div class="mt-3 rounded-xl bg-sand p-3 text-sm"><b>🚌 最寄バス停「${esc(tt.stops[s.stopId].name)}」 ${now}以降の次発</b><br>${nexts.length ? nexts.map(esc).join("<br>") : "該当便なし"}</div>
-    ${s.officialUrl ? `<a class="mt-3 block w-full text-center rounded-xl bg-sea text-white text-sm font-bold py-2.5 transition-transform active:scale-[0.98]" href="${esc(s.officialUrl)}" target="_blank" rel="noopener">🔗 公式サイトを見る</a>` : ""}
-    <div class="mt-3 text-xs text-neutral-400">出典: <a class="underline" href="${esc(s.sourceUrl)}" target="_blank" rel="noopener">${esc(s.sourceName)}</a></div>`;
+    ${s.photo ? `<img src="${esc(s.photo)}" alt="${esc(loc.name)}" loading="lazy" class="w-full h-36 object-cover rounded-xl mb-3">` : ""}
+    <h3 class="text-lg font-bold">${esc(s.emoji)} ${esc(loc.name)}</h3>
+    <div class="text-xs text-neutral-500 mt-2">${esc(T("荷物適性", "Luggage friendliness"))}</div>
+    <div class="flex items-center gap-1 mt-1">${[0, 1, 2].map((i) => `<span class="inline-block w-3 h-3 rounded-full ${i < s.luggageScore ? "bg-tsubaki" : "bg-neutral-200"}"></span>`).join("")} <span class="text-xs text-neutral-500 ml-1">${esc(lugLabels[s.luggageScore])}</span></div>
+    <p class="text-sm mt-3">${esc(loc.desc)}</p>
+    <div class="text-xs text-neutral-500 mt-2">${esc(T("目安の滞在時間", "Suggested stay"))}: ${s.minStayMin ? esc(T(`${s.minStayMin}分〜`, `${s.minStayMin} min+`)) : "—"}${s.checkIn ? ` ／ ${esc(T("チェックイン", "Check-in"))} ` + esc(s.checkIn) : ""}</div>
+    ${loc.cautions.length ? `<b class="block text-sm mt-3">${esc(T("⚠ 注意", "⚠ Caution"))}</b><ul class="list-disc list-inside text-sm text-neutral-600 mt-1 space-y-0.5">${loc.cautions.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
+    ${loc.todo.length ? `<b class="block text-sm mt-3">${esc(T("❓ 現地で確認すること", "❓ Confirm locally"))}</b><ul class="list-disc list-inside text-sm text-neutral-600 mt-1 space-y-0.5">${loc.todo.map((c) => `<li>${esc(c)}</li>`).join("")}</ul>` : ""}
+    <div class="mt-3 rounded-xl bg-sand p-3 text-sm"><b>${esc(T(`🚌 最寄バス停「${stopName(s.stopId)}」 ${now}以降の次発`, `🚌 Next buses from "${stopName(s.stopId)}" after ${now}`))}</b><br>${nexts.length ? nexts.map(esc).join("<br>") : esc(T("該当便なし", "No buses found"))}</div>
+    ${s.officialUrl ? `<a class="mt-3 block w-full text-center rounded-xl bg-sea text-white text-sm font-bold py-2.5 transition-transform active:scale-[0.98]" href="${esc(s.officialUrl)}" target="_blank" rel="noopener">${esc(T("🔗 公式サイトを見る", "🔗 Official website"))}</a>` : ""}
+    <div class="mt-3 text-xs text-neutral-400">${esc(T("出典", "Source"))}: <a class="underline" href="${esc(s.sourceUrl)}" target="_blank" rel="noopener">${esc(s.sourceName)}</a></div>`;
   $("#modal").hidden = false;
 }
 function closeModal() { $("#modal").hidden = true; }
