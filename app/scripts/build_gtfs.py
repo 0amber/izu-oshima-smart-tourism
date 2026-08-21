@@ -29,12 +29,16 @@ STOP_MAP = {
     "TSUBAKI": ["椿・花ガーデン", "椿花ガーデン"],
     "ONSEN": ["三原山温泉"],
     "SUMMIT": ["三原山頂口", "三原山山頂口"],
+    "PARK": ["大島公園"],
+    "HABU": ["波浮港"],
 }
 STOP_NAMES = {
-    "PORT": "入港地（元町港／岡田港）",
-    "TSUBAKI": "椿・花ガーデン",
-    "ONSEN": "三原山温泉（大島温泉ホテル前）",
-    "SUMMIT": "三原山頂口",
+    "PORT": {"name": "入港地（元町港／岡田港）", "note": "当日の海況で決まる"},
+    "TSUBAKI": {"name": "椿・花ガーデン"},
+    "ONSEN": {"name": "三原山温泉（大島温泉ホテル前）"},
+    "SUMMIT": {"name": "三原山頂口"},
+    "PARK": {"name": "大島公園"},
+    "HABU": {"name": "波浮港"},
 }
 
 def read_csv(z, name):

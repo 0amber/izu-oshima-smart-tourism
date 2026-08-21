@@ -36,6 +36,18 @@
       "lat": 34.73828,
       "lon": 139.38015,
       "en": "Mt. Mihara Trailhead"
+    },
+    "PARK": {
+      "name": "大島公園",
+      "lat": 34.76181,
+      "lon": 139.43372,
+      "en": "Oshima Park"
+    },
+    "HABU": {
+      "name": "波浮港",
+      "lat": 34.68684,
+      "lon": 139.43966,
+      "en": "Habu Port"
     }
   }
 }

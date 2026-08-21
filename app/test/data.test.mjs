@@ -9,6 +9,9 @@ const geo = JSON.parse(readFileSync(new URL("../public/data/geo.json", import.me
 test("timetable: 全tripのstopIdはstops定義に存在する", () => {
   for (const trip of tt.trips) for (const s of trip.stops) assert.ok(tt.stops[s.stopId], `${trip.tripId}: ${s.stopId}`);
 });
+test("timetable: stops定義は{name}オブジェクト(バスカード表示が依存)", () => {
+  for (const [id, s] of Object.entries(tt.stops)) assert.ok(typeof s.name === "string" && s.name.length > 0, id);
+});
 test("spots: 全スポットのstopIdはstops定義に存在する", () => {
   for (const [id, s] of Object.entries(spots)) assert.ok(tt.stops[s.stopId], `${id}`);
 });

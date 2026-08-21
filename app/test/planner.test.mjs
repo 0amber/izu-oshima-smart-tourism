@@ -124,6 +124,32 @@ test("planTrip: dateなしは従来ラベルのまま(後方互換)", () => {
   assert.equal(p.days[1].label, "2日目（日）");
 });
 
+test("planTrip: course=park は1日目に大島公園→乗り継ぎで温泉ホテルへ(実在便)", () => {
+  const p = planTrip({ tt, spots, port: "motomachi", arrival: "10:00", hasLuggage: true, course: "park" });
+  const d1 = p.days[0].items;
+  const spotIds = d1.filter((i) => i.type === "spot").map((i) => i.spotId);
+  assert.deepEqual(spotIds, ["PARK", "ONSEN"]);
+  const buses = d1.filter((i) => i.type === "bus");
+  assert.equal(buses[0].dep, "10:10"); // PORT→大島公園
+  assert.ok(buses.length >= 3, `乗継便を含むはず: ${buses.length}`); // PARK→PORT→ONSEN
+  assert.equal(buses.at(-1).arr, "12:58"); // 12:40港発→温泉ホテル
+  for (const b of buses) assert.ok(b.verified);
+});
+
+test("planTrip: course=habu の日帰りは波浮港往復で港に戻る", () => {
+  const p = planTrip({ tt, spots, port: "motomachi", arrival: "10:00", hasLuggage: false, stayNights: 0, course: "habu" });
+  const items = p.days[0].items;
+  const spotIds = items.filter((i) => i.type === "spot").map((i) => i.spotId);
+  assert.deepEqual(spotIds, ["HABU"]);
+  assert.ok(items.at(-1).title.includes("港に到着"), items.at(-1).title);
+});
+
+test("planTrip: course未指定は従来どおり三原山コース(後方互換)", () => {
+  const p = planTrip({ tt, spots, port: "motomachi", arrival: "10:00", hasLuggage: true });
+  const spotIds = p.days[0].items.filter((i) => i.type === "spot").map((i) => i.spotId);
+  assert.deepEqual(spotIds, ["TSUBAKI", "ONSEN"]);
+});
+
 test("planTrip: lang=en で旅程の文言・スポット名が英語になる", () => {
   const p = planTrip({ tt, spots, port: "motomachi", arrival: "10:00", hasLuggage: true, lang: "en" });
   assert.equal(p.days[0].label, "Day 1 (Sat)");

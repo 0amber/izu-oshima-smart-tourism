@@ -109,5 +109,61 @@
       ],
       "todo": []
     }
+  },
+  "PARK": {
+    "name": "大島公園（動物園・椿園）",
+    "emoji": "🦩",
+    "stopId": "PARK",
+    "luggageScore": 1,
+    "minStayMin": 45,
+    "desc": "入園無料の動物園と、世界最大級の椿園。園内は広いが主要エリアは回りやすい。",
+    "cautions": [
+      "園内は起伏があり広い。荷物があるなら入口周辺をコンパクトに"
+    ],
+    "todo": [
+      "動物園の入口に荷物を置ける場所はある？"
+    ],
+    "sourceName": "大島町公式サイト",
+    "sourceUrl": "https://www.town.oshima.tokyo.jp/",
+    "officialUrl": "https://www.izu-oshima.or.jp/",
+    "photo": "img/oshima-park.jpg",
+    "en": {
+      "name": "Oshima Park (zoo & camellia garden)",
+      "desc": "A free-admission zoo and one of the world's largest camellia gardens. Big grounds, but the main areas are easy to cover.",
+      "cautions": [
+        "The park is large with some slopes — keep it compact near the entrance if you have luggage"
+      ],
+      "todo": [
+        "Is there anywhere to leave luggage at the zoo entrance?"
+      ]
+    }
+  },
+  "HABU": {
+    "name": "波浮港",
+    "emoji": "⚓",
+    "stopId": "HABU",
+    "luggageScore": 1,
+    "minStayMin": 60,
+    "desc": "火口湖が海とつながってできた小さな港町。レトロな街並み、名物コロッケ、文学の香り。",
+    "cautions": [
+      "見晴台や旧港屋旅館へは階段・坂がある"
+    ],
+    "todo": [
+      "鵜飼商店のコロッケは何時まで？"
+    ],
+    "sourceName": "大島町公式サイト",
+    "sourceUrl": "https://www.town.oshima.tokyo.jp/",
+    "officialUrl": "https://www.izu-oshima.or.jp/",
+    "photo": "img/habu.jpg",
+    "en": {
+      "name": "Habu Port",
+      "desc": "A tiny port town born when a crater lake opened to the sea. Retro streets, famous croquettes, literary history.",
+      "cautions": [
+        "Stairs and slopes to the lookout and the old Minatoya inn"
+      ],
+      "todo": [
+        "Until what time does the Ukai croquette shop open?"
+      ]
+    }
   }
 }
