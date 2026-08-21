@@ -3,7 +3,7 @@
 ## ファイル
 | ファイル | 用途 |
 |---|---|
-| `promo-2min.mp4` | 完成映像（2分02秒、1280×720、**無音**、H.264、約8MB）。モーショングラフィックス（`promo.html`）＋PoC実演をPlaywrightで自動再生・録画 |
+| `promo-2min.mp4` | 完成映像（2分02秒、1280×720、**無音・全編テロップ付き**、H.264、約9MB）。モーショングラフィックス（`promo.html`）＋**公開アプリ実演**（pages.dev・実AI解説）をPlaywrightで自動再生・録画。エンドカードにアプリQR。`app/public/video/` にも同梱しアプリ内・URL（/video/promo-2min.mp4）で視聴可 |
 | `promo.html` | 映像の本体（単一HTML＋CSS/JS、外部依存なし）。`?part=1`（冒頭〜DEMOカード 44秒）／`?part=2`（仕組み〜エンド）。時刻同期でシーンが切り替わる |
 | `record_promo.py` | 録画スクリプト：part1 → PoC実演（`poc/dist/oshima-smart-course.html` を実操作）→ part2 → mp4化（122秒でカット） |
 | `promo-2min.webm` | 録画の元ファイル（Git管理外） |
