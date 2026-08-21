@@ -33,6 +33,7 @@ const UI = {
   g6: "⛴ The sea at Motomachi Port", g7: "🚌 Oshima Bus around the island",
   g8: "⚓ Habu Port — retro port town", g9: "🦩 Oshima Park Zoo (free admission)",
   links: "Links:", movieTitle: "Oshima Smart Course in 2 minutes", movieNote: "Silent, with captions. Direct URL:",
+  dlLabel: "📦 Downloads:", dlPptx: "Slides (PPTX)", dlPdf: "Slides (PDF)", dlTxt: "Submission form entries (txt)", dlDemo: "60-sec demo video",
 };
 function applyI18n() {
   document.documentElement.lang = state.lang;
