@@ -11,7 +11,8 @@
     "build:css": "tailwindcss -i src/styles.css -o public/css/styles.css --minify",
     "watch:css": "tailwindcss -i src/styles.css -o public/css/styles.css --watch",
     "build:standalone": "python3 scripts/build_standalone.py",
-    "build:gtfs": "python3 scripts/build_gtfs.py"
+    "build:gtfs": "python3 scripts/build_gtfs.py",
+    "gtfs:update": "sh scripts/update_gtfs.sh"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "latest"

@@ -74,9 +74,13 @@ npx wrangler pages secret put ANTHROPIC_API_KEY --project-name oshima-smart-cour
 
 ### GTFSデータの差し替え
 
-- GTFS取得後は `npm run build:gtfs -- AllLines.zip --date 20260822` で `public/data/timetable.json` を差し替え（それまでは公式PDF起こしの手入力時刻表。画面に注記バナーが出ます）
+- ODPTの承認が下りたら、アクセストークン（https://developer.odpt.org/ ログイン後に取得）を使って **1コマンド**で差し替え：
+  ```bash
+  cd app && ODPT_TOKEN=<アクセストークン> npm run gtfs:update
+  ```
+  （ダウンロード→変換→テストまで自動。それまでは公式PDF起こしの手入力時刻表。画面に注記バナーが出ます）
 
-> **⚠️ GTFSの現状（8/21・スキップ確定）**：ODPT開発者登録は申請済みだが承認まで2〜3営業日かかるため、**提出締切（8/23）は手入力時刻表（公式PDF起こし・出典明記）で提出する方針に確定**。変換パイプラインは合成GTFSによるテストで動作を示す。承認が下り次第、実データで `build:gtfs` / `gtfs_to_knowledge.py` を実行して差し替える。
+> **⚠️ GTFSの現状（8/21・スキップ確定）**：ODPT開発者登録は申請済みだが承認まで2〜3営業日かかるため、**提出締切（8/23）は手入力時刻表（公式PDF起こし・出典明記）で提出する方針に確定**。変換パイプラインは合成GTFSのエンドツーエンドテストで動作確認済み。承認が下り次第、上記1コマンドで実データに差し替える。
 
 ---
 
