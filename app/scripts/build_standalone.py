@@ -31,6 +31,10 @@ def main():
         "geo": json.loads(read("data/geo.json")),
     }
 
+    # --- 紹介ビデオ(9MB超)はスタンドアロン版には含めない ---
+    html = re.sub(r'\n?\s*<section id="promoVideo".*?</section>', "", html, flags=re.S)
+    html = re.sub(r'\s*<a href="#promoVideo"[^>]*>.*?</a>', "", html, flags=re.S)
+
     # --- 画像(img/…参照)を data URI で埋め込み(オフラインでも表示できるように) ---
     def embed_img(m):
         attr, path = m.group(1), m.group(2)
