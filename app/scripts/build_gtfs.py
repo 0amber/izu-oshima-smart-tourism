@@ -48,15 +48,36 @@ def active_services(z, date):
     d = dt.datetime.strptime(date, "%Y%m%d").date()
     wd = ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"][d.weekday()]
     active = set()
+    valid_to = date
     for r in read_csv(z, "calendar.txt"):
         if r["start_date"] <= date <= r["end_date"] and r.get(wd) == "1":
             active.add(r["service_id"])
+            valid_to = max(valid_to, r["end_date"])
     for r in read_csv(z, "calendar_dates.txt"):
         if r["date"] != date:
             continue
         if r["exception_type"] == "1": active.add(r["service_id"])
         elif r["exception_type"] == "2": active.discard(r["service_id"])
-    return active
+    return active, valid_to
+
+# ライセンス配慮: GTFSの trip_id / service_id は出力しない(復元不可能な要約にする)。
+# 便IDは 路線プレフィックス+方向+発時刻 で合成、運行日は粗い区分ラベルに変換する。
+ROUTE_PREFIX = [("三原山", "MIHARA"), ("大島公園", "PARK"), ("波浮", "HABU"), ("野田浜", "NODAHAMA")]
+def synth_trip_id(route_name, first_stop, last_stop, dep, used):
+    key = next((p for kw, p in ROUTE_PREFIX if kw in route_name), "BUS")
+    updown = "UP" if first_stop == "PORT" else ("DOWN" if last_stop == "PORT" else "MID")
+    base = f"{key}_{updown}_{dep.replace(':', '')}"
+    tid, n = base, 2
+    while tid in used:
+        tid = f"{base}_{n}"; n += 1
+    used.add(tid)
+    return tid
+
+def service_label(sid):
+    for kw, label in [("全日", "全日運行"), ("土休日", "土休日運行"), ("平日", "平日運行"), ("夏", "夏ダイヤ")]:
+        if kw in sid:
+            return label
+    return "運行日は公式で確認"
 
 def map_stop(stop_name):
     for sid, kws in STOP_MAP.items():
@@ -79,7 +100,7 @@ def main():
     prev = json.loads(out_path.read_text()) if out_path.exists() else {}
 
     z = zipfile.ZipFile(a.zip)
-    services = active_services(z, a.date)
+    services, valid_to = active_services(z, a.date)
     stops = {r["stop_id"]: r for r in read_csv(z, "stops.txt")}
     routes = {r["route_id"]: r for r in read_csv(z, "routes.txt")}
     trips = {r["trip_id"]: r for r in read_csv(z, "trips.txt") if r["service_id"] in services}
@@ -88,7 +109,10 @@ def main():
         if r["trip_id"] in trips:
             st_by_trip.setdefault(r["trip_id"], []).append(r)
 
+    iso = lambda s: f"{s[:4]}-{s[4:6]}-{s[6:]}"
     out_trips = []
+    used_ids = set()
+    rows = []
     for tid, sts in st_by_trip.items():
         sts.sort(key=lambda r: int(r["stop_sequence"]))
         seq, ports = [], []
@@ -102,22 +126,27 @@ def main():
             seq.append({"stopId": sid, "arr": hhmm(r["arrival_time"]), "dep": hhmm(r["departure_time"])})
         if len(seq) < 2:
             continue
+        rows.append((tid, seq, ports))
+    # 便IDの合成を発時刻順で安定させる
+    rows.sort(key=lambda x: (x[1][0]["dep"], x[0]))
+    for tid, seq, ports in rows:
         t = trips[tid]
         route = routes.get(t["route_id"], {})
+        route_name = route.get("route_long_name") or route.get("route_short_name") or "路線バス"
         out_trips.append({
-            "tripId": tid,
-            "routeName": route.get("route_long_name") or route.get("route_short_name") or t["route_id"],
-            "serviceId": t["service_id"],
+            "tripId": synth_trip_id(route_name, seq[0]["stopId"], seq[-1]["stopId"], seq[0]["dep"], used_ids),
+            "routeName": route_name,
+            "serviceId": service_label(t["service_id"]),
             "ports": ports or ["motomachi", "okada"],
             "stops": seq,
         })
 
     out = {
         "meta": {
-            "source": f"大島バス GTFS-JP（ODPT）から生成 date={a.date}",
+            "source": f"大島バス GTFS-JP（公共交通オープンデータセンター）より生成。観光に必要な停留所のみの要約（識別子・座標は含まない）",
             "sourceUrl": "https://ckan.odpt.org/dataset/oshima_bus_all_lines",
-            "validFrom": a.date, "validTo": a.date,
-            "serviceNote": f"有効 service_id: {', '.join(sorted(services))}",
+            "validFrom": iso(a.date), "validTo": iso(valid_to),
+            "serviceNote": f"対象日 {iso(a.date)} に有効な便のみ収録。運行日・季節ダイヤは公式で要確認",
             "generatedBy": "scripts/build_gtfs.py",
         },
         "stops": STOP_NAMES,
