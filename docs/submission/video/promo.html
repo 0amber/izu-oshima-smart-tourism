@@ -103,9 +103,12 @@ html,body{width:1280px;height:720px;overflow:hidden;background:#fff;font-family:
 .end .t .team{font-size:26px;margin-top:40px;opacity:.9}
 .end .cr{position:absolute;left:90px;right:90px;bottom:36px;font-size:15px;line-height:1.5;opacity:.8}
 .pill{display:inline-block;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.7);border-radius:999px;padding:8px 20px;font-size:26px;font-weight:800;margin-right:12px}
+#chap{position:fixed;top:22px;left:26px;z-index:999;background:rgba(255,255,255,.94);color:#0b3a5c;font:800 20px/1 -apple-system,'Hiragino Sans',sans-serif;padding:10px 20px;border-radius:999px;box-shadow:0 2px 10px rgba(0,0,0,.18)}
+#chap:empty{display:none}
 </style>
 </head>
 <body>
+<div id="chap"></div>
 
 <!-- ===== PART 1 ===== -->
 <!-- S1 hook: 0-6.5 -->
@@ -190,13 +193,27 @@ html,body{width:1280px;height:720px;overflow:hidden;background:#fff;font-family:
   </div>
 </section>
 
-<!-- S7 impact: 13-24 -->
+<!-- S7a evidence: 11-20 -->
+<section class="scene" id="s7a">
+  <div class="data">
+    <div class="title" style="top:52px">調査でわかった、<span style="color:var(--tsubaki)">課題の大きさ</span></div>
+    <ul>
+      <li class="a" style="animation:flowin .4s .2s">大島の来島者は 年間約19万人<small>令和4年 188,867人・コロナ前は24万人（大島町町勢要覧）</small></li>
+      <li class="a" style="animation:flowin .4s .9s">生成AI利用者の 77.8％ が旅行で活用<small>「行程作成」の利用意向が上位（JTB総合研究所 2025）</small></li>
+      <li class="a" style="animation:flowin .4s 1.6s">二次交通の確保は「喫緊の課題」<small>国土交通省 運輸局資料</small></li>
+      <li class="a" style="animation:flowin .4s 2.3s">「実在便だけでAIが旅程を組む」サービスは未確認<small>乗換案内は旅程を作らず、AIは実在を保証しない（当チーム調査）</small></li>
+    </ul>
+    <div class="formula a" style="animation:up .6s 3.2s;font-size:36px">その空白を、オープンデータで埋める</div>
+  </div>
+</section>
+
+<!-- S7 impact: 20-29 -->
 <section class="scene" id="s7">
   <div class="imp">
     <div class="txt">
       <div class="l1 a" style="animation:up .6s .2s">到着直後の半日を、<br>観光の時間に。</div>
-      <div class="l2 a" style="animation:up .6s 1.2s">年間約20万人が訪れる伊豆大島で、<br>荷物に縛られる初日をなくす。</div>
-      <div class="l3 a" style="animation:fadein .5s 1.8s">※来島者数は東京都 観光客入込実態調査の最新値で要確認</div>
+      <div class="l2 a" style="animation:up .6s 1.2s">年間約19万人が訪れる伊豆大島で、<br>荷物に縛られる初日をなくす。</div>
+      <div class="l3 a" style="animation:fadein .5s 1.8s">※令和4年 来島188,867人（大島町町勢要覧）</div>
       <div class="l2 a" style="animation:up .6s 3.2s;font-weight:800">GTFSがある島・地方へ、そのまま横展開。</div>
     </div>
     <div class="map">
@@ -212,14 +229,15 @@ html,body{width:1280px;height:720px;overflow:hidden;background:#fff;font-family:
 <!-- S8 data: 24-33 -->
 <section class="scene" id="s8">
   <div class="data">
-    <div class="title" style="top:52px">使ったオープンデータ</div>
-    <ul>
+    <div class="title" style="top:46px">使ったオープンデータ・ツール</div>
+    <ul style="margin-top:-40px">
       <li class="a" style="animation:flowin .4s .2s">大島バス GTFS-JP<small>公共交通オープンデータセンター（ODPT）— 本作品の核</small></li>
-      <li class="a" style="animation:flowin .4s .7s">伊豆諸島・小笠原諸島 観光客入込実態調査<small>東京都</small></li>
-      <li class="a" style="animation:flowin .4s 1.2s">東京都観光客数等実態調査<small>東京都</small></li>
+      <li class="a" style="animation:flowin .4s .7s">気象庁 天気予報JSON ＋ OpenStreetMap<small>天気チップ・旅程地図・スポット座標</small></li>
+      <li class="a" style="animation:flowin .4s 1.2s">伊豆諸島・小笠原諸島 観光客入込実態調査 ほか<small>東京都・大島町町勢要覧</small></li>
       <li class="a" style="animation:flowin .4s 1.7s">東海汽船 時刻表／大島バス 手荷物規定<small>民間</small></li>
+      <li class="a" style="animation:flowin .4s 2.2s;border-left-color:var(--tsubaki)">開発: Claude API・Claude Code・Cloudflare<small>AI解説(claude-opus-5)・音声はWeb Speech API・地図はLeaflet</small></li>
     </ul>
-    <div class="formula a" style="animation:up .6s 3s">オープンデータ × <span>ドメイン知識</span> × AI</div>
+    <div class="formula a" style="animation:up .6s 3.2s;bottom:36px;font-size:40px">オープンデータ × <span>ドメイン知識</span> × AI</div>
   </div>
 </section>
 
@@ -243,17 +261,19 @@ html,body{width:1280px;height:720px;overflow:hidden;background:#fff;font-family:
 
 <script>
 const PART = new URLSearchParams(location.search).get('part') || '1';
-const T1 = [['s1',0,6.5],['s2',6.5,14],['s3a',14,17.5],['s3b',17.5,21],['s3c',21,24.5],['s3d',24.5,28],['s4',28,38],['s5',38,44]];
-const T2 = [['s6',0,13],['s7',13,24],['s8',24,33],['s9',33,48]];
+const T1 = [['s1',0,6.5],['s2',6.5,13],['s3a',13,16.5],['s3b',16.5,20],['s3c',20,23.5],['s3d',23.5,27],['s4',27,37],['s5',37,42]];
+const T2 = [['s6',0,10],['s7a',10,18.5],['s7',18.5,26.5],['s8',26.5,34.5],['s9',34.5,49]];
+const LABELS = {s1:'はじめに', s2:'課題｜生成AIの幻覚', s3a:'課題｜島の現実', s3b:'課題｜島の現実', s3c:'課題｜島の現実', s3d:'課題｜島の現実', s4:'解決アイデア', s5:'実演デモへ', s6:'仕組み', s7a:'調査による裏付け', s7:'インパクトと広がり', s8:'使ったオープンデータ', s9:'まとめ'};
 const TL = PART === '2' ? T2 : T1;
 window.__DURATION = TL[TL.length-1][2];
 function run(){
   const t0 = performance.now();
+  const chap = document.getElementById('chap');
   TL.forEach(([id,a,b])=>{
-    setTimeout(()=>document.getElementById(id).classList.add('on'), a*1000);
+    setTimeout(()=>{document.getElementById(id).classList.add('on'); chap.textContent = LABELS[id] || '';}, a*1000);
     setTimeout(()=>document.getElementById(id).classList.remove('on'), b*1000);
   });
-  if (PART !== '2') { setTimeout(()=>document.getElementById('tg').classList.add('r'), 40500); setTimeout(()=>document.getElementById('tg').classList.remove('r'), 42000); setTimeout(()=>document.getElementById('tg').classList.add('r'), 43000); }
+  if (PART !== '2') { setTimeout(()=>document.getElementById('tg').classList.add('r'), 38500); setTimeout(()=>document.getElementById('tg').classList.remove('r'), 40000); setTimeout(()=>document.getElementById('tg').classList.add('r'), 41000); }
 }
 window.__start = run;
 if (!new URLSearchParams(location.search).has('manual')) window.addEventListener('load', run);
