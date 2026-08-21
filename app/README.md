@@ -34,7 +34,8 @@ npm run dev:node         # → http://localhost:8788/
 | `npm run build:css` | Tailwind v4 で `src/styles.css` → `public/css/styles.css` を再生成（**CSSを触ったら必須**） |
 | `npm run watch:css` | 同上のwatchモード |
 | `npm run build:standalone` | `dist/oshima-smart-course.html` を生成。**サーバー不要・file://で開ける現地オフライン検証用**（要 `build:css` 済み） |
-| `npm run build:gtfs -- AllLines.zip --date 20260822` | ODPTの実GTFS取得後に `public/data/timetable.json` を差し替える（それまでは公式PDF起こしの手入力時刻表） |
+| `ODPT_TOKEN=<トークン> npm run gtfs:update` | **ODPTの実GTFSをダウンロード→timetable.json差し替え→テストまで一発**（トークンは https://developer.odpt.org/ ログイン後に取得。それまでは公式PDF起こしの手入力時刻表） |
+| `npm run build:gtfs -- AllLines.zip --date 20260822` | 手元のGTFS zipから変換だけ行う場合 |
 
 ## Cloudflare へデプロイする
 
