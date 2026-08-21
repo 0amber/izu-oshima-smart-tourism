@@ -3,7 +3,7 @@ import { planTrip, nextBus, explain, addMin } from "./planner.js";
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
-const state = { port: "motomachi", arrival: "10:00", hasLuggage: true, day: 0, plan: null, weather: null, date: "2026-08-22", stayNights: 1,
+const state = { port: "motomachi", arrival: "10:00", hasLuggage: true, day: 0, plan: null, weather: null, date: "2026-08-22", stayNights: 1, course: "mihara",
   lang: (typeof localStorage !== "undefined" && localStorage.getItem("lang")) === "en" ? "en" : "ja" };
 let tt, spots, ferry, geo;
 
@@ -16,6 +16,8 @@ const UI = {
   qrTitle: "📱 Open this app on your phone", qrSub: "Scan the QR and share with your crew!",
   shareX: "𝕏 Post", shareLine: "Share on LINE", share: "🔗 Share", videoLink: "▶ Intro video (2 min)",
   step1Title: "Choose your conditions",
+  lblCourse: "Course",
+  course0: "Classic: Mt. Mihara", course1: "Zoo & camellias: Oshima Park", course2: "Retro port town: Habu",
   lblDate: "Departure date", lblStay: "Duration",
   stay0: "Day trip", stay1: "2 days / 1 night", stay2: "3 days / 2 nights",
   lblPort: "Arrival port", portMoto: "Motomachi Port", portOkada: "Okada Port", portUnknown: "Not sure yet (decided that day)",
@@ -29,6 +31,7 @@ const UI = {
   g1: "🌋 Mt. Mihara — symbol of the island", g2: "🕳 Crater rim course", g3: "🦖 Godzilla Rock",
   g4: "🌺 Camellia promenade", g5: "🥬 Ashitaba — local greens (great as tempura)",
   g6: "⛴ The sea at Motomachi Port", g7: "🚌 Oshima Bus around the island",
+  g8: "⚓ Habu Port — retro port town", g9: "🦩 Oshima Park Zoo (free admission)",
   links: "Links:", movieTitle: "Oshima Smart Course in 2 minutes", movieNote: "Silent, with captions. Direct URL:",
 };
 function applyI18n() {
@@ -154,6 +157,7 @@ function bind() {
   $("#arrival").addEventListener("change", (e) => { state.arrival = e.target.value; render(); });
   $("#tripDate").addEventListener("change", (e) => { state.date = e.target.value || null; render(); });
   $("#stay").addEventListener("change", (e) => { state.stayNights = +e.target.value; state.day = 0; render(); });
+  $("#course").addEventListener("change", (e) => { state.course = e.target.value; state.day = 0; render(); });
   $("#lugOn").addEventListener("click", () => setLuggage(true));
   $("#lugOff").addEventListener("click", () => setLuggage(false));
   $("#explainBtn").addEventListener("click", () => runExplain());
@@ -228,7 +232,7 @@ function busCard(b) {
 function render() {
   const ret = (ferry.inbound || [])[0];
   state.plan = planTrip({ tt, spots, port: state.port, arrival: state.arrival, hasLuggage: state.hasLuggage,
-    stayNights: state.stayNights, date: state.date, lang: state.lang,
+    stayNights: state.stayNights, date: state.date, lang: state.lang, course: state.course,
     returnNote: ret ? T(`帰りの船: ${ret.shipType} ${ret.depOshima}発 → 竹芝${ret.arriveTakeshiba}着(${ferry.meta.validNote})`,
       `Return ferry: ${shipName(ret.shipType)} dep ${ret.depOshima} → Takeshiba ${ret.arriveTakeshiba} (confirm on the day — port/schedule depend on sea conditions)`) : undefined });
   const p = state.plan;

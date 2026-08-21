@@ -8,10 +8,25 @@
     "generatedBy": "scripts/build_gtfs.py"
   },
   "stops": {
-    "PORT": "入港地（元町港／岡田港）",
-    "TSUBAKI": "椿・花ガーデン",
-    "ONSEN": "三原山温泉（大島温泉ホテル前）",
-    "SUMMIT": "三原山頂口"
+    "PORT": {
+      "name": "入港地（元町港／岡田港）",
+      "note": "当日の海況で決まる"
+    },
+    "TSUBAKI": {
+      "name": "椿・花ガーデン"
+    },
+    "ONSEN": {
+      "name": "三原山温泉（大島温泉ホテル前）"
+    },
+    "SUMMIT": {
+      "name": "三原山頂口"
+    },
+    "PARK": {
+      "name": "大島公園"
+    },
+    "HABU": {
+      "name": "波浮港"
+    }
   },
   "fares": {
     "PORT-TSUBAKI": {
@@ -41,7 +56,7 @@
   },
   "trips": [
     {
-      "tripId": "PARK_UP_0733",
+      "tripId": "PARK_DOWN_0720",
       "routeName": "Ａ 大島公園ライン",
       "serviceId": "全日運行",
       "ports": [
@@ -49,6 +64,11 @@
         "motomachi"
       ],
       "stops": [
+        {
+          "stopId": "PARK",
+          "arr": "07:20",
+          "dep": "07:20"
+        },
         {
           "stopId": "PORT",
           "arr": "07:33",
@@ -58,6 +78,46 @@
           "stopId": "PORT",
           "arr": "07:50",
           "dep": "07:50"
+        }
+      ]
+    },
+    {
+      "tripId": "HABU_DOWN_0729",
+      "routeName": "Ｂ 波浮港ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "HABU",
+          "arr": "07:29",
+          "dep": "07:29"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "07:59",
+          "dep": "07:59"
+        }
+      ]
+    },
+    {
+      "tripId": "HABU_UP_0810",
+      "routeName": "Ｂ 波浮港ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "PORT",
+          "arr": "08:10",
+          "dep": "08:10"
+        },
+        {
+          "stopId": "HABU",
+          "arr": "08:40",
+          "dep": "08:40"
         }
       ]
     },
@@ -79,6 +139,11 @@
           "stopId": "PORT",
           "arr": "08:37",
           "dep": "08:37"
+        },
+        {
+          "stopId": "PARK",
+          "arr": "08:50",
+          "dep": "08:50"
         }
       ]
     },
@@ -113,6 +178,46 @@
       ]
     },
     {
+      "tripId": "HABU_DOWN_0829",
+      "routeName": "Ｂ 波浮港ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "HABU",
+          "arr": "08:29",
+          "dep": "08:29"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "08:59",
+          "dep": "08:59"
+        }
+      ]
+    },
+    {
+      "tripId": "HABU_DOWN_0909",
+      "routeName": "Ｂ 波浮港ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "HABU",
+          "arr": "09:09",
+          "dep": "09:09"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "09:39",
+          "dep": "09:39"
+        }
+      ]
+    },
+    {
       "tripId": "PARK_UP_0910",
       "routeName": "Ａ 大島公園ライン",
       "serviceId": "全日運行",
@@ -130,6 +235,37 @@
           "stopId": "PORT",
           "arr": "09:27",
           "dep": "09:27"
+        },
+        {
+          "stopId": "PARK",
+          "arr": "09:40",
+          "dep": "09:40"
+        }
+      ]
+    },
+    {
+      "tripId": "PARK_DOWN_0930",
+      "routeName": "Ａ 大島公園ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "okada",
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "PARK",
+          "arr": "09:30",
+          "dep": "09:30"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "09:43",
+          "dep": "09:43"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "10:00",
+          "dep": "10:00"
         }
       ]
     },
@@ -194,27 +330,6 @@
       ]
     },
     {
-      "tripId": "PARK_UP_0943",
-      "routeName": "Ａ 大島公園ライン",
-      "serviceId": "全日運行",
-      "ports": [
-        "okada",
-        "motomachi"
-      ],
-      "stops": [
-        {
-          "stopId": "PORT",
-          "arr": "09:43",
-          "dep": "09:43"
-        },
-        {
-          "stopId": "PORT",
-          "arr": "10:00",
-          "dep": "10:00"
-        }
-      ]
-    },
-    {
       "tripId": "PARK_UP_1000",
       "routeName": "Ａ 大島公園ライン",
       "serviceId": "全日運行",
@@ -232,6 +347,37 @@
           "stopId": "PORT",
           "arr": "10:17",
           "dep": "10:17"
+        },
+        {
+          "stopId": "PARK",
+          "arr": "10:30",
+          "dep": "10:30"
+        }
+      ]
+    },
+    {
+      "tripId": "PARK_DOWN_1000",
+      "routeName": "Ａ 大島公園ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "okada",
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "PARK",
+          "arr": "10:00",
+          "dep": "10:00"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "10:13",
+          "dep": "10:13"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "10:34",
+          "dep": "10:34"
         }
       ]
     },
@@ -253,27 +399,31 @@
           "stopId": "PORT",
           "arr": "10:31",
           "dep": "10:31"
+        },
+        {
+          "stopId": "PARK",
+          "arr": "10:44",
+          "dep": "10:44"
         }
       ]
     },
     {
-      "tripId": "PARK_UP_1013",
-      "routeName": "Ａ 大島公園ライン",
+      "tripId": "HABU_UP_1010",
+      "routeName": "Ｂ 波浮港ライン",
       "serviceId": "全日運行",
       "ports": [
-        "okada",
         "motomachi"
       ],
       "stops": [
         {
           "stopId": "PORT",
-          "arr": "10:13",
-          "dep": "10:13"
+          "arr": "10:10",
+          "dep": "10:10"
         },
         {
-          "stopId": "PORT",
-          "arr": "10:34",
-          "dep": "10:34"
+          "stopId": "HABU",
+          "arr": "10:40",
+          "dep": "10:40"
         }
       ]
     },
@@ -355,6 +505,37 @@
           "stopId": "PORT",
           "arr": "10:57",
           "dep": "10:57"
+        },
+        {
+          "stopId": "PARK",
+          "arr": "11:10",
+          "dep": "11:10"
+        }
+      ]
+    },
+    {
+      "tripId": "PARK_DOWN_1040",
+      "routeName": "Ａ 大島公園ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "okada",
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "PARK",
+          "arr": "10:40",
+          "dep": "10:40"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "10:53",
+          "dep": "10:53"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "11:14",
+          "dep": "11:14"
         }
       ]
     },
@@ -376,32 +557,16 @@
           "stopId": "PORT",
           "arr": "11:11",
           "dep": "11:11"
-        }
-      ]
-    },
-    {
-      "tripId": "PARK_UP_1053",
-      "routeName": "Ａ 大島公園ライン",
-      "serviceId": "全日運行",
-      "ports": [
-        "okada",
-        "motomachi"
-      ],
-      "stops": [
-        {
-          "stopId": "PORT",
-          "arr": "10:53",
-          "dep": "10:53"
         },
         {
-          "stopId": "PORT",
-          "arr": "11:14",
-          "dep": "11:14"
+          "stopId": "PARK",
+          "arr": "11:24",
+          "dep": "11:24"
         }
       ]
     },
     {
-      "tripId": "PARK_UP_1113",
+      "tripId": "PARK_DOWN_1100",
       "routeName": "Ａ 大島公園ライン",
       "serviceId": "全日運行",
       "ports": [
@@ -409,6 +574,11 @@
         "motomachi"
       ],
       "stops": [
+        {
+          "stopId": "PARK",
+          "arr": "11:00",
+          "dep": "11:00"
+        },
         {
           "stopId": "PORT",
           "arr": "11:13",
@@ -418,6 +588,46 @@
           "stopId": "PORT",
           "arr": "11:30",
           "dep": "11:30"
+        }
+      ]
+    },
+    {
+      "tripId": "HABU_UP_1100",
+      "routeName": "Ｂ 波浮港ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "PORT",
+          "arr": "11:00",
+          "dep": "11:00"
+        },
+        {
+          "stopId": "HABU",
+          "arr": "11:30",
+          "dep": "11:30"
+        }
+      ]
+    },
+    {
+      "tripId": "HABU_DOWN_1119",
+      "routeName": "Ｂ 波浮港ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "HABU",
+          "arr": "11:19",
+          "dep": "11:19"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "11:49",
+          "dep": "11:49"
         }
       ]
     },
@@ -482,7 +692,7 @@
       ]
     },
     {
-      "tripId": "PARK_UP_1153",
+      "tripId": "PARK_DOWN_1140",
       "routeName": "Ａ 大島公園ライン",
       "serviceId": "全日運行",
       "ports": [
@@ -490,6 +700,11 @@
         "motomachi"
       ],
       "stops": [
+        {
+          "stopId": "PARK",
+          "arr": "11:40",
+          "dep": "11:40"
+        },
         {
           "stopId": "PORT",
           "arr": "11:53",
@@ -499,6 +714,46 @@
           "stopId": "PORT",
           "arr": "12:10",
           "dep": "12:10"
+        }
+      ]
+    },
+    {
+      "tripId": "HABU_UP_1140",
+      "routeName": "Ｂ 波浮港ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "PORT",
+          "arr": "11:40",
+          "dep": "11:40"
+        },
+        {
+          "stopId": "HABU",
+          "arr": "12:10",
+          "dep": "12:10"
+        }
+      ]
+    },
+    {
+      "tripId": "HABU_DOWN_1159",
+      "routeName": "Ｂ 波浮港ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "HABU",
+          "arr": "11:59",
+          "dep": "11:59"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "12:29",
+          "dep": "12:29"
         }
       ]
     },
@@ -520,6 +775,11 @@
           "stopId": "PORT",
           "arr": "12:27",
           "dep": "12:27"
+        },
+        {
+          "stopId": "PARK",
+          "arr": "12:40",
+          "dep": "12:40"
         }
       ]
     },
@@ -554,7 +814,7 @@
       ]
     },
     {
-      "tripId": "PARK_UP_1303",
+      "tripId": "PARK_DOWN_1250",
       "routeName": "Ａ 大島公園ライン",
       "serviceId": "全日運行",
       "ports": [
@@ -562,6 +822,11 @@
         "motomachi"
       ],
       "stops": [
+        {
+          "stopId": "PARK",
+          "arr": "12:50",
+          "dep": "12:50"
+        },
         {
           "stopId": "PORT",
           "arr": "13:03",
@@ -571,6 +836,26 @@
           "stopId": "PORT",
           "arr": "13:20",
           "dep": "13:20"
+        }
+      ]
+    },
+    {
+      "tripId": "HABU_DOWN_1309",
+      "routeName": "Ｂ 波浮港ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "HABU",
+          "arr": "13:09",
+          "dep": "13:09"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "13:39",
+          "dep": "13:39"
         }
       ]
     },
@@ -592,6 +877,31 @@
           "stopId": "PORT",
           "arr": "13:47",
           "dep": "13:47"
+        },
+        {
+          "stopId": "PARK",
+          "arr": "14:00",
+          "dep": "14:00"
+        }
+      ]
+    },
+    {
+      "tripId": "HABU_UP_1330",
+      "routeName": "Ｂ 波浮港ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "PORT",
+          "arr": "13:30",
+          "dep": "13:30"
+        },
+        {
+          "stopId": "HABU",
+          "arr": "14:00",
+          "dep": "14:00"
         }
       ]
     },
@@ -656,6 +966,32 @@
       ]
     },
     {
+      "tripId": "PARK_DOWN_1410",
+      "routeName": "Ａ 大島公園ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "okada",
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "PARK",
+          "arr": "14:10",
+          "dep": "14:10"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "14:23",
+          "dep": "14:23"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "14:40",
+          "dep": "14:40"
+        }
+      ]
+    },
+    {
       "tripId": "PARK_UP_1410",
       "routeName": "Ａ 大島公園ライン",
       "serviceId": "夏ダイヤ",
@@ -694,32 +1030,56 @@
           "stopId": "PORT",
           "arr": "14:37",
           "dep": "14:37"
+        },
+        {
+          "stopId": "PARK",
+          "arr": "14:50",
+          "dep": "14:50"
         }
       ]
     },
     {
-      "tripId": "PARK_UP_1423",
-      "routeName": "Ａ 大島公園ライン",
+      "tripId": "HABU_UP_1420",
+      "routeName": "Ｂ 波浮港ライン",
       "serviceId": "全日運行",
       "ports": [
-        "okada",
         "motomachi"
       ],
       "stops": [
         {
           "stopId": "PORT",
-          "arr": "14:23",
-          "dep": "14:23"
+          "arr": "14:20",
+          "dep": "14:20"
+        },
+        {
+          "stopId": "HABU",
+          "arr": "14:50",
+          "dep": "14:50"
+        }
+      ]
+    },
+    {
+      "tripId": "HABU_DOWN_1429",
+      "routeName": "Ｂ 波浮港ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "HABU",
+          "arr": "14:29",
+          "dep": "14:29"
         },
         {
           "stopId": "PORT",
-          "arr": "14:40",
-          "dep": "14:40"
+          "arr": "14:59",
+          "dep": "14:59"
         }
       ]
     },
     {
-      "tripId": "PARK_UP_1443",
+      "tripId": "PARK_DOWN_1430",
       "routeName": "Ａ 大島公園ライン",
       "serviceId": "全日運行",
       "ports": [
@@ -727,6 +1087,11 @@
         "motomachi"
       ],
       "stops": [
+        {
+          "stopId": "PARK",
+          "arr": "14:30",
+          "dep": "14:30"
+        },
         {
           "stopId": "PORT",
           "arr": "14:43",
@@ -736,6 +1101,32 @@
           "stopId": "PORT",
           "arr": "15:00",
           "dep": "15:00"
+        }
+      ]
+    },
+    {
+      "tripId": "PARK_DOWN_1500",
+      "routeName": "Ａ 大島公園ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "okada",
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "PARK",
+          "arr": "15:00",
+          "dep": "15:00"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "15:13",
+          "dep": "15:13"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "15:30",
+          "dep": "15:30"
         }
       ]
     },
@@ -757,32 +1148,36 @@
           "stopId": "PORT",
           "arr": "15:27",
           "dep": "15:27"
+        },
+        {
+          "stopId": "PARK",
+          "arr": "15:40",
+          "dep": "15:40"
         }
       ]
     },
     {
-      "tripId": "PARK_UP_1513",
-      "routeName": "Ａ 大島公園ライン",
+      "tripId": "HABU_DOWN_1519",
+      "routeName": "Ｂ 波浮港ライン",
       "serviceId": "全日運行",
       "ports": [
-        "okada",
         "motomachi"
       ],
       "stops": [
         {
-          "stopId": "PORT",
-          "arr": "15:13",
-          "dep": "15:13"
+          "stopId": "HABU",
+          "arr": "15:19",
+          "dep": "15:19"
         },
         {
           "stopId": "PORT",
-          "arr": "15:30",
-          "dep": "15:30"
+          "arr": "15:49",
+          "dep": "15:49"
         }
       ]
     },
     {
-      "tripId": "PARK_UP_1533",
+      "tripId": "PARK_DOWN_1520",
       "routeName": "Ａ 大島公園ライン",
       "serviceId": "全日運行",
       "ports": [
@@ -790,6 +1185,11 @@
         "motomachi"
       ],
       "stops": [
+        {
+          "stopId": "PARK",
+          "arr": "15:20",
+          "dep": "15:20"
+        },
         {
           "stopId": "PORT",
           "arr": "15:33",
@@ -799,6 +1199,32 @@
           "stopId": "PORT",
           "arr": "15:54",
           "dep": "15:54"
+        }
+      ]
+    },
+    {
+      "tripId": "PARK_DOWN_1550",
+      "routeName": "Ａ 大島公園ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "okada",
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "PARK",
+          "arr": "15:50",
+          "dep": "15:50"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "16:03",
+          "dep": "16:03"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "16:24",
+          "dep": "16:24"
         }
       ]
     },
@@ -820,32 +1246,36 @@
           "stopId": "PORT",
           "arr": "16:17",
           "dep": "16:17"
-        }
-      ]
-    },
-    {
-      "tripId": "PARK_UP_1603",
-      "routeName": "Ａ 大島公園ライン",
-      "serviceId": "全日運行",
-      "ports": [
-        "okada",
-        "motomachi"
-      ],
-      "stops": [
-        {
-          "stopId": "PORT",
-          "arr": "16:03",
-          "dep": "16:03"
         },
         {
-          "stopId": "PORT",
-          "arr": "16:24",
-          "dep": "16:24"
+          "stopId": "PARK",
+          "arr": "16:30",
+          "dep": "16:30"
         }
       ]
     },
     {
-      "tripId": "PARK_UP_1653",
+      "tripId": "HABU_UP_1610",
+      "routeName": "Ｂ 波浮港ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "PORT",
+          "arr": "16:10",
+          "dep": "16:10"
+        },
+        {
+          "stopId": "HABU",
+          "arr": "16:40",
+          "dep": "16:40"
+        }
+      ]
+    },
+    {
+      "tripId": "PARK_DOWN_1640",
       "routeName": "Ａ 大島公園ライン",
       "serviceId": "全日運行",
       "ports": [
@@ -853,6 +1283,11 @@
         "motomachi"
       ],
       "stops": [
+        {
+          "stopId": "PARK",
+          "arr": "16:40",
+          "dep": "16:40"
+        },
         {
           "stopId": "PORT",
           "arr": "16:53",
@@ -862,6 +1297,26 @@
           "stopId": "PORT",
           "arr": "17:10",
           "dep": "17:10"
+        }
+      ]
+    },
+    {
+      "tripId": "HABU_DOWN_1709",
+      "routeName": "Ｂ 波浮港ライン",
+      "serviceId": "全日運行",
+      "ports": [
+        "motomachi"
+      ],
+      "stops": [
+        {
+          "stopId": "HABU",
+          "arr": "17:09",
+          "dep": "17:09"
+        },
+        {
+          "stopId": "PORT",
+          "arr": "17:39",
+          "dep": "17:39"
         }
       ]
     },
@@ -883,11 +1338,16 @@
           "stopId": "PORT",
           "arr": "17:38",
           "dep": "17:38"
+        },
+        {
+          "stopId": "PARK",
+          "arr": "17:50",
+          "dep": "17:50"
         }
       ]
     },
     {
-      "tripId": "PARK_UP_1814",
+      "tripId": "PARK_DOWN_1800",
       "routeName": "Ａ 大島公園ライン",
       "serviceId": "全日運行",
       "ports": [
@@ -895,6 +1355,11 @@
         "motomachi"
       ],
       "stops": [
+        {
+          "stopId": "PARK",
+          "arr": "18:00",
+          "dep": "18:00"
+        },
         {
           "stopId": "PORT",
           "arr": "18:14",

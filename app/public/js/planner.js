@@ -36,7 +36,22 @@ export function fare(tt, a, b) {
 }
 
 const WALK_BUFFER = 10; // 下船→バス停の余裕（分）
+const TRANSFER_BUFFER = 5; // 港での乗り継ぎ余裕（分）
 const HOTEL_CHECKIN = "15:00";
+// コース→1日目のメインスポット。mihara は従来ロジック（荷物で椿/山頂を出し分け）
+const COURSE_SPOT = { park: "PARK", habu: "HABU" };
+
+/** from→to の直通便。無ければ 港乗り継ぎ(from→PORT→to) を試し、便の配列を返す */
+export function nextBusChain(tt, from, to, t, opts) {
+  const direct = nextBus(tt, from, to, t, opts);
+  let legs = direct ? [direct] : null;
+  if (from !== "PORT" && to !== "PORT") {
+    const l1 = nextBus(tt, from, "PORT", t, opts);
+    const l2 = l1 && nextBus(tt, "PORT", to, addMin(l1.arr, TRANSFER_BUFFER), opts);
+    if (l2 && (!legs || toMin(l2.arr) < toMin(legs[legs.length - 1].arr))) legs = [l1, l2];
+  }
+  return legs;
+}
 
 // ---- 旅程文言の日英テーブル。関数値は補間用 ----
 const MSG = {
@@ -71,6 +86,7 @@ const MSG = {
     day2Title: "ホテルにキャリーケースを預けて出発", day2Note: "身軽になって三原山へ 🎒",
     day2Summit: "三原山を満喫（火口一周・裏砂漠など）",
     pickup: "荷物を回収", pickupWait: (h, m) => `。港行きまで${h}時間${m}分あるので昼食・温泉・休憩`,
+    courseNote: { park: "入園無料の動物園と椿園をおさんぽ", habu: "レトロな港町をぶらり（名物コロッケも）" },
   },
   en: {
     ports: { motomachi: "Motomachi Port", okada: "Okada Port", unknown: "the port (decided that day)" },
@@ -103,6 +119,7 @@ const MSG = {
     day2Title: "Drop your suitcase at the hotel and head out", day2Note: "Travel light to Mt. Mihara 🎒",
     day2Summit: "Enjoy Mt. Mihara (crater rim, black desert)",
     pickup: "Pick up your bags", pickupWait: (h, m) => ` — ${h}h ${m}m until the port bus: lunch, onsen, rest`,
+    courseNote: { park: "Free-admission zoo and camellia garden stroll", habu: "Wander the retro port town (try the croquettes)" },
   },
 };
 
@@ -144,7 +161,7 @@ function dayLabel(i, date, fallback, L) {
  * 荷物あり: 港→椿・花ガーデン(2h+)→ホテル(荷物預け)。荷物なし: 港→山頂口直行→ホテル
  * 最終日: ホテル(荷物預け)→山頂→港。2泊3日は中日にまる一日三原山
  */
-export function planTrip({ tt, spots, port = "motomachi", arrival = "10:00", hasLuggage = true, returnNote, stayNights = 1, date, lang = "ja" }) {
+export function planTrip({ tt, spots, port = "motomachi", arrival = "10:00", hasLuggage = true, returnNote, stayNights = 1, date, lang = "ja", course = "mihara" }) {
   const L = MSG[lang] || MSG.ja;
   const warnings = [];
   const unresolved = [];
@@ -154,7 +171,8 @@ export function planTrip({ tt, spots, port = "motomachi", arrival = "10:00", has
   const ready = addMin(arrival, WALK_BUFFER);
   const portName = L.ports[port] ?? L.ports.unknown;
   const spotName = (id) => locSpot(spots[id], lang).name;
-  const input = { port, arrival, hasLuggage, stayNights, date, lang };
+  const courseSpot = COURSE_SPOT[course] && spots[COURSE_SPOT[course]] ? COURSE_SPOT[course] : null;
+  const input = { port, arrival, hasLuggage, stayNights, date, lang, course };
   const arriveEnd = { type: "event", title: L.arrivePort, note: returnNote || L.checkReturn };
 
   if (port === "unknown") warnings.push(L.warnUnknownPort);
@@ -164,13 +182,14 @@ export function planTrip({ tt, spots, port = "motomachi", arrival = "10:00", has
   if (stayNights === 0) {
     if (hasLuggage) warnings.push(L.warnDayTrip);
     day1.push({ type: "event", time: arrival, title: L.arriveAt(portName), note: hasLuggage ? L.withLuggage : L.light });
-    const spotId = hasLuggage ? "TSUBAKI" : "SUMMIT";
+    const spotId = courseSpot ?? (hasLuggage ? "TSUBAKI" : "SUMMIT");
+    const note = courseSpot ? L.courseNote[course] : hasLuggage ? L.gardenEasy : L.craterCourse;
     const g1 = nextBus(tt, "PORT", spotId, ready, opts);
     if (!g1) unresolved.push(L.noBus(L.port, spotName(spotId), L.hintArrival));
     else {
       day1.push(busItem(g1, tt));
       const g2 = nextBus(tt, spotId, "PORT", addMin(g1.arr, spots[spotId].minStayMin), opts);
-      day1.push(spotItem(spotId, spots, g1.arr, g2 ? g2.dep : null, hasLuggage ? L.gardenEasy : L.craterCourse, hasLuggage, lang));
+      day1.push(spotItem(spotId, spots, g1.arr, g2 ? g2.dep : null, note, hasLuggage, lang));
       if (!g2) unresolved.push(L.noBus(spotName(spotId), L.port));
       else {
         day1.push(busItem(g2, tt));
@@ -182,7 +201,23 @@ export function planTrip({ tt, spots, port = "motomachi", arrival = "10:00", has
 
   day1.push({ type: "event", time: arrival, title: L.arriveAt(portName), note: hasLuggage ? L.withLuggage : L.light });
 
-  if (hasLuggage) {
+  if (courseSpot) {
+    // ---- 選択コース(大島公園/波浮港): 港→スポット→(港乗り継ぎ)→温泉ホテル ----
+    const b1 = nextBus(tt, "PORT", courseSpot, ready, opts);
+    if (!b1) unresolved.push(L.noBus(L.port, spotName(courseSpot), L.hintArrival));
+    else {
+      day1.push(busItem(b1, tt));
+      const legs = nextBusChain(tt, courseSpot, "ONSEN", addMin(b1.arr, spots[courseSpot].minStayMin), opts);
+      day1.push(spotItem(courseSpot, spots, b1.arr, legs ? legs[0].dep : null, L.courseNote[course], hasLuggage, lang));
+      if (!legs) unresolved.push(L.noBus(spotName(courseSpot), spotName("ONSEN")));
+      else {
+        for (const leg of legs) day1.push(busItem(leg, tt));
+        const arr = legs[legs.length - 1].arr;
+        const early = toMin(arr) < toMin(HOTEL_CHECKIN);
+        day1.push(spotItem("ONSEN", spots, arr, null, early ? L.checkInEarly(HOTEL_CHECKIN) : L.checkIn, hasLuggage, lang));
+      }
+    }
+  } else if (hasLuggage) {
     // 港 → 椿・花ガーデン
     const b1 = nextBus(tt, "PORT", "TSUBAKI", ready, opts);
     if (!b1) unresolved.push(L.noBus(L.port, spotName("TSUBAKI"), L.hintArrival));
