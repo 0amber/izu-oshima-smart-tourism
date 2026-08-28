@@ -18,6 +18,7 @@
     "sourceUrl": "https://www.town.oshima.tokyo.jp/",
     "officialUrl": "https://www.izu-oshima.or.jp/",
     "photo": "img/camellia.jpg",
+    "photoCredit": "(WT-shared) Shoestring / CC BY-SA 4.0 (Wikimedia Commons)",
     "en": {
       "name": "Tsubaki Flower Garden",
       "desc": "8 min by bus from the port. The grounds are flat, easy to stroll even with your suitcase. Big lawn square.",
@@ -49,6 +50,7 @@
     "sourceUrl": "https://www.town.oshima.tokyo.jp/",
     "officialUrl": "https://www.izu-oshima.or.jp/",
     "photo": "img/mihara-trail.jpg",
+    "photoCredit": "Yoshi Canopus / CC BY-SA 4.0 (Wikimedia Commons)",
     "en": {
       "name": "Mt. Mihara (summit trailhead to crater)",
       "desc": "The symbol of Izu Oshima. The path from the trailhead to the crater is unpaved — travel light.",
@@ -77,6 +79,7 @@
     "sourceUrl": "https://www.town.oshima.tokyo.jp/",
     "officialUrl": "https://www.oshima-onsen.co.jp/",
     "photo": "img/mihara.jpg",
+    "photoCredit": "Kentaro Ohno / CC BY 2.0 (Wikimedia Commons)",
     "en": {
       "name": "Oshima Onsen Hotel (Mihara Onsen)",
       "desc": "Right at the bus stop. If they store your bags before check-in, you can head to Mt. Mihara traveling light.",
@@ -101,6 +104,7 @@
     "sourceUrl": "https://www.town.oshima.tokyo.jp/",
     "officialUrl": "https://www.town.oshima.tokyo.jp/",
     "photo": "img/motomachi.jpg",
+    "photoCredit": "Guilhem Vellut / CC BY 2.0 (Wikimedia Commons)",
     "en": {
       "name": "Motomachi stroll",
       "desc": "A walk around the port town. Lots of slopes — a bit tough with luggage.",
@@ -127,6 +131,7 @@
     "sourceUrl": "https://www.town.oshima.tokyo.jp/",
     "officialUrl": "https://www.izu-oshima.or.jp/",
     "photo": "img/oshima-park.jpg",
+    "photoCredit": "Tsuyoshi chiba / CC BY-SA 4.0 (Wikimedia Commons)",
     "en": {
       "name": "Oshima Park (zoo & camellia garden)",
       "desc": "A free-admission zoo and one of the world's largest camellia gardens. Big grounds, but the main areas are easy to cover.",
@@ -155,6 +160,7 @@
     "sourceUrl": "https://www.town.oshima.tokyo.jp/",
     "officialUrl": "https://www.izu-oshima.or.jp/",
     "photo": "img/habu.jpg",
+    "photoCredit": "alonfloc / CC BY 3.0 (Wikimedia Commons)",
     "en": {
       "name": "Habu Port",
       "desc": "A tiny port town born when a crater lake opened to the sea. Retro streets, famous croquettes, literary history.",

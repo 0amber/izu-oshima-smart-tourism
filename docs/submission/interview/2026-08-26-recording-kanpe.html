@@ -1,0 +1,90 @@
+<meta charset="utf-8">
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+         color: #1a1a1a; font-size: 10.5pt; line-height: 1.55; }
+  .page { width: 210mm; min-height: 297mm; padding: 13mm 14mm; page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+  h1 { font-size: 16pt; color: #0e7a8a; text-align: center; }
+  .sub { text-align: center; font-size: 9pt; color: #555; margin: 2mm 0 4mm; }
+  .note { background: #eef7f8; border-left: 3px solid #0e7a8a; padding: 2.5mm 3.5mm;
+           font-weight: 600; font-size: 9.5pt; margin-bottom: 4mm; }
+  h2 { font-size: 12pt; color: #0e7a8a; margin: 5mm 0 2mm; }
+  h3 { font-size: 10.5pt; margin: 3mm 0 1mm; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { border: 1px solid #b9c7ca; padding: 1.6mm 2.2mm; vertical-align: top; text-align: left; }
+  th { background: #e6f2f4; color: #0e5966; font-size: 9pt; }
+  .script td { font-size: 10pt; }
+  .script td.line { font-size: 11.5pt; font-weight: 600; }
+  .script td.t, .script td.sp, .script td.s { white-space: nowrap; font-weight: 700; color: #0e7a8a; }
+  .script td.s { color: #444; font-weight: 600; }
+  .small td { font-size: 9pt; }
+  ul { margin: 1mm 0 2mm 6mm; }
+  li { margin-bottom: 0.8mm; }
+  .src { font-size: 8pt; color: #777; margin-top: 4mm; }
+</style>
+<div class="page">
+  <h1>First Stage収録カンペ — 2分プレゼン(3人版)</h1>
+  <div class="sub">SBC.別班連携チーム『大島スマートコース』｜収録 2026年8月26日・Zoom・日本語｜作成 2026-08-25</div>
+  <div class="note">公式の位置づけは「各チーム2分間のプレゼンテーション収録」(質疑ではない)。収録映像はYouTubeで一般公開。
+  6人の審査委員が動画等で審査し、24作品がFinal Stage(10/17)へ進出。</div>
+  <h2>1. 役割分担(推奨。入れ替え自由)</h2>
+  <table class="small"><tr><th>役</th><th>担当(案)</th><th>受け持ち</th><th>ねらい</th></tr><tr><td>話者① つかみ・締め</td><td>志田さん(登壇候補)</td><td>スライド1-2, 9-10</td><td>冒頭5秒の掴みとインパクトの言語化</td></tr>
+<tr><td>話者② 島の現実・解決</td><td>杉山さん(大島で勤務経験あり)</td><td>スライド3-5</td><td>現地経験者が語る説得力</td></tr>
+<tr><td>話者③ アプリ・技術</td><td>島田さん(開発・PM)</td><td>スライド6-8</td><td>デモと技術の確かさ</td></tr>
+<tr><td>画面共有・送り</td><td>話者③が兼任</td><td>oshima-slides.pptx(10枚)</td><td>セリフ末尾の「▶」が送りの合図</td></tr></table>
+  <h2>2. 本番台本(通し約120秒・670字)　※「▶」=次のスライドへ</h2>
+  <table class="script"><tr><th>時間</th><th>スライド</th><th>話者</th><th>セリフ</th></tr><tr><td class='t'>0:00–0:08</td><td class='s'>1 表紙</td><td class='sp'>①</td><td class='line'>その旅程、バスは本当にありますか？　私たちの作品は「大島スマートコース」です。▶</td></tr>
+<tr><td class='t'>0:08–0:22</td><td class='s'>2 課題</td><td class='sp'>①</td><td class='line'>生成AIに伊豆大島の旅程を頼むと、それらしい答えが返ってきます。でも、そのバスは存在しません。時刻表はPDF、GTFSはzip。AIは時刻表を読めないからです。▶</td></tr>
+<tr><td class='t'>0:22–0:38</td><td class='s'>3 現実</td><td class='sp'>②</td><td class='line'>島の現実はこうです。大きな荷物はバスで1個500円、混雑時は乗車拒否も。宿のチェックインは15時。三原山ラインは1日3往復で、午後に山へ上がる便はない。知らないと、初日が崩れます。▶</td></tr>
+<tr><td class='t'>0:38–0:49</td><td class='s'>4 裏付け</td><td class='sp'>②</td><td class='line'>来島者は年間約19万人。生成AI利用者の77.8%が旅行で活用する今、「正確な旅程を作るAI」はまだ空白です。▶</td></tr>
+<tr><td class='t'>0:49–1:04</td><td class='s'>5 解決</td><td class='sp'>②</td><td class='line'>そこで私たちは、公共交通オープンデータGTFSを観光に必要な停留所だけの表に変換し、現地の暗黙知10項目と一緒にAIへ渡しました。ルールはひとつ、「時刻表にない便を作らない」。▶</td></tr>
+<tr><td class='t'>1:04–1:18</td><td class='s'>6 アプリ</td><td class='sp'>③</td><td class='line'>公開中のアプリでは、日付・港・荷物・コースを選ぶだけ。実在する53便だけで時刻入りの旅程を組み、地図と天気、AIガイドの音声解説、日英切替まで、スマホですぐ使えます。▶</td></tr>
+<tr><td class='t'>1:18–1:28</td><td class='s'>7 実演</td><td class='sp'>③</td><td class='line'>実演では、荷物ありなら椿園経由、身軽なら山頂へ直行。コースを変えれば、港での乗り継ぎも自動で探します。▶</td></tr>
+<tr><td class='t'>1:28–1:38</td><td class='s'>8 技術</td><td class='sp'>③</td><td class='line'>時刻は実在便のみ、全便に検証マーク。公開する表は識別子も座標も含まない要約で、ライセンスにも配慮しています。▶</td></tr>
+<tr><td class='t'>1:38–1:49</td><td class='s'>9 効果</td><td class='sp'>①</td><td class='line'>到着直後の半日を、観光の時間に変える。GTFSのある島や地方へ、そのまま横展開できます。運用はOSS、ダイヤ改定ごとに1コマンドで更新します。▶</td></tr>
+<tr><td class='t'>1:49–2:00</td><td class='s'>10 締め</td><td class='sp'>①</td><td class='line'>オープンデータ×ドメイン知識×AI。「大島スマートコース」、今すぐ使えます。以上、SBC.別班連携チームの発表でした。ありがとうございました。</td></tr></table>
+  <h3>時間が押したときのカット(この順に)</h3>
+  <ul><li>スライド9「運用はOSS、ダイヤ改定ごとに1コマンドで更新します。」をカット(約5秒)</li>
+<li>スライド3「知らないと、初日が崩れます。」をカット(約3秒)</li>
+<li>スライド8 後半を「ライセンスにも配慮しています。」に短縮(約4秒)</li></ul>
+</div>
+<div class="page">
+  <h2>3. 審査基準への刺さり方(勝ち筋)</h2>
+  <p>審査基準は5つ(配点非公開)。台本は全基準を1回以上踏んでいる。</p>
+  <table class="small"><tr><th>審査基準</th><th>刺すスライド</th><th>ひとこと武器</th></tr><tr><td>データ活用</td><td>5・10</td><td>大島バスGTFS-JPが核。気象庁予報・OSM・都観光統計など計7種</td></tr>
+<tr><td>アイデア力</td><td>2・7</td><td>「幻覚ゼロの旅程」×「荷物で組み替わる」— 乗換案内と生成AIの間の空白を突く</td></tr>
+<tr><td>技術力</td><td>8</td><td>復元不可能な要約・全便検証マーク・AI失敗時フォールバック・1コマンド再生成</td></tr>
+<tr><td>ソーシャルインパクト</td><td>4・9</td><td>年間約19万人、国も「二次交通は喫緊の課題」と明記。半日を取り戻し島しょへ横展開</td></tr>
+<tr><td>サービスデザイン</td><td>6</td><td>スマホ・QRで今すぐ使える。日英切替・音声読み上げ・天気連動</td></tr></table>
+  <p style="margin-top:2mm">2025年度作品集(132作品)の傾向: 行政課題解決賞は交通系(風ぐるま乗換案内)。
+  交通×課題解決は評価実績のある領域。本作の差別化は「実在保証(幻覚ゼロ)」と「荷物という独自の計画軸」。
+  多数の企画止まり作品との違いとして、スライド6の<b>「公開中」「今すぐ使えます」は必ず言う</b>。</p>
+  <p style="margin-top:2mm">昨年のFirst Stageアーカイブ(4時間44分・約130チーム連続再生)から: 審査委員は2分プレゼンを
+  大量に連続視聴する。<b>冒頭5秒の問いかけで掴む・数字は少数を繰り返す・早口で詰め込まない</b>が効く。
+  ファイナリストYORUGATA(1:25:46〜)の構成は「名乗り→統計で裏付けた課題→デモ→メリット・横展開→
+  『以上、〇〇の発表でした』の定型締め」で、本台本も同型。2025年度審査委員: 宮坂学(東京都副知事)・井原正博(GovTech東京CTO)・
+  閑歳孝子(くふうカンパニー)・高野克己(都デジタルサービス局長)・田村賢哉(Eukarya)・西村真里子(HEART CATCH)。
+  行政×民間×技術の混成なので、専門用語(GTFS等)は台本どおり一言説明を添える。</p>
+  <h2>4. 収録前チェックリスト</h2>
+  <h3>前日(今日)</h3><ul><li>3人で通し練習2回(ストップウォッチ計測。1回目は素で、2回目は本番想定)</li>
+<li>oshima-slides.pptx をスライドショーで最後まで送れるか確認</li>
+<li>デモURL確認: izu-oshima-smart-tourism.kotaroshimada38.workers.dev</li>
+<li>Zoom表示名を「チーム名+氏名」に。マイク・カメラ・回線チェック</li></ul>
+  <h3>開始直前</h3><ul><li>画面共有→スライドショー開始。発表者ツールは共有画面に映さない(カンペは紙か別デバイス)</li>
+<li>PC・スマホの通知オフ(おやすみモード)</li>
+<li>話者順(①→②→③→①)とスライド送り担当を最終確認</li></ul>
+  <h3>収録中の心得・公開への注意</h3><ul><li>昨年は司会が「次は〇〇の発表です」とチーム名を紹介してから開始。長い名乗りは不要(台本どおり)</li>
+<li>噛んでも止まらない・謝らない。録り直し可否は当日の運営案内に従う</li>
+<li>押したら上記カット順で削る。最後の「ありがとうございました」は必ず言い切る</li>
+<li>YouTubeで一般公開される。顔出し・実名は同意済みメンバーのみ。写真クレジット・OSM帰属はそのまま</li></ul>
+  <h2>5. もし質問・確認をされたら(30秒短答集)</h2>
+  <table class="small"><tr><th>想定質問</th><th>短答</th></tr><tr><td>データは何を?</td><td>核は大島バスGTFS-JP(公共交通オープンデータセンター)。ODPT承認済みの実データで、生成した時刻表は公式時刻表と完全一致を確認。ほかに気象庁予報JSON、東京都の観光統計、OpenStreetMapなど計7種。</td></tr>
+<tr><td>AIの幻覚対策は?</td><td>旅程の時刻はGTFSに実在する53便だけ。AI(Claude)は確定済みの旅程JSONを引用して解説するのみ。全便に「時刻表と一致」の検証マークと便IDを表示。</td></tr>
+<tr><td>ライセンスは大丈夫?</td><td>公開物は識別子・座標を含まない復元不可能な要約に限定しODPTライセンスに配慮。写真はCC素材で帰属明記、地図は© OpenStreetMap contributors。</td></tr>
+<tr><td>他の地域でも使える?</td><td>GTFSが整備されている島・地方なら変換は1コマンドで再生成でき、そのまま横展開できる。</td></tr>
+<tr><td>誰がどう使う?</td><td>旅行者がスマホ・QRで直接使うほか、観光協会や宿の案内窓口が旅程提案に使う運用を、NPO・Code forのネットワークで現地と協働して進める。</td></tr></table>
+  <div class="src">出典: odhackathon.metro.tokyo.lg.jp /judging/・/recruitment/(審査基準)・/collection/(2025作品集)、
+  docs/research/2026-08-21-market-research.md、提出フォーム最終版、昨年First Stageアーカイブ(youtube.com/watch?v=Ux1xQvWWf60)。</div>
+</div>
