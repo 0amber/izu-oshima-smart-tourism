@@ -352,7 +352,7 @@ function renderItem(it) {
             <div class="text-xs text-neutral-500 mt-1">${esc(it.note)}</div>
             ${it.cautions?.length ? `<div class="mt-1 flex flex-wrap gap-1">${it.cautions.map((c) => `<span class="text-xs rounded-full bg-warn/10 text-warn px-2 py-0.5">⚠ ${esc(c)}</span>`).join("")}</div>` : ""}
           </div>
-          ${spots[it.spotId]?.photo ? `<img src="${esc(spots[it.spotId].photo)}" alt="" loading="lazy" class="w-16 h-16 shrink-0 rounded-lg object-cover self-center">` : ""}
+          ${spots[it.spotId]?.photo ? `<img src="${esc(spots[it.spotId].photo)}" alt="" loading="lazy" title="${esc(spots[it.spotId].photoCredit ? `📷 ${spots[it.spotId].photoCredit}` : "")}" class="w-16 h-16 shrink-0 rounded-lg object-cover self-center">` : ""}
         </div>
       </div></li>`;
   }
@@ -483,7 +483,7 @@ function openSpot(id) {
     ? ["× Not doable with luggage", "△ Tough with luggage", "○ Fine with luggage"]
     : ["× 荷物ありは不可", "△ 荷物ありはやや大変", "○ 荷物ありでもOK"];
   $("#modalBody").innerHTML = `
-    ${s.photo ? `<img src="${esc(s.photo)}" alt="${esc(loc.name)}" loading="lazy" class="w-full h-36 object-cover rounded-xl mb-3">` : ""}
+    ${s.photo ? `<img src="${esc(s.photo)}" alt="${esc(loc.name)}" loading="lazy" class="w-full h-36 object-cover rounded-xl">${s.photoCredit ? `<div class="mt-1 text-right text-[10px] text-neutral-400">📷 ${esc(s.photoCredit)}</div>` : ""}<div class="mb-3"></div>` : ""}
     <h3 class="text-lg font-bold">${esc(s.emoji)} ${esc(loc.name)}</h3>
     <div class="text-xs text-neutral-500 mt-2">${esc(T("荷物適性", "Luggage friendliness"))}</div>
     <div class="flex items-center gap-1 mt-1">${[0, 1, 2].map((i) => `<span class="inline-block w-3 h-3 rounded-full ${i < s.luggageScore ? "bg-tsubaki" : "bg-neutral-200"}"></span>`).join("")} <span class="text-xs text-neutral-500 ml-1">${esc(lugLabels[s.luggageScore])}</span></div>

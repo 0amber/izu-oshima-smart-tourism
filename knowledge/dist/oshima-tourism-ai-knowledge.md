@@ -1,6 +1,6 @@
 # 伊豆大島 観光AIナレッジ — 情報基盤ドキュメント
 
-ChatGPTに時刻入りの旅程を提案させるための、AI-readableな時刻表と現地の暗黙知（SBC.別班連携チーム）
+ChatGPTに時刻入りの旅程を提案させるための、AI-readableな時刻表と現地の暗黙知（SBC.情報通信技術部特別班）
 
 生成日：2026-08-18　ブランチ：feature/ai-readable-knowledge
 

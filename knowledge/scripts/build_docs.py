@@ -17,7 +17,7 @@ from docx.oxml.ns import qn
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
 TITLE = "伊豆大島 観光AIナレッジ — 情報基盤ドキュメント"
-SUB = "ChatGPTに時刻入りの旅程を提案させるための、AI-readableな時刻表と現地の暗黙知（SBC.別班連携チーム）"
+SUB = "ChatGPTに時刻入りの旅程を提案させるための、AI-readableな時刻表と現地の暗黙知（SBC.情報通信技術部特別班）"
 
 ORDER = [
     ("はじめに", ROOT / "README.md"),
